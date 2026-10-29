@@ -5,6 +5,7 @@ import { catalog, getBrands } from "@/data/catalog";
 import {
   getServerShopInfoSnapshot,
   getShopInfoSnapshot,
+  isRememberingShopInfo,
   parseShopInfoSnapshot,
   saveShopInfo,
   subscribeToShopInfo,
@@ -12,7 +13,6 @@ import {
 } from "@/lib/shopInfoStorage";
 import { normalizeSyrianWhatsAppNumber } from "@/lib/phone";
 import {
-  buildSubmissionMessage,
   submitOffer,
   type SubmissionOffer,
   type SubmissionPayload,
@@ -33,6 +33,12 @@ type FormErrors = {
 };
 
 const EMPTY_ERRORS: FormErrors = { rows: {} };
+const EMPTY_SHOP_INFO: ShopInfoDraft = {
+  name: "",
+  area: "",
+  address: "",
+  whatsapp: "",
+};
 const inputClassName =
   "mt-1 min-h-12 w-full rounded-xl border border-slate-200 bg-white px-4 py-3 text-base outline-none transition focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10";
 
@@ -100,19 +106,32 @@ export default function AddPriceForm() {
     () => parseShopInfoSnapshot(shopInfoSnapshot),
     [shopInfoSnapshot],
   );
+  const rememberShopInfo = isRememberingShopInfo(shopInfoSnapshot);
   const [rows, setRows] = useState([createRow("model-1")]);
   const [notes, setNotes] = useState("");
   const [errors, setErrors] = useState<FormErrors>(EMPTY_ERRORS);
   const [message, setMessage] = useState("");
   const [submitted, setSubmitted] = useState(false);
-  const [whatsappOpened, setWhatsappOpened] = useState(false);
+  const [submissionChannel, setSubmissionChannel] = useState<
+    "firestore" | "whatsapp" | null
+  >(null);
   const [submitError, setSubmitError] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   const [nextRowId, setNextRowId] = useState(2);
 
   function updateShopInfo(updates: Partial<ShopInfoDraft>) {
-    saveShopInfo({ ...shopInfo, ...updates });
+    saveShopInfo({ ...shopInfo, ...updates }, rememberShopInfo);
     setErrors(EMPTY_ERRORS);
+  }
+
+  function resetForm(clearShopInfo: boolean) {
+    setRows([createRow("model-1")]);
+    setNextRowId(2);
+    setNotes("");
+    setErrors(EMPTY_ERRORS);
+    if (clearShopInfo) {
+      saveShopInfo(EMPTY_SHOP_INFO, false);
+    }
   }
 
   function updateRow(id: string, updates: Partial<OfferFormRowValue>) {
@@ -174,23 +193,50 @@ export default function AddPriceForm() {
       };
     });
     const payload: SubmissionPayload = {
-      shop: { ...shopInfo, whatsapp },
+      shop: {
+        name: shopInfo.name,
+        area: shopInfo.area,
+        address: shopInfo.address,
+        whatsapp,
+      },
       offers,
       ...(notes.trim() ? { notes: notes.trim() } : {}),
     };
 
-    setMessage(buildSubmissionMessage(payload));
     try {
       const result = await submitOffer(payload);
-      setWhatsappOpened(result.ok);
+      setMessage(result.message ?? "");
+      if (!result.ok) {
+        setSubmitError(
+          "تعذّر فتح واتساب. لم تُمسح البيانات؛ يمكنك نسخ الرسالة وإرسالها يدوياً.",
+        );
+        return;
+      }
+
+      setSubmissionChannel(result.channel);
+      if (rememberShopInfo) {
+        saveShopInfo(payload.shop, true);
+      } else {
+        saveShopInfo(EMPTY_SHOP_INFO, false);
+      }
+      resetForm(false);
+      setSubmitError("");
       setSubmitted(true);
     } catch (error) {
-      console.error("Failed to prepare WhatsApp offer submission:", error);
+      console.error("Failed to submit offer:", error);
       setSubmitError(
-        "تعذّر فتح واتساب تلقائياً. يمكنك نسخ الرسالة وإرسالها يدوياً.",
+        "تعذّر إرسال الطلب. لم تُمسح البيانات؛ يمكنك المحاولة مجدداً أو نسخ الرسالة.",
       );
-      setSubmitted(true);
     }
+  }
+
+  function startNewSubmission() {
+    setSubmitted(false);
+    setSubmissionChannel(null);
+    setMessage("");
+    setCopyStatus("");
+    setSubmitError("");
+    resetForm(!rememberShopInfo);
   }
 
   async function copyMessage() {
@@ -206,44 +252,48 @@ export default function AddPriceForm() {
     return (
       <section className="space-y-5" aria-live="polite">
         <div className="rounded-2xl bg-emerald-50 p-5 text-emerald-900 ring-1 ring-emerald-200">
-          <h2 className="text-xl font-extrabold">شكراً لك!</h2>
+          <h2 className="scroll-mt-24 text-xl font-extrabold">شكراً لك!</h2>
           <p className="mt-2">
-            {submitError ||
-              "تم تجهيز طلبك. سنراجع الأسعار وننشرها بالموقع قريباً."}
+            {submissionChannel === "firestore"
+              ? "تم إرسال طلبك للمراجعة."
+              : "تم تجهيز طلبك. سنراجع الأسعار وننشرها بالموقع قريباً."}
           </p>
-          {!whatsappOpened && !submitError && (
-            <p className="mt-2 text-sm">
-              إذا لم يفتح واتساب، يمكنك نسخ الرسالة من الخيار أدناه وإرسالها
-              يدوياً.
-            </p>
-          )}
         </div>
 
-        <details className="rounded-2xl border border-slate-200 bg-white p-4">
-          <summary className="cursor-pointer font-bold text-slate-800">
-            نسخ الرسالة
-          </summary>
-          <textarea
-            readOnly
-            value={message}
-            dir="auto"
-            rows={12}
-            aria-label="نص رسالة واتساب"
-            className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm"
-          />
-          <button
-            type="button"
-            onClick={copyMessage}
-            className="mt-3 rounded-full bg-slate-900 px-5 py-2 font-bold text-white transition hover:bg-slate-700"
-          >
-            نسخ الرسالة
-          </button>
-          {copyStatus && (
-            <p className="mt-2 text-sm text-slate-600" aria-live="polite">
-              {copyStatus}
-            </p>
-          )}
-        </details>
+        {submissionChannel === "whatsapp" && (
+          <details className="rounded-2xl border border-slate-200 bg-white p-4">
+            <summary className="cursor-pointer font-bold text-slate-800">
+              نسخ الرسالة
+            </summary>
+            <textarea
+              readOnly
+              value={message}
+              dir="auto"
+              rows={12}
+              aria-label="نص رسالة واتساب"
+              className="mt-4 w-full rounded-xl border border-slate-200 bg-slate-50 p-3 text-sm"
+            />
+            <button
+              type="button"
+              onClick={copyMessage}
+              className="mt-3 rounded-full bg-slate-900 px-5 py-2 font-bold text-white transition hover:bg-slate-700"
+            >
+              نسخ الرسالة
+            </button>
+            {copyStatus && (
+              <p className="mt-2 text-sm text-slate-600" aria-live="polite">
+                {copyStatus}
+              </p>
+            )}
+          </details>
+        )}
+        <button
+          type="button"
+          onClick={startNewSubmission}
+          className="rounded-full border border-slate-300 px-5 py-2 font-bold text-slate-700 transition hover:bg-slate-50"
+        >
+          إضافة أسعار جديدة
+        </button>
       </section>
     );
   }
@@ -251,9 +301,11 @@ export default function AddPriceForm() {
   return (
     <form className="space-y-7" onSubmit={handleSubmit} noValidate>
       <div>
-        <h2 className="text-xl font-extrabold">بيانات المحل</h2>
+        <h2 className="scroll-mt-24 text-xl font-extrabold">
+          بيانات المحل
+        </h2>
         <p className="mt-1 text-sm text-slate-500">
-          سنحفظ هذه المعلومات على جهازك لتسهيل إرسال الأسعار لاحقاً.
+          يمكنك تذكّر بيانات المحل على هذا الجهاز لتسهيل الإرسال لاحقاً.
         </p>
       </div>
 
@@ -337,11 +389,37 @@ export default function AddPriceForm() {
             </span>
           )}
         </label>
+
+        <div className="flex flex-wrap items-center justify-between gap-3 sm:col-span-2">
+          <label className="flex min-h-11 items-center gap-3 text-sm font-bold text-slate-700">
+            <input
+              type="checkbox"
+              checked={rememberShopInfo}
+              onChange={(event) =>
+                saveShopInfo(shopInfo, event.target.checked)
+              }
+              className="h-5 w-5 rounded border-slate-300 accent-emerald-600"
+            />
+            تذكّر بيانات محلي على هذا الجهاز
+          </label>
+          <button
+            type="button"
+            onClick={() => {
+              saveShopInfo(EMPTY_SHOP_INFO, false);
+              setErrors(EMPTY_ERRORS);
+            }}
+            className="text-sm font-bold text-slate-500 underline-offset-4 hover:text-red-600 hover:underline"
+          >
+            مسح بيانات المحل
+          </button>
+        </div>
       </div>
 
       <div className="space-y-4">
         <div>
-          <h2 className="text-xl font-extrabold">الأسعار والموديلات</h2>
+          <h2 className="scroll-mt-24 text-xl font-extrabold">
+            الأسعار والموديلات
+          </h2>
           <p className="mt-1 text-sm text-slate-500">
             أضف سعراً لكل سعة تخزين، ويمكنك إرسال حتى 10 موديلات دفعة واحدة.
           </p>
@@ -400,11 +478,38 @@ export default function AddPriceForm() {
           type="submit"
           className="w-full rounded-full bg-green-600 px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-green-600/20 transition hover:-translate-y-0.5 hover:bg-green-700 sm:w-auto"
         >
-          أرسل الأسعار عبر واتساب
+          أرسل الأسعار
         </button>
         <p className="mt-3 text-xs text-slate-500">
           الأسعار لا تُنشر تلقائياً؛ يراجعها صاحب الموقع قبل إضافتها.
         </p>
+        {submitError && (
+          <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+            <p>{submitError}</p>
+            {message && (
+              <details className="mt-3">
+                <summary className="cursor-pointer font-bold">
+                  نسخ الرسالة
+                </summary>
+                <textarea
+                  readOnly
+                  value={message}
+                  dir="auto"
+                  rows={8}
+                  aria-label="نص رسالة واتساب"
+                  className="mt-3 w-full rounded-xl border border-amber-200 bg-white p-3"
+                />
+                <button
+                  type="button"
+                  onClick={copyMessage}
+                  className="mt-3 rounded-full bg-slate-900 px-5 py-2 font-bold text-white"
+                >
+                  نسخ الرسالة
+                </button>
+              </details>
+            )}
+          </div>
+        )}
       </div>
     </form>
   );

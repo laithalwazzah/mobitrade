@@ -15,8 +15,8 @@ export default function AddPrice() {
         </div>
       </section>
 
-      <main className="mx-auto -mt-12 w-full max-w-3xl flex-1 px-4 pb-16">
-        <div className="rounded-2xl bg-white p-5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 sm:p-8">
+      <main className="mx-auto -mt-3 w-full max-w-3xl flex-1 px-4 pb-16">
+        <div className="rounded-2xl bg-white p-5 shadow-xl shadow-slate-900/10 ring-1 ring-slate-200 sm:px-8 sm:pt-14 sm:pb-8">
           <AddPriceForm />
         </div>
       </main>

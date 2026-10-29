@@ -1,7 +1,14 @@
 import { WHATSAPP_DESTINATION_PHONE } from "@/lib/config";
 import { conditionLabel } from "@/data/helpers";
 import type { OfferCondition } from "@/data/products";
+import { getFirebaseFirestore } from "@/lib/firebase";
 import { normalizeSyrianWhatsAppNumber } from "@/lib/phone";
+import {
+  doc,
+  serverTimestamp,
+  setDoc,
+  type Firestore,
+} from "firebase/firestore";
 
 export type OfferCurrency = "USD" | "SYP";
 export type { OfferCondition } from "@/data/products";
@@ -27,6 +34,22 @@ export type SubmissionPayload = {
   notes?: string;
 };
 
+export type SubmissionResult =
+  | {
+      ok: true;
+      channel: "firestore" | "whatsapp";
+      clientId: string;
+      message?: string;
+    }
+  | { ok: false; clientId: string; message: string };
+
+function createClientId() {
+  if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
+    return crypto.randomUUID();
+  }
+  return `${Date.now().toString(36)}-${Math.random().toString(36).slice(2)}`;
+}
+
 function getLocalDate() {
   const now = new Date();
   const month = String(now.getMonth() + 1).padStart(2, "0");
@@ -34,7 +57,10 @@ function getLocalDate() {
   return `${now.getFullYear()}-${month}-${day}`;
 }
 
-export function buildSubmissionMessage(payload: SubmissionPayload) {
+export function buildSubmissionMessage(
+  payload: SubmissionPayload,
+  clientId: string,
+) {
   const offerLines = payload.offers.map((offer, index) => {
     const fullName = `${offer.brand} ${offer.name}`;
     const condition = conditionLabel(offer.condition);
@@ -46,8 +72,15 @@ export function buildSubmissionMessage(payload: SubmissionPayload) {
     throw new Error("رقم واتساب غير صحيح. مثال: 0912345678");
   }
 
+  const shop = {
+    name: payload.shop.name,
+    area: payload.shop.area,
+    address: payload.shop.address,
+    whatsapp,
+  };
   const data = {
-    shop: { ...payload.shop, whatsapp },
+    clientId,
+    shop,
     offers: payload.offers.map((offer) => ({
       name: offer.name,
       brand: offer.brand,
@@ -64,10 +97,11 @@ export function buildSubmissionMessage(payload: SubmissionPayload) {
     "طلب إضافة أسعار إلى موقع سعّرلي",
     "",
     "بيانات المحل:",
-    `اسم المحل: ${payload.shop.name}`,
-    `المنطقة: ${payload.shop.area}`,
-    `العنوان: ${payload.shop.address}`,
+    `اسم المحل: ${shop.name}`,
+    `المنطقة: ${shop.area}`,
+    `العنوان: ${shop.address}`,
     `واتساب المحل: ${whatsapp}`,
+    `رقم الطلب: ${clientId}`,
     "",
     "الأسعار:",
     ...offerLines,
@@ -81,20 +115,82 @@ export function buildSubmissionMessage(payload: SubmissionPayload) {
 
 export async function submitOffer(
   payload: SubmissionPayload,
-): Promise<{ ok: boolean }> {
-  if (typeof window === "undefined") return { ok: false };
+): Promise<SubmissionResult> {
+  const clientId = createClientId();
+  if (typeof window === "undefined") {
+    return { ok: false, clientId, message: "" };
+  }
 
   const whatsapp = normalizeSyrianWhatsAppNumber(payload.shop.whatsapp);
-  if (!whatsapp) return { ok: false };
+  if (!whatsapp) {
+    return {
+      ok: false,
+      clientId,
+      message: "رقم واتساب غير صحيح. مثال: 0912345678",
+    };
+  }
 
   const normalizedPayload = {
     ...payload,
-    shop: { ...payload.shop, whatsapp },
+    shop: {
+      name: payload.shop.name,
+      area: payload.shop.area,
+      address: payload.shop.address,
+      whatsapp,
+    },
   };
-  const message = buildSubmissionMessage(normalizedPayload);
-  const url = `https://wa.me/${WHATSAPP_DESTINATION_PHONE}?text=${encodeURIComponent(message)}`;
-  const openedWindow = window.open(url, "_blank");
+  let db: Firestore | null = null;
+  try {
+    db = getFirebaseFirestore();
+  } catch {
+    console.warn("Firebase initialization failed; using WhatsApp fallback.");
+  }
+  const pendingWindow = db ? window.open("about:blank", "_blank") : null;
 
+  if (pendingWindow) {
+    pendingWindow.document.title = "إرسال الطلب";
+    pendingWindow.document.body.textContent = "جارٍ إرسال طلبك للمراجعة...";
+  }
+
+  if (db) {
+    let timeoutId: ReturnType<typeof setTimeout> | undefined;
+    try {
+      await Promise.race([
+        setDoc(doc(db, "submissions", clientId), {
+          shop: normalizedPayload.shop,
+          offers: normalizedPayload.offers,
+          ...(normalizedPayload.notes
+            ? { notes: normalizedPayload.notes }
+            : {}),
+          status: "pending",
+          createdAt: serverTimestamp(),
+          clientId,
+        }),
+        new Promise<never>((_, reject) => {
+          timeoutId = setTimeout(
+            () => reject(new Error("Firestore submission timed out.")),
+            8000,
+          );
+        }),
+      ]);
+      pendingWindow?.close();
+      return { ok: true, channel: "firestore", clientId };
+    } catch {
+      console.warn("Firestore submission failed; using WhatsApp fallback.");
+    } finally {
+      if (timeoutId) clearTimeout(timeoutId);
+    }
+  }
+
+  const message = buildSubmissionMessage(normalizedPayload, clientId);
+  const url = `https://wa.me/${WHATSAPP_DESTINATION_PHONE}?text=${encodeURIComponent(message)}`;
+  const openedWindow = pendingWindow ?? window.open(url, "_blank");
+
+  if (pendingWindow) {
+    pendingWindow.location.href = url;
+  }
   if (openedWindow) openedWindow.opener = null;
-  return { ok: openedWindow !== null };
+  return openedWindow
+    ? { ok: true, channel: "whatsapp", clientId, message }
+    : { ok: false, clientId, message };
 }
