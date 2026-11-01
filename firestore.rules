@@ -1,0 +1,52 @@
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{db}/documents {
+
+    match /liveOffers/{id} {
+      allow read: if true;
+      allow create, update: if id.matches('^9639[0-9]{8}_.+')
+        && request.resource.data.keys().hasOnly(['shop','product','condition','price','currency','notes','updatedAt'])
+        && request.resource.data.shop.keys().hasOnly(['name','area','address','whatsapp'])
+        && request.resource.data.product.keys().hasOnly(['brand','name','storage','network'])
+        && request.resource.data.shop.whatsapp == id.split('_')[0]
+        && request.resource.data.shop.name is string
+        && request.resource.data.shop.name.size() > 0
+        && request.resource.data.shop.name.size() <= 80
+        && request.resource.data.shop.area is string
+        && request.resource.data.shop.area.size() <= 80
+        && request.resource.data.shop.address is string
+        && request.resource.data.shop.address.size() <= 160
+        && request.resource.data.product.brand is string
+        && request.resource.data.product.brand.size() <= 40
+        && request.resource.data.product.name is string
+        && request.resource.data.product.name.size() > 0
+        && request.resource.data.product.name.size() <= 60
+        && request.resource.data.product.storage is string
+        && request.resource.data.product.storage.size() <= 20
+        && (!('network' in request.resource.data.product) || request.resource.data.product.network in ['4G','5G'])
+        && request.resource.data.condition in ['new','used']
+        && request.resource.data.currency in ['USD','SYP']
+        && request.resource.data.price is number
+        && request.resource.data.price > 0
+        && request.resource.data.price < 1000000000
+        && request.resource.data.updatedAt == request.time;
+      allow delete: if false;
+    }
+
+    match /submissions/{id} {
+      allow create: if request.resource.data.keys().hasOnly(['shop','offers','notes','status','createdAt','clientId'])
+        && request.resource.data.status == 'pending'
+        && request.resource.data.createdAt == request.time
+        && request.resource.data.shop.name is string
+        && request.resource.data.shop.name.size() <= 80
+        && request.resource.data.offers is list
+        && request.resource.data.offers.size() >= 1
+        && request.resource.data.offers.size() <= 10;
+      allow read, update, delete: if false;
+    }
+
+    match /{document=**} {
+      allow read, write: if false;
+    }
+  }
+}

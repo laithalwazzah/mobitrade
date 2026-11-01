@@ -2,8 +2,8 @@
 
 import Link from "next/link";
 import { useState } from "react";
-import type { Product } from "@/data/products";
-import { lowestOffer, formatPrice } from "@/data/helpers";
+import type { OfferCondition, Product } from "@/data/products";
+import { conditionLabel, lowestOffer, formatPrice } from "@/data/helpers";
 
 export default function ProductList({ products }: { products: Product[] }) {
   const [query, setQuery] = useState("");
@@ -92,8 +92,23 @@ export default function ProductList({ products }: { products: Product[] }) {
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
         {filtered.map((product, index) => {
-          const newOffer = lowestOffer(product, "new");
-          const displayedOffer = newOffer ?? lowestOffer(product, "used");
+          const displayedCondition: OfferCondition =
+            condition === "all"
+              ? product.offers.some((offer) => offer.condition === "new")
+                ? "new"
+                : "used"
+              : condition;
+          const displayedCurrency = product.offers.some(
+            (offer) =>
+              offer.condition === displayedCondition && offer.currency === "USD",
+          )
+            ? "USD"
+            : "SYP";
+          const displayedOffer = lowestOffer(
+            product,
+            displayedCondition,
+            displayedCurrency,
+          );
           const sameConditionCurrencyOffers = displayedOffer
             ? product.offers.filter(
                 (offer) =>
@@ -105,11 +120,22 @@ export default function ProductList({ products }: { products: Product[] }) {
             ? Math.max(...sameConditionCurrencyOffers.map((offer) => offer.price))
             : 0;
           const saving = displayedOffer ? worst - displayedOffer.price : 0;
+          const shopCount = new Set(
+            product.offers
+              .filter(
+                (offer) =>
+                  condition === "all" || offer.condition === condition,
+              )
+              .map((offer) => offer.shopId),
+          ).size;
+          const showConditionBadge =
+            displayedOffer &&
+            (condition !== "all" || displayedOffer.condition === "used");
 
           return (
             <Link
               key={product.id}
-              href={`/product/${product.id}`}
+              href={`/product?id=${encodeURIComponent(product.id)}`}
               className="animate-fade-up group overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10"
               style={{ animationDelay: `${index * 60}ms` }}
             >
@@ -146,11 +172,19 @@ export default function ProductList({ products }: { products: Product[] }) {
                   <div>
                     <div className="flex items-center gap-2">
                       <p className="text-xs text-slate-400">
-                        {newOffer ? "أرخص سعر جديد" : "أرخص سعر"}
+                        {condition === "all" && displayedCondition === "new"
+                          ? "أرخص سعر جديد"
+                          : "أرخص سعر"}
                       </p>
-                      {!newOffer && displayedOffer && (
-                        <span className="rounded-full bg-amber-100 px-2 py-0.5 text-xs font-bold text-amber-800">
-                          مستعمل
+                      {showConditionBadge && (
+                        <span
+                          className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                            displayedOffer.condition === "new"
+                              ? "bg-emerald-100 text-emerald-800"
+                              : "bg-amber-100 text-amber-800"
+                          }`}
+                        >
+                          {conditionLabel(displayedOffer.condition)}
                         </span>
                       )}
                     </div>
@@ -161,13 +195,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                     )}
                   </div>
                   <p className="text-xs text-slate-500">
-                    {
-                      product.offers.filter(
-                        (offer) =>
-                          condition === "all" || offer.condition === condition,
-                      ).length
-                    }{" "}
-                    محل
+                    {shopCount} محل
                   </p>
                 </div>
               </div>

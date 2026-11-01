@@ -27,7 +27,8 @@ export type OfferField =
   | "storage"
   | "condition"
   | "network"
-  | "price";
+  | "price"
+  | "duplicate";
 
 type Props = {
   index: number;
@@ -303,6 +304,8 @@ export default function OfferFormRow({
           {showError("price")}
         </div>
       </div>
+
+      {showError("duplicate")}
 
       {onRemove && (
         <button

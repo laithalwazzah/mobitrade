@@ -2,34 +2,60 @@ import {
   products,
   shops,
   type Product,
+  type Shop,
   type Offer,
   type OfferCondition,
 } from "./products";
 
-export function getShop(id: string) {
-  return shops.find((s) => s.id === id);
+export function getShop(id: string, shopList: readonly Shop[] = shops) {
+  return shopList.find((shop) => shop.id === id);
 }
 
-export function getProduct(id: string) {
-  return products.find((p) => p.id === id);
+export function getProduct(
+  id: string,
+  productList: readonly Product[] = products,
+) {
+  return productList.find((product) => product.id === id);
 }
 
-export function sortedOffers(product: Product): Offer[] {
-  return [...product.offers].sort(
-    (a, b) =>
-      a.price - b.price ||
-      (a.condition === b.condition ? 0 : a.condition === "new" ? -1 : 1),
-  );
+export type OfferGroup = {
+  condition: OfferCondition;
+  currency: Offer["currency"];
+  offers: Offer[];
+};
+
+export function sortedOffers(
+  product: Product,
+  condition: OfferCondition,
+  currency: Offer["currency"],
+): Offer[] {
+  return product.offers
+    .filter(
+      (offer) =>
+        offer.condition === condition && offer.currency === currency,
+    )
+    .sort((a, b) => a.price - b.price);
+}
+
+export function groupedOffers(product: Product): OfferGroup[] {
+  const groups: OfferGroup[] = [];
+
+  for (const condition of ["new", "used"] as const) {
+    for (const currency of ["USD", "SYP"] as const) {
+      const offers = sortedOffers(product, condition, currency);
+      if (offers.length > 0) groups.push({ condition, currency, offers });
+    }
+  }
+
+  return groups;
 }
 
 export function lowestOffer(
   product: Product,
-  condition?: OfferCondition,
+  condition: OfferCondition,
+  currency: Offer["currency"],
 ): Offer | undefined {
-  const offers = condition
-    ? product.offers.filter((offer) => offer.condition === condition)
-    : product.offers;
-  return sortedOffers({ ...product, offers })[0];
+  return sortedOffers(product, condition, currency)[0];
 }
 
 export function conditionLabel(condition: OfferCondition) {
@@ -41,8 +67,9 @@ export function findProduct(
   name: string,
   storage: string,
   network?: "4G" | "5G",
+  productList: readonly Product[] = products,
 ) {
-  return products.find(
+  return productList.find(
     (product) =>
       product.brand === brand &&
       product.name === name &&
@@ -58,13 +85,13 @@ export function formatPrice(offer: Offer) {
     : `${offer.price.toLocaleString("en-US")}${symbol}`;
 }
 
-export function getShopOffers(shopId: string) {
-  return products
-    .map((product) => ({
-      product,
-      offer: product.offers.find((offer) => offer.shopId === shopId),
-    }))
-    .filter(
-      (item): item is { product: Product; offer: Offer } => Boolean(item.offer),
-    );
+export function getShopOffers(
+  shopId: string,
+  productList: readonly Product[] = products,
+) {
+  return productList.flatMap((product) =>
+    product.offers
+      .filter((offer) => offer.shopId === shopId)
+      .map((offer) => ({ product, offer })),
+  );
 }

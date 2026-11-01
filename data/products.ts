@@ -27,33 +27,11 @@ export type Shop = {
 
 export const shops: Shop[] = [
   {
-    id: "shop1",
-    name: "اسم المحل الأول",
-    area: "اللاذقية - اسم الحي",
-    address: "العنوان التفصيلي",
-    whatsapp: "963000000000",
-  },
-  {
-    id: "shop2",
-    name: "اسم المحل الثاني",
-    area: "اللاذقية - اسم الحي",
-    address: "العنوان التفصيلي",
-    whatsapp: "963000000001",
-  },
-  {
     id: "shop3",
     name: "HDO",
     area: "اللاذقية - الزراعة",
     address: "الزراعة، جانب سور السكن",
     whatsapp: "963937272727",
-  },
-  // TEST DATA - remove before publishing
-  {
-    id: "shop4",
-    name: "غلطان بالنمرة",
-    area: "اللاذقية - سبيرو",
-    address: "مفرق سبيرو",
-    whatsapp: "963936354895",
   },
   {
     id: "shop5",
@@ -65,28 +43,6 @@ export const shops: Shop[] = [
 ];
 
 export const products: Product[] = [
-  {
-    id: "p1",
-    name: "اسم الموديل (تجريبي)",
-    brand: "الشركة",
-    storage: "128GB",
-    offers: [
-      {
-        shopId: "shop1",
-        price: 250,
-        currency: "USD",
-        updatedAt: "2026-10-27",
-        condition: "new",
-      },
-      {
-        shopId: "shop2",
-        price: 245,
-        currency: "USD",
-        updatedAt: "2026-10-25",
-        condition: "new",
-      },
-    ],
-  },
   {
     id: "p2",
     name: "Galaxy A32",
@@ -100,14 +56,6 @@ export const products: Product[] = [
         currency: "USD",
         updatedAt: "2026-10-28",
         condition: "new",
-      },
-      // TEST DATA - remove before publishing
-      {
-        shopId: "shop4",
-        price: 220,
-        currency: "USD",
-        condition: "new",
-        updatedAt: "2026-10-28",
       },
     ],
   },

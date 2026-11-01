@@ -3,10 +3,11 @@ import { conditionLabel } from "@/data/helpers";
 import type { OfferCondition } from "@/data/products";
 import { getFirebaseFirestore } from "@/lib/firebase";
 import { normalizeSyrianWhatsAppNumber } from "@/lib/phone";
+import { createLiveOfferDocumentId } from "@/lib/productKey";
 import {
   doc,
   serverTimestamp,
-  setDoc,
+  writeBatch,
   type Firestore,
 } from "firebase/firestore";
 
@@ -18,7 +19,7 @@ export type SubmissionOffer = {
   name: string;
   storage: string;
   condition: OfferCondition;
-  network: "4G" | "5G";
+  network?: "4G" | "5G";
   price: number;
   currency: OfferCurrency;
 };
@@ -43,7 +44,7 @@ export type SubmissionResult =
     }
   | { ok: false; clientId: string; message: string };
 
-function createClientId() {
+export function createSubmissionClientId() {
   if (typeof crypto !== "undefined" && typeof crypto.randomUUID === "function") {
     return crypto.randomUUID();
   }
@@ -64,8 +65,9 @@ export function buildSubmissionMessage(
   const offerLines = payload.offers.map((offer, index) => {
     const fullName = `${offer.brand} ${offer.name}`;
     const condition = conditionLabel(offer.condition);
+    const network = offer.network ?? "غير محدد";
     const price = `${offer.price.toLocaleString("en-US")} ${offer.currency}`;
-    return `${index + 1}. ${fullName} | ${offer.storage} | ${condition} | ${offer.network} | ${price}`;
+    return `${index + 1}. ${fullName} | ${offer.storage} | ${condition} | ${network} | ${price}`;
   });
   const whatsapp = normalizeSyrianWhatsAppNumber(payload.shop.whatsapp);
   if (!whatsapp) {
@@ -86,7 +88,7 @@ export function buildSubmissionMessage(
       brand: offer.brand,
       storage: offer.storage,
       condition: offer.condition,
-      network: offer.network,
+      ...(offer.network ? { network: offer.network } : {}),
       price: offer.price,
       currency: offer.currency,
       updatedAt: getLocalDate(),
@@ -113,10 +115,66 @@ export function buildSubmissionMessage(
   ].join("\n");
 }
 
+export function buildFirestoreWrites(
+  payload: SubmissionPayload,
+  clientId: string,
+  timestamp: unknown,
+) {
+  const notes = payload.notes?.trim();
+  const liveOffers = payload.offers.map((offer) => {
+    const product = {
+      brand: offer.brand,
+      name: offer.name,
+      storage: offer.storage,
+      ...(offer.network ? { network: offer.network } : {}),
+    };
+    return {
+      id: createLiveOfferDocumentId(
+        payload.shop.whatsapp,
+        product,
+        offer.condition,
+      ),
+      data: {
+        shop: payload.shop,
+        product,
+        condition: offer.condition,
+        price: offer.price,
+        currency: offer.currency,
+        ...(notes ? { notes } : {}),
+        updatedAt: timestamp,
+      },
+    };
+  });
+  const submissionOffers = payload.offers.map((offer) => ({
+    brand: offer.brand,
+    name: offer.name,
+    storage: offer.storage,
+    condition: offer.condition,
+    ...(offer.network ? { network: offer.network } : {}),
+    price: offer.price,
+    currency: offer.currency,
+  }));
+
+  return {
+    liveOffers,
+    submission: {
+      id: clientId,
+      data: {
+        shop: payload.shop,
+        offers: submissionOffers,
+        ...(notes ? { notes } : {}),
+        status: "pending" as const,
+        createdAt: timestamp,
+        clientId,
+      },
+    },
+  };
+}
+
 export async function submitOffer(
   payload: SubmissionPayload,
+  clientId = createSubmissionClientId(),
 ): Promise<SubmissionResult> {
-  const clientId = createClientId();
   if (typeof window === "undefined") {
     return { ok: false, clientId, message: "" };
   }
@@ -130,7 +188,7 @@ export async function submitOffer(
     };
   }
 
-  const normalizedPayload = {
+  const normalizedPayload: SubmissionPayload = {
     ...payload,
     shop: {
       name: payload.shop.name,
@@ -155,21 +213,23 @@ export async function submitOffer(
   if (db) {
     let timeoutId: ReturnType<typeof setTimeout> | undefined;
     try {
+      const timestamp = serverTimestamp();
+      const writes = buildFirestoreWrites(normalizedPayload, clientId, timestamp);
+      const batch = writeBatch(db);
+      writes.liveOffers.forEach((offer) => {
+        batch.set(doc(db, "liveOffers", offer.id), offer.data);
+      });
+      batch.set(
+        doc(db, "submissions", writes.submission.id),
+        writes.submission.data,
+      );
+
       await Promise.race([
-        setDoc(doc(db, "submissions", clientId), {
-          shop: normalizedPayload.shop,
-          offers: normalizedPayload.offers,
-          ...(normalizedPayload.notes
-            ? { notes: normalizedPayload.notes }
-            : {}),
-          status: "pending",
-          createdAt: serverTimestamp(),
-          clientId,
-        }),
+        batch.commit(),
         new Promise<never>((_, reject) => {
           timeoutId = setTimeout(
             () => reject(new Error("Firestore submission timed out.")),
-            8000,
+            5000,
           );
         }),
       ]);

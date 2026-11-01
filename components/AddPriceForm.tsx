@@ -1,7 +1,12 @@
 "use client";
 
-import { useMemo, useState, useSyncExternalStore } from "react";
+import Link from "next/link";
+import { useMemo, useRef, useState, useSyncExternalStore } from "react";
+import { useCatalog } from "@/components/CatalogProvider";
 import { catalog, getBrands } from "@/data/catalog";
+import { findProduct } from "@/data/helpers";
+import { getDuplicateOfferIndexes } from "@/lib/duplicateOffers";
+import { createProductKey } from "@/lib/productKey";
 import {
   getServerShopInfoSnapshot,
   getShopInfoSnapshot,
@@ -13,6 +18,7 @@ import {
 } from "@/lib/shopInfoStorage";
 import { normalizeSyrianWhatsAppNumber } from "@/lib/phone";
 import {
+  createSubmissionClientId,
   submitOffer,
   type SubmissionOffer,
   type SubmissionPayload,
@@ -68,9 +74,13 @@ function getRowErrors(row: OfferFormRowValue): RowErrors {
   if (!model && !isOther) errors.model = "اختر الموديل.";
   if (isOther && !row.customModel.trim()) {
     errors.customModel = "اكتب اسم الموديل.";
+  } else if (isOther && row.customModel.trim().length > 60) {
+    errors.customModel = "اسم الموديل يجب ألا يتجاوز 60 حرفاً.";
   }
   if (!row.storage.trim()) {
     errors.storage = "اختر أو اكتب سعة التخزين.";
+  } else if (row.storage.trim().length > 20) {
+    errors.storage = "سعة التخزين يجب ألا تتجاوز 20 حرفاً.";
   } else if (model && !model.storages.includes(row.storage)) {
     errors.storage = "اختر سعة من القائمة.";
   }
@@ -89,14 +99,20 @@ function getRowErrors(row: OfferFormRowValue): RowErrors {
   }
 
   const price = Number(row.price);
-  if (!row.price.trim() || !Number.isFinite(price) || price <= 0) {
-    errors.price = "أدخل سعراً أكبر من صفر.";
+  if (
+    !row.price.trim() ||
+    !Number.isFinite(price) ||
+    price <= 0 ||
+    price >= 1_000_000_000
+  ) {
+    errors.price = "أدخل سعراً أكبر من صفر وأقل من مليار.";
   }
 
   return errors;
 }
 
 export default function AddPriceForm() {
+  const { refresh } = useCatalog();
   const shopInfoSnapshot = useSyncExternalStore(
     subscribeToShopInfo,
     getShopInfoSnapshot,
@@ -118,6 +134,15 @@ export default function AddPriceForm() {
   const [submitError, setSubmitError] = useState("");
   const [copyStatus, setCopyStatus] = useState("");
   const [nextRowId, setNextRowId] = useState(2);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [submittedProducts, setSubmittedProducts] = useState<
+    { id: string; label: string }[]
+  >([]);
+  const submittingRef = useRef(false);
+  const retryRef = useRef<{
+    payloadKey: string;
+    clientId: string;
+  } | null>(null);
 
   function updateShopInfo(updates: Partial<ShopInfoDraft>) {
     saveShopInfo({ ...shopInfo, ...updates }, rememberShopInfo);
@@ -144,8 +169,14 @@ export default function AddPriceForm() {
   function validateShopInfo(): FormErrors {
     const nextErrors: FormErrors = { rows: {} };
     if (!shopInfo.name.trim()) nextErrors.shopName = "أدخل اسم المحل.";
+    else if (shopInfo.name.trim().length > 80)
+      nextErrors.shopName = "اسم المحل يجب ألا يتجاوز 80 حرفاً.";
     if (!shopInfo.area.trim()) nextErrors.area = "أدخل المنطقة أو الحي.";
+    else if (shopInfo.area.trim().length > 80)
+      nextErrors.area = "المنطقة يجب ألا تتجاوز 80 حرفاً.";
     if (!shopInfo.address.trim()) nextErrors.address = "أدخل العنوان التفصيلي.";
+    else if (shopInfo.address.trim().length > 160)
+      nextErrors.address = "العنوان يجب ألا يتجاوز 160 حرفاً.";
     if (!shopInfo.whatsapp.trim()) {
       nextErrors.whatsapp = "أدخل رقم واتساب المحل.";
     } else if (!normalizeSyrianWhatsAppNumber(shopInfo.whatsapp)) {
@@ -157,11 +188,33 @@ export default function AddPriceForm() {
       if (Object.keys(rowErrors).length > 0) nextErrors.rows[row.id] = rowErrors;
     });
 
+    const duplicateIndexes = getDuplicateOfferIndexes(
+      rows.map((row) => {
+        const model = catalog.find((item) => item.id === row.modelId);
+        return {
+          brand: row.brand,
+          name: model?.name ?? row.customModel.trim(),
+          storage: row.storage.trim(),
+          ...(row.network ? { network: row.network } : {}),
+          condition: row.condition,
+        };
+      }),
+    );
+    duplicateIndexes.forEach((index) => {
+      const row = rows[index];
+      nextErrors.rows[row.id] = {
+        ...nextErrors.rows[row.id],
+        duplicate:
+          "هذا العرض مكرر؛ احذف أحد الصفين أو غيّر الموديل أو الحالة.",
+      };
+    });
+
     return nextErrors;
   }
 
   async function handleSubmit(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
+    if (submittingRef.current) return;
     setSubmitError("");
     setCopyStatus("");
 
@@ -187,33 +240,66 @@ export default function AddPriceForm() {
         name: model?.name ?? row.customModel.trim(),
         storage: row.storage.trim(),
         condition: row.condition === "used" ? "used" : "new",
-        network: row.network === "5G" ? "5G" : "4G",
+        ...(row.network ? { network: row.network } : {}),
         price: Number(row.price),
         currency: row.currency,
       };
     });
     const payload: SubmissionPayload = {
       shop: {
-        name: shopInfo.name,
-        area: shopInfo.area,
-        address: shopInfo.address,
+        name: shopInfo.name.trim(),
+        area: shopInfo.area.trim(),
+        address: shopInfo.address.trim(),
         whatsapp,
       },
       offers,
       ...(notes.trim() ? { notes: notes.trim() } : {}),
     };
+    const payloadKey = JSON.stringify(payload);
+    const clientId =
+      retryRef.current?.payloadKey === payloadKey
+        ? retryRef.current.clientId
+        : createSubmissionClientId();
+
+    submittingRef.current = true;
+    setIsSubmitting(true);
 
     try {
-      const result = await submitOffer(payload);
+      const result = await submitOffer(payload, clientId);
       setMessage(result.message ?? "");
       if (!result.ok) {
+        retryRef.current = { payloadKey, clientId: result.clientId };
         setSubmitError(
           "تعذّر فتح واتساب. لم تُمسح البيانات؛ يمكنك نسخ الرسالة وإرسالها يدوياً.",
         );
         return;
       }
 
+      retryRef.current = null;
       setSubmissionChannel(result.channel);
+      const links = Array.from(
+        new Map(
+          offers.map((offer) => {
+            const staticProduct = findProduct(
+              offer.brand,
+              offer.name,
+              offer.storage,
+              offer.network,
+            );
+            const id =
+              staticProduct?.id ?? `live-${createProductKey(offer)}`;
+            return [
+              id,
+              {
+                id,
+                label: `${offer.brand} ${offer.name} ${offer.storage}`,
+              },
+            ] as const;
+          }),
+        ).values(),
+      );
+      setSubmittedProducts(links);
+      if (result.channel === "firestore") await refresh();
       if (rememberShopInfo) {
         saveShopInfo(payload.shop, true);
       } else {
@@ -223,10 +309,14 @@ export default function AddPriceForm() {
       setSubmitError("");
       setSubmitted(true);
     } catch (error) {
+      retryRef.current = { payloadKey, clientId };
       console.error("Failed to submit offer:", error);
       setSubmitError(
         "تعذّر إرسال الطلب. لم تُمسح البيانات؛ يمكنك المحاولة مجدداً أو نسخ الرسالة.",
       );
+    } finally {
+      submittingRef.current = false;
+      setIsSubmitting(false);
     }
   }
 
@@ -236,6 +326,7 @@ export default function AddPriceForm() {
     setMessage("");
     setCopyStatus("");
     setSubmitError("");
+    setSubmittedProducts([]);
     resetForm(!rememberShopInfo);
   }
 
@@ -255,9 +346,28 @@ export default function AddPriceForm() {
           <h2 className="scroll-mt-24 text-xl font-extrabold">شكراً لك!</h2>
           <p className="mt-2">
             {submissionChannel === "firestore"
-              ? "تم إرسال طلبك للمراجعة."
+              ? "تمت إضافة عرضك للموقع."
               : "تم تجهيز طلبك. سنراجع الأسعار وننشرها بالموقع قريباً."}
           </p>
+          {submissionChannel === "firestore" && (
+            <div className="mt-4 flex flex-wrap gap-2">
+              {submittedProducts.map((product) => (
+                <Link
+                  key={product.id}
+                  href={`/product?id=${encodeURIComponent(product.id)}`}
+                  className="rounded-full bg-white px-4 py-2 text-sm font-bold text-emerald-800 ring-1 ring-emerald-200"
+                >
+                  {product.label}
+                </Link>
+              ))}
+              <Link
+                href="/"
+                className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-bold text-white"
+              >
+                الصفحة الرئيسية
+              </Link>
+            </div>
+          )}
         </div>
 
         {submissionChannel === "whatsapp" && (
@@ -476,12 +586,13 @@ export default function AddPriceForm() {
       <div>
         <button
           type="submit"
-          className="w-full rounded-full bg-green-600 px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-green-600/20 transition hover:-translate-y-0.5 hover:bg-green-700 sm:w-auto"
+          disabled={isSubmitting}
+          className="w-full rounded-full bg-green-600 px-8 py-3.5 text-lg font-bold text-white shadow-lg shadow-green-600/20 transition hover:-translate-y-0.5 hover:bg-green-700 disabled:cursor-wait disabled:opacity-70 disabled:hover:translate-y-0 sm:w-auto"
         >
-          أرسل الأسعار
+          {isSubmitting ? "جارٍ الإرسال..." : "أرسل الأسعار"}
         </button>
         <p className="mt-3 text-xs text-slate-500">
-          الأسعار لا تُنشر تلقائياً؛ يراجعها صاحب الموقع قبل إضافتها.
+          عند نجاح الإرسال إلى Firebase تظهر الأسعار مباشرة في الموقع.
         </p>
         {submitError && (
           <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
