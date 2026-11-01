@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CatalogProvider from "@/components/CatalogProvider";
+import CompareProvider from "@/components/CompareProvider";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -26,9 +27,11 @@ export default function RootLayout({
         className={`${cairo.variable} flex min-h-screen flex-col bg-slate-50 text-slate-900 antialiased`}
       >
         <CatalogProvider>
-          <Header />
-          {children}
-          <Footer />
+          <CompareProvider>
+            <Header />
+            {children}
+            <Footer />
+          </CompareProvider>
         </CatalogProvider>
       </body>
     </html>

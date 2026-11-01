@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useState } from "react";
 import type { OfferCondition, Product } from "@/data/products";
 import { conditionLabel, lowestOffer, formatPrice } from "@/data/helpers";
+import CompareButton from "@/components/CompareButton";
 
 export default function ProductList({ products }: { products: Product[] }) {
   const [query, setQuery] = useState("");
@@ -133,12 +134,16 @@ export default function ProductList({ products }: { products: Product[] }) {
             (condition !== "all" || displayedOffer.condition === "used");
 
           return (
-            <Link
+            <article
               key={product.id}
-              href={`/product?id=${encodeURIComponent(product.id)}`}
               className="animate-fade-up group overflow-hidden rounded-2xl border border-slate-200 bg-white transition duration-300 hover:-translate-y-1 hover:shadow-xl hover:shadow-emerald-500/10"
               style={{ animationDelay: `${index * 60}ms` }}
             >
+              <Link
+                href={`/product?id=${encodeURIComponent(product.id)}`}
+                className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+                aria-label={`عرض تفاصيل ${product.brand} ${product.name} ${product.storage}`}
+              >
               <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
                 <svg
                   viewBox="0 0 24 24"
@@ -199,7 +204,11 @@ export default function ProductList({ products }: { products: Product[] }) {
                   </p>
                 </div>
               </div>
-            </Link>
+              </Link>
+              <div className="px-5 pb-5">
+                <CompareButton product={product} className="w-full" />
+              </div>
+            </article>
           );
         })}
         {filtered.length === 0 && (

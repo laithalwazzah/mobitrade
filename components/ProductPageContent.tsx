@@ -3,6 +3,7 @@
 import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCatalog } from "@/components/CatalogProvider";
+import CompareButton from "@/components/CompareButton";
 import {
   conditionLabel,
   formatPrice,
@@ -47,6 +48,9 @@ export default function ProductPageContent() {
           {product.network && (
             <span className="mr-2 mt-3 inline-block rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-bold text-emerald-200">{product.network}</span>
           )}
+          <div className="mt-5">
+            <CompareButton product={product} className="border-white/30 bg-white/10 text-white hover:border-emerald-300 hover:text-emerald-200" />
+          </div>
         </div>
       </section>
       <main className="mx-auto -mt-8 w-full max-w-3xl flex-1 space-y-4 px-4 pb-16">

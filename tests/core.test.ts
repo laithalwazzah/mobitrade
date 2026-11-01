@@ -14,6 +14,21 @@ import {
   buildFirestoreWrites,
   type SubmissionPayload,
 } from "../lib/submitOffer";
+import {
+  addCompareSelection,
+  parseCompareSelection,
+  removeCompareSelection,
+  replaceCompareSelection,
+  sanitizeCompareSelection,
+} from "../lib/compareSelection";
+import {
+  createSpecificationKey,
+  getProductSpecifications,
+  getSpecificationsOrUnavailable,
+  specificationsByModelNetwork,
+  UNAVAILABLE_SPEC,
+} from "../data/specifications";
+import { catalog } from "../data/catalog";
 
 const staticShops: Shop[] = [
   {
@@ -323,4 +338,78 @@ test("Firestore write payload matches the allowed rules contract", () => {
   ]);
   assert.equal(hasUndefined(writes), false);
   assert.equal(live.id.split("_")[0], payload.shop.whatsapp);
+});
+
+test("comparison selection rejects corrupt data, duplicates, and invalid keys", () => {
+  assert.deepEqual(parseCompareSelection("not json"), []);
+  assert.deepEqual(parseCompareSelection(JSON.stringify({ key: "phone" })), []);
+  assert.deepEqual(
+    sanitizeCompareSelection(["phone-one", "phone-one", "bad_key", 42, "phone-two", "phone-three"]),
+    ["phone-one", "phone-two"],
+  );
+});
+
+test("comparison selection adds two unique products and supports remove and replace", () => {
+  const first = addCompareSelection([], "phone-one");
+  const duplicate = addCompareSelection(first, "phone-one");
+  const full = addCompareSelection(duplicate, "phone-two");
+  assert.deepEqual(addCompareSelection(full, "phone-three"), full);
+  assert.deepEqual(replaceCompareSelection(full, 1, "phone-three"), ["phone-one", "phone-three"]);
+  assert.deepEqual(replaceCompareSelection(full, 1, "phone-one"), full);
+  assert.deepEqual(removeCompareSelection(full, "phone-one"), ["phone-two"]);
+});
+
+test("specifications use model and network identity while storage stays variant-specific", () => {
+  assert.equal(
+    getProductSpecifications({ brand: "Samsung", name: "Galaxy A32", storage: "128GB", network: "4G" })?.ram,
+    "4GB أو 6GB أو 8GB بحسب السوق",
+  );
+  assert.equal(
+    getProductSpecifications({ brand: "Samsung", name: "Galaxy A32", storage: "256GB", network: "4G" }),
+    getProductSpecifications({ brand: "Samsung", name: "Galaxy A32", storage: "128GB", network: "4G" }),
+  );
+  assert.equal(getSpecificationsOrUnavailable({ brand: "Samsung", name: "Galaxy M14", storage: "128GB", network: "4G" }).ram, "6GB");
+  assert.equal(getSpecificationsOrUnavailable({ brand: "Apple", name: "iPhone 11", storage: "256GB", network: "4G" }).storage, "256GB");
+  assert.equal(
+    getProductSpecifications({ brand: "Test", name: "Unknown", storage: "64GB" }),
+    undefined,
+  );
+  assert.ok(
+    Object.entries(
+      getSpecificationsOrUnavailable({
+        brand: "Test",
+        name: "Unknown",
+        storage: "64GB",
+      }),
+    ).filter(([field]) => field !== "storage").every(([, value]) => value === UNAVAILABLE_SPEC),
+  );
+  assert.equal(
+    getSpecificationsOrUnavailable({ brand: "Test", name: "Unknown", storage: "64GB" }).storage,
+    "64GB",
+  );
+});
+
+test("every catalog model and network variant has sourced specifications", () => {
+  for (const model of catalog) {
+    for (const network of model.network) {
+      const specificationKey = createSpecificationKey({ ...model, network });
+      const specifications = specificationsByModelNetwork[specificationKey];
+      assert.ok(specifications, `Missing specifications for ${model.brand} ${model.name} ${network}`);
+      assert.ok(specifications.sources.length > 0, `Missing sources for ${model.brand} ${model.name} ${network}`);
+      assert.ok(specifications.sources.every((source) => /^https:\/\//.test(source.url)));
+    }
+  }
+});
+
+test("Realme C55 has verified model-level specifications", () => {
+  const specifications = getSpecificationsOrUnavailable({
+    brand: "Realme",
+    name: "C55",
+    storage: "256GB",
+    network: "4G",
+  });
+  assert.match(specifications.display, /6\.72/);
+  assert.equal(specifications.processor, "MediaTek Helio G88");
+  assert.equal(specifications.storage, "256GB");
+  assert.equal(specifications.charging, "33W SUPERVOOC");
 });
