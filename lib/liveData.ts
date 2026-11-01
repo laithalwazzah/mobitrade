@@ -3,7 +3,7 @@
 import { collection, getDocs } from "firebase/firestore";
 import { getFirebaseFirestore } from "@/lib/firebase";
 import {
-  isLiveOfferDocument,
+  parseLiveOfferDocument,
   type LiveOfferDocument,
 } from "@/lib/liveOffer";
 
@@ -38,7 +38,7 @@ function parseLiveOffer(id: string, value: unknown): LiveOfferDocument | null {
     updatedAt: updatedAt.date,
     updatedAtMillis: updatedAt.milliseconds,
   };
-  return isLiveOfferDocument(candidate) ? candidate : null;
+  return parseLiveOfferDocument(candidate);
 }
 
 export async function getLiveOffers(): Promise<LiveOfferDocument[] | null> {

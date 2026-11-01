@@ -1,6 +1,6 @@
 import type { Product, Shop } from "@/data/products";
 import { findProduct } from "@/data/helpers";
-import { isLiveOfferDocument } from "@/lib/liveOffer";
+import { parseLiveOfferDocument } from "@/lib/liveOffer";
 import { matchShop } from "@/lib/matchShop";
 import { createProductKey } from "@/lib/productKey";
 
@@ -14,7 +14,9 @@ export function mergeCatalog(
   staticShops: readonly Shop[],
   liveDocuments: readonly unknown[],
 ): MergedCatalog {
-  const liveOffers = liveDocuments.filter(isLiveOfferDocument);
+  const liveOffers = liveDocuments
+    .map(parseLiveOfferDocument)
+    .filter((document) => document !== null);
   const shops = staticShops.map((shop) => ({ ...shop }));
   const products = staticProducts.map((product) => ({
     ...product,
@@ -69,6 +71,7 @@ export function mergeCatalog(
       currency: liveOffer.currency,
       updatedAt: liveOffer.updatedAt,
       condition: liveOffer.condition,
+      ...(liveOffer.notes ? { notes: liveOffer.notes } : {}),
     };
     const conflictIndex = product.offers.findIndex(
       (offer) =>

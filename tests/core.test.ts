@@ -127,6 +127,28 @@ test("mergeCatalog matches static product and shop and lets newer live data win"
   ]);
 });
 
+test("mergeCatalog preserves trimmed notes from live offers", () => {
+  const merged = mergeCatalog(staticProducts, staticShops, [
+    liveOffer({ notes: "  Available today\nCall first  " }),
+  ]);
+  assert.equal(merged.products[0].offers[0].notes, "Available today\nCall first");
+});
+
+test("mergeCatalog omits missing, blank, and invalid live notes", () => {
+  const document = liveOffer();
+  const documents: unknown[] = [
+    document,
+    { ...document, notes: "   " },
+    { ...document, notes: 42 },
+  ];
+
+  for (const liveDocument of documents) {
+    const merged = mergeCatalog(staticProducts, staticShops, [liveDocument]);
+    assert.equal(merged.products[0].offers.length, 1);
+    assert.equal(merged.products[0].offers[0].notes, undefined);
+  }
+});
+
 test("mergeCatalog keeps newer static conflict and keeps new plus used offers", () => {
   const olderUsed = liveOffer({ updatedAt: "2025-12-01", price: 90 });
   const newOffer = liveOffer({ condition: "new", price: 140 });

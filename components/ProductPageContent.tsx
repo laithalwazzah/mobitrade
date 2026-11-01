@@ -85,6 +85,11 @@ export default function ProductPageContent() {
                         </div>
                         <p className="mt-1 text-sm text-slate-500">{shop.area}</p>
                         <p className="mt-1 text-xs text-slate-400">آخر تحديث: {offer.updatedAt}</p>
+                        {offer.notes && (
+                          <p className="mt-2 break-words whitespace-pre-line text-sm text-slate-500">
+                            {offer.notes}
+                          </p>
+                        )}
                       </div>
                       <div className="text-left">
                         <p className={`text-2xl font-extrabold ${isBest && isNew ? "text-emerald-600" : isBest ? "text-amber-700" : "text-slate-800"}`}>

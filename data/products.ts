@@ -6,6 +6,7 @@ export type Offer = {
   currency: "USD" | "SYP";
   updatedAt: string; // بصيغة "2026-10-27"
   condition: OfferCondition;
+  notes?: string;
 };
 
 export type Product = {
