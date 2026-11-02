@@ -9,6 +9,7 @@ import {
 } from "@/data/specifications";
 import { conditionLabel, formatPrice, groupedOffers } from "@/data/helpers";
 import type { Product } from "@/data/products";
+import ProductMedia, { BrandLogo } from "@/components/ProductMedia";
 
 function LowestPrices({ product }: { product: Product }) {
   const groups = groupedOffers(product);
@@ -79,7 +80,11 @@ export default function ComparePageContent() {
                 <th className="w-40 p-4 text-sm text-slate-500">الجهاز</th>
                 {products.map((product) => (
                   <th key={product.id} className="p-4 align-top">
-                    <p className="text-sm text-slate-500">{product.brand}</p>
+                    <ProductMedia product={product} className="mb-3 h-36 w-full rounded-xl" sizes="260px" />
+                    <p className="flex items-center gap-2 text-sm text-slate-500">
+                      <BrandLogo brand={product.brand} className="h-5 w-7" />
+                      {product.brand}
+                    </p>
                     <Link href={`/product?id=${encodeURIComponent(product.id)}`} className="mt-1 inline-block text-xl font-extrabold hover:text-emerald-700">{product.name}</Link>
                     <p className="mt-1 text-sm text-slate-500">{product.storage} · {product.network ?? "غير متوفر"}</p>
                     <button type="button" onClick={() => remove(product)} className="mt-3 text-xs font-bold text-red-600 hover:underline">إزالة من المقارنة</button>

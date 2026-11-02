@@ -4,6 +4,7 @@ import Link from "next/link";
 import { useSearchParams } from "next/navigation";
 import { useCatalog } from "@/components/CatalogProvider";
 import CompareButton from "@/components/CompareButton";
+import ProductMedia, { BrandLogo } from "@/components/ProductMedia";
 import {
   conditionLabel,
   formatPrice,
@@ -40,20 +41,30 @@ export default function ProductPageContent() {
   return (
     <>
       <section className="bg-slate-900 text-white">
-        <div className="mx-auto max-w-3xl px-4 pt-8 pb-16">
+        <div className="mx-auto max-w-4xl px-4 pt-8 pb-16">
           <Link href="/" className="text-sm text-emerald-300 hover:underline">← رجوع للقائمة</Link>
-          <p className="mt-6 text-sm text-slate-400">{product.brand}</p>
-          <h1 className="mt-1 text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
-          <span className="mt-3 inline-block rounded-full bg-white/10 px-3 py-1 text-sm">{product.storage}</span>
-          {product.network && (
-            <span className="mr-2 mt-3 inline-block rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-bold text-emerald-200">{product.network}</span>
-          )}
-          <div className="mt-5">
-            <CompareButton product={product} className="border-white/30 bg-white/10 text-white hover:border-emerald-300 hover:text-emerald-200" />
+          <div className="mt-6 grid items-center gap-6 sm:grid-cols-[1fr_220px]">
+            <div>
+              <p className="flex items-center gap-2 text-sm text-slate-300">
+                <span className="inline-flex rounded-md bg-white p-1">
+                  <BrandLogo brand={product.brand} className="h-5 w-7" />
+                </span>
+                {product.brand}
+              </p>
+              <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
+              <span className="mt-3 inline-block rounded-full bg-white/10 px-3 py-1 text-sm">{product.storage}</span>
+              {product.network && (
+                <span className="mr-2 mt-3 inline-block rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-bold text-emerald-200">{product.network}</span>
+              )}
+              <div className="mt-5">
+                <CompareButton product={product} className="border-white/30 bg-white/10 text-white hover:border-emerald-300 hover:text-emerald-200" />
+              </div>
+            </div>
+            <ProductMedia product={product} className="h-56 w-full rounded-2xl" sizes="220px" />
           </div>
         </div>
       </section>
-      <main className="mx-auto -mt-8 w-full max-w-3xl flex-1 space-y-4 px-4 pb-16">
+      <main className="mx-auto -mt-8 w-full max-w-4xl flex-1 space-y-4 px-4 pb-16">
         {groupedOffers(product).map((group, groupIndex) => {
           const isNew = group.condition === "new";
           return (

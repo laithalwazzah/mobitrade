@@ -1,5 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { existsSync, statSync } from "node:fs";
+import path from "node:path";
 import type { Product, Shop } from "../data/products";
 import { lowestOffer } from "../data/helpers";
 import { getDuplicateOfferIndexes } from "../lib/duplicateOffers";
@@ -29,6 +31,11 @@ import {
   UNAVAILABLE_SPEC,
 } from "../data/specifications";
 import { catalog } from "../data/catalog";
+import {
+  brandMediaRegistry,
+  deviceMediaRegistry,
+  getDeviceMedia,
+} from "../data/media";
 
 const staticShops: Shop[] = [
   {
@@ -412,4 +419,44 @@ test("Realme C55 has verified model-level specifications", () => {
   assert.equal(specifications.processor, "MediaTek Helio G88");
   assert.equal(specifications.storage, "256GB");
   assert.equal(specifications.charging, "33W SUPERVOOC");
+});
+
+test("every catalog model and network variant has valid local device media", () => {
+  const expectedVariants = catalog.flatMap((model) =>
+    model.network.map((network) => `${model.brand}|${model.name}|${network}`),
+  );
+  const registryVariants = deviceMediaRegistry.map(
+    (media) => `${media.brand}|${media.name}|${media.network}`,
+  );
+
+  assert.equal(new Set(registryVariants).size, registryVariants.length);
+  assert.deepEqual(registryVariants.sort(), expectedVariants.sort());
+
+  for (const media of deviceMediaRegistry) {
+    assert.match(media.path, /^\/images\/devices\/[a-z0-9-]+\.webp$/);
+    assert.match(media.sourceUrl, /^https:\/\//);
+    assert.ok(media.alt.trim().length > 0);
+    const localPath = path.join(process.cwd(), "public", media.path.slice(1));
+    assert.equal(existsSync(localPath), true, `Missing ${localPath}`);
+    assert.ok(statSync(localPath).size > 0, `Empty ${localPath}`);
+  }
+});
+
+test("every catalog brand has valid local logo media and unknown products use fallback", () => {
+  const brands = new Set(catalog.map((model) => model.brand));
+  for (const brand of brands) {
+    const media = brandMediaRegistry[brand];
+    assert.ok(media, `Missing logo for ${brand}`);
+    assert.match(media.path, /^\/images\/brands\/[a-z0-9-]+\.(?:svg|webp)$/);
+    assert.match(media.sourceUrl, /^https:\/\//);
+    assert.ok(media.alt.trim().length > 0);
+    const localPath = path.join(process.cwd(), "public", media.path.slice(1));
+    assert.equal(existsSync(localPath), true, `Missing ${localPath}`);
+    assert.ok(statSync(localPath).size > 0, `Empty ${localPath}`);
+  }
+
+  assert.equal(
+    getDeviceMedia({ brand: "Test", name: "Custom", storage: "64GB" }),
+    undefined,
+  );
 });

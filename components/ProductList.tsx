@@ -5,6 +5,7 @@ import { useState } from "react";
 import type { OfferCondition, Product } from "@/data/products";
 import { conditionLabel, lowestOffer, formatPrice } from "@/data/helpers";
 import CompareButton from "@/components/CompareButton";
+import ProductMedia, { BrandLogo } from "@/components/ProductMedia";
 
 export default function ProductList({ products }: { products: Product[] }) {
   const [query, setQuery] = useState("");
@@ -54,12 +55,15 @@ export default function ProductList({ products }: { products: Product[] }) {
             <button
               key={currentBrand}
               onClick={() => setBrand(currentBrand)}
-              className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold transition ${
                 brand === currentBrand
                   ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
               }`}
             >
+              {currentBrand !== "all" && (
+                <BrandLogo brand={currentBrand} className="h-4 w-5" />
+              )}
               {currentBrand === "all" ? "الكل" : currentBrand}
             </button>
           ))}
@@ -144,21 +148,11 @@ export default function ProductList({ products }: { products: Product[] }) {
                 className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
                 aria-label={`عرض تفاصيل ${product.brand} ${product.name} ${product.storage}`}
               >
-              <div className="relative flex h-40 items-center justify-center bg-gradient-to-br from-slate-100 to-slate-200">
-                <svg
-                  viewBox="0 0 24 24"
-                  className="h-24 w-24 text-slate-300 transition duration-300 group-hover:scale-110 group-hover:text-emerald-500"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="1"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                >
-                  <rect x="7" y="2" width="10" height="20" rx="2.5" />
-                  <path d="M11 18h2" />
-                </svg>
-                <span className="absolute top-3 right-3 rounded-full bg-white px-3 py-1 text-xs font-bold text-slate-700 shadow-sm">
-                  {product.brand}
+              <div className="relative">
+                <ProductMedia product={product} className="h-44 w-full" />
+                <span className="absolute top-3 right-3 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">
+                  <BrandLogo brand={product.brand} className="h-4 w-5" />
+                  <span>{product.brand}</span>
                 </span>
                 {saving > 0 && displayedOffer && (
                   <span className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
