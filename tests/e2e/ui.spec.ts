@@ -17,15 +17,14 @@ test("1.1 core pages, RTL, Cairo, responsive layout and not-found states", async
   await expect(page.getByRole("heading", { name: "هذا المنتج غير موجود" })).toBeVisible();
   await page.goto("/shop?id=nope");
   await expect(page.getByRole("heading", { name: "هذا المحل غير موجود" })).toBeVisible();
+  clean();
   const response = await page.goto("/unknown-test-url");
   expect(response?.status()).toBe(404);
   await expect(page.getByText(/404|غير موجود/i).first()).toBeVisible();
   await screenshot(page, testInfo, "pages-404");
-  clean();
 });
 
 test("1.1 unknown runtime id shows loading before not-found", async ({ page }) => {
-  const clean = watchPage(page, (url) => url.includes("firestore.googleapis.com"));
   await page.route("**/firestore.googleapis.com/**", async (route) => {
     await new Promise((resolve) => setTimeout(resolve, 800));
     await route.abort();
@@ -33,7 +32,6 @@ test("1.1 unknown runtime id shows loading before not-found", async ({ page }) =
   await page.goto("/product?id=live-test-unknown");
   await expect(page.getByRole("heading", { name: /جارٍ تحميل أحدث الأسعار/ })).toBeVisible();
   await expect(page.getByRole("heading", { name: "هذا المنتج غير موجود" })).toBeVisible();
-  clean();
 });
 
 test("1.2 add headings are not overlapped at 375, 768 and 1280", async ({ page }, testInfo) => {
@@ -84,13 +82,13 @@ test("1.4 home filters, brand and search work together", async ({ page }) => {
   await expect(iphone.getByText("$250", { exact: true })).toBeVisible();
   await page.getByRole("button", { name: "جديد", exact: true }).click();
   await expect(iphone).toHaveCount(0);
-  await page.getByRole("button", { name: "الكل", exact: true }).last().click();
-  await page.getByRole("button", { name: "Samsung", exact: true }).click();
+  await page.getByRole("group", { name: "الحالة" }).getByRole("button", { name: "الكل", exact: true }).click();
+  await page.locator('[aria-label="الشركة"]').getByRole("button", { name: /Samsung/ }).click();
   await page.getByPlaceholder(/ابحث عن موبايل/).fill("Galaxy A32");
   await expect(page.locator('a[href="/product?id=p2"]')).toBeVisible();
   await expect(page.locator('a[href="/product?id=p3"]')).toHaveCount(0);
   await page.getByPlaceholder(/ابحث عن موبايل/).fill("لا توجد نتيجة اختبار");
-  await expect(page.getByText(/ما في نتائج مطابقة/)).toBeVisible();
+  await expect(page.getByRole("heading", { name: "لا توجد نتائج مطابقة" })).toBeVisible();
   clean();
 });
 

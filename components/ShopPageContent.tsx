@@ -11,7 +11,7 @@ function MissingShop({ loading }: { loading: boolean }) {
       <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
         <h1 className="text-2xl font-extrabold">{loading ? "جارٍ تحميل أحدث الأسعار..." : "هذا المحل غير موجود"}</h1>
         {!loading && (
-          <Link href="/" className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للرئيسية</Link>
+          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للرئيسية</Link>
         )}
       </div>
     </main>
@@ -32,7 +32,7 @@ export default function ShopPageContent() {
       <section className="relative overflow-hidden bg-slate-900 text-white">
         <div className="pointer-events-none absolute -top-20 -left-20 h-64 w-64 rounded-full bg-emerald-500/25 blur-3xl" />
         <div className="relative mx-auto max-w-3xl px-4 pt-8 pb-16">
-          <Link href="/" className="text-sm text-emerald-300 hover:underline">← رجوع للقائمة</Link>
+          <Link href="/" prefetch={false} className="text-sm text-emerald-300 hover:underline">← رجوع للقائمة</Link>
           <h1 className="mt-6 text-3xl font-extrabold sm:text-4xl">{shop.name}</h1>
           <p className="mt-2 text-slate-300">{shop.area}</p>
           <p className="text-sm text-slate-400">{shop.address}</p>
@@ -46,7 +46,7 @@ export default function ShopPageContent() {
             <ul className="divide-y divide-slate-100">
               {items.map(({ product, offer }) => (
                 <li key={`${product.id}-${offer.condition}-${offer.currency}`}>
-                  <Link href={`/product?id=${encodeURIComponent(product.id)}`} className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition hover:bg-slate-50">
+                  <Link href={`/product?id=${encodeURIComponent(product.id)}`} prefetch={false} className="flex items-center justify-between gap-4 rounded-xl px-4 py-3 transition hover:bg-slate-50">
                     <div>
                       <p className="font-bold">{product.name}</p>
                       <p className="text-xs text-slate-500">{product.brand} · {product.storage} · تحديث {offer.updatedAt}</p>

@@ -4,7 +4,7 @@ export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/80 backdrop-blur-md">
       <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" className="flex items-center gap-3">
+        <Link href="/" prefetch={false} className="flex items-center gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-slate-900">
             <svg
               viewBox="0 0 24 24"
@@ -30,6 +30,7 @@ export default function Header() {
         </Link>
         <Link
           href="/add"
+          prefetch={false}
           className="rounded-full border border-emerald-400/40 px-5 py-2 text-sm font-bold text-emerald-300 transition hover:bg-emerald-400 hover:text-slate-900"
         >
           أضف سعر

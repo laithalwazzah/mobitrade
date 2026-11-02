@@ -21,7 +21,7 @@ function MissingProduct({ loading }: { loading: boolean }) {
           {loading ? "جارٍ تحميل أحدث الأسعار..." : "هذا المنتج غير موجود"}
         </h1>
         {!loading && (
-          <Link href="/" className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">
+          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">
             العودة للرئيسية
           </Link>
         )}
@@ -42,7 +42,7 @@ export default function ProductPageContent() {
     <>
       <section className="bg-slate-900 text-white">
         <div className="mx-auto max-w-4xl px-4 pt-8 pb-16">
-          <Link href="/" className="text-sm text-emerald-300 hover:underline">← رجوع للقائمة</Link>
+          <Link href="/" prefetch={false} className="text-sm text-emerald-300 hover:underline">← رجوع للقائمة</Link>
           <div className="mt-6 grid items-center gap-6 sm:grid-cols-[1fr_220px]">
             <div>
               <p className="flex items-center gap-2 text-sm text-slate-300">
@@ -90,7 +90,7 @@ export default function ProductPageContent() {
                     >
                       <div>
                         <div className="flex flex-wrap items-center gap-2">
-                          <Link href={`/shop?id=${encodeURIComponent(shop.id)}`} className="text-lg font-extrabold hover:text-emerald-600">{shop.name}</Link>
+                          <Link href={`/shop?id=${encodeURIComponent(shop.id)}`} prefetch={false} className="text-lg font-extrabold hover:text-emerald-600">{shop.name}</Link>
                           <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${isNew ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
                             {conditionLabel(offer.condition)}
                           </span>

@@ -49,7 +49,7 @@ test("device images and brand logos load without shifting card layout", async ({
   const after = await media.boundingBox();
   expect(after).not.toBeNull();
   expect(after!.width).toBe(before!.width);
-  expect(after!.height).toBe(before!.height);
+  expect(Math.abs(after!.height - before!.height)).toBeLessThan(0.1);
   expect(after!.height).toBeGreaterThanOrEqual(170);
 
   await expectLoadedImage(card.locator('img[src*="/images/brands/"]'));

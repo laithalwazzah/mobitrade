@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --import tsx --test tests/core.test.ts",
+    "test": "node --import tsx --test tests/core.test.ts tests/sprint01.test.ts",
     "test:e2e": "playwright test",
     "test:firestore": "node --import tsx --test tests/firestore-rest.test.ts",
     "test:rules": "node --import tsx --test tests/firestore-emulator.test.ts"

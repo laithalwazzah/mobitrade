@@ -1,30 +1,57 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
-import type { OfferCondition, Product } from "@/data/products";
-import { conditionLabel, lowestOffer, formatPrice } from "@/data/helpers";
+import { useState, useSyncExternalStore } from "react";
+import type { Product } from "@/data/products";
+import { conditionLabel, formatPrice } from "@/data/helpers";
 import CompareButton from "@/components/CompareButton";
 import ProductMedia, { BrandLogo } from "@/components/ProductMedia";
+import {
+  filterAndSortCatalog,
+  isOfferStale,
+  uniqueMatchingShopCount,
+  type CatalogSort,
+  type ConditionFilter,
+  type CurrencyFilter,
+} from "@/lib/catalogView";
+
+const subscribeToHydration = () => () => {};
+const getClientHydrationSnapshot = () => true;
+const getServerHydrationSnapshot = () => false;
 
 export default function ProductList({ products }: { products: Product[] }) {
   const [query, setQuery] = useState("");
   const [brand, setBrand] = useState("all");
-  const [condition, setCondition] = useState<"all" | "new" | "used">("all");
+  const [condition, setCondition] = useState<ConditionFilter>("all");
+  const [currency, setCurrency] = useState<CurrencyFilter>("all");
+  const [sort, setSort] = useState<CatalogSort>("newest");
+  const hydrated = useSyncExternalStore(
+    subscribeToHydration,
+    getClientHydrationSnapshot,
+    getServerHydrationSnapshot,
+  );
 
-  const brands = Array.from(new Set(products.map((p) => p.brand)));
-
-  const filtered = products.filter((p) => {
-    const searchTerm = query.trim().toLowerCase();
-    const matchesQuery =
-      p.name.toLowerCase().includes(searchTerm) ||
-      p.brand.toLowerCase().includes(searchTerm);
-    const matchesBrand = brand === "all" || p.brand === brand;
-    const matchesCondition =
-      condition === "all" ||
-      p.offers.some((offer) => offer.condition === condition);
-    return matchesQuery && matchesBrand && matchesCondition;
+  const brands = Array.from(new Set(products.map((product) => product.brand)));
+  const items = filterAndSortCatalog(products, {
+    query,
+    brand,
+    condition,
+    currency,
+    sort,
   });
+
+  function resetFilters() {
+    setQuery("");
+    setBrand("all");
+    setCondition("all");
+    setCurrency("all");
+    setSort("newest");
+  }
+
+  function selectCurrency(value: CurrencyFilter) {
+    setCurrency(value);
+    if (value === "all" && sort === "price") setSort("newest");
+  }
 
   return (
     <>
@@ -37,23 +64,26 @@ export default function ProductList({ products }: { products: Product[] }) {
             stroke="currentColor"
             strokeWidth="2"
             strokeLinecap="round"
+            aria-hidden="true"
           >
             <circle cx="11" cy="11" r="7" />
             <path d="m20 20-3.5-3.5" />
           </svg>
           <input
-            type="text"
+            type="search"
             value={query}
-            onChange={(e) => setQuery(e.target.value)}
+            onChange={(event) => setQuery(event.target.value)}
             placeholder="ابحث عن موبايل... مثلاً آيفون 15"
             className="w-full rounded-xl border border-slate-200 bg-slate-50 py-3 pr-12 pl-4 outline-none transition focus:border-emerald-500 focus:bg-white focus:ring-4 focus:ring-emerald-500/10"
           />
         </div>
 
-        <div className="mt-4 flex flex-wrap gap-2">
+        <div className="mt-4 flex flex-wrap gap-2" aria-label="الشركة">
           {["all", ...brands].map((currentBrand) => (
             <button
               key={currentBrand}
+              type="button"
+              aria-pressed={brand === currentBrand}
               onClick={() => setBrand(currentBrand)}
               className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold transition ${
                 brand === currentBrand
@@ -69,73 +99,112 @@ export default function ProductList({ products }: { products: Product[] }) {
           ))}
         </div>
 
-        <div className="mt-3 flex flex-wrap items-center gap-2">
-          <span className="text-sm font-bold text-slate-600">الحالة:</span>
-          {(
-            [
-              { value: "all", label: "الكل" },
-              { value: "new", label: "جديد" },
-              { value: "used", label: "مستعمل" },
-            ] as const
-          ).map((option) => (
+        <div className="mt-4 grid gap-4 lg:grid-cols-[1fr_1fr_auto] lg:items-end">
+          <div>
+            <p className="mb-2 text-sm font-bold text-slate-600">الحالة</p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="الحالة">
+              {(
+                [
+                  { value: "all", label: "الكل" },
+                  { value: "new", label: "جديد" },
+                  { value: "used", label: "مستعمل" },
+                ] as const
+              ).map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={condition === option.value}
+                  onClick={() => setCondition(option.value)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                    condition === option.value
+                      ? "bg-emerald-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div>
+            <p className="mb-2 text-sm font-bold text-slate-600">العملة</p>
+            <div className="flex flex-wrap gap-2" role="group" aria-label="العملة">
+              {(
+                [
+                  { value: "all", label: "الكل" },
+                  { value: "USD", label: "USD" },
+                  { value: "SYP", label: "SYP" },
+                ] as const
+              ).map((option) => (
+                <button
+                  key={option.value}
+                  type="button"
+                  aria-pressed={currency === option.value}
+                  onClick={() => selectCurrency(option.value)}
+                  className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                    currency === option.value
+                      ? "bg-sky-600 text-white"
+                      : "bg-slate-100 text-slate-600 hover:bg-slate-200"
+                  }`}
+                >
+                  {option.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          <div className="flex flex-wrap items-end gap-3">
+            <label className="grid gap-2 text-sm font-bold text-slate-600">
+              ترتيب المنتجات
+              <select
+                value={sort}
+                onChange={(event) => setSort(event.target.value as CatalogSort)}
+                className="min-w-44 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-slate-800 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+              >
+                <option value="newest">الأحدث أولاً</option>
+                <option value="name">اسم المنتج</option>
+                <option value="price" disabled={currency === "all"}>
+                  السعر الأقل
+                </option>
+              </select>
+            </label>
             <button
-              key={option.value}
               type="button"
-              aria-pressed={condition === option.value}
-              onClick={() => setCondition(option.value)}
-              className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
-                condition === option.value
-                  ? "bg-emerald-600 text-white"
-                  : "bg-slate-100 text-slate-600 hover:bg-slate-200"
-              }`}
+              onClick={resetFilters}
+              className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:border-red-300 hover:text-red-700"
             >
-              {option.label}
+              مسح الفلاتر
             </button>
-          ))}
+          </div>
         </div>
+        {currency === "all" && (
+          <p className="mt-3 text-xs text-slate-400">
+            اختر USD أو SYP لتفعيل الترتيب حسب السعر.
+          </p>
+        )}
       </div>
 
       <div className="mt-8 grid gap-5 sm:grid-cols-2 lg:grid-cols-3">
-        {filtered.map((product, index) => {
-          const displayedCondition: OfferCondition =
-            condition === "all"
-              ? product.offers.some((offer) => offer.condition === "new")
-                ? "new"
-                : "used"
-              : condition;
-          const displayedCurrency = product.offers.some(
+        {items.map(({ product, displayedOffer }, index) => {
+          const sameConditionCurrencyOffers = product.offers.filter(
             (offer) =>
-              offer.condition === displayedCondition && offer.currency === "USD",
-          )
-            ? "USD"
-            : "SYP";
-          const displayedOffer = lowestOffer(
-            product,
-            displayedCondition,
-            displayedCurrency,
+              offer.condition === displayedOffer.condition &&
+              offer.currency === displayedOffer.currency,
           );
-          const sameConditionCurrencyOffers = displayedOffer
-            ? product.offers.filter(
-                (offer) =>
-                  offer.condition === displayedOffer.condition &&
-                  offer.currency === displayedOffer.currency,
-              )
-            : [];
-          const worst = sameConditionCurrencyOffers.length
-            ? Math.max(...sameConditionCurrencyOffers.map((offer) => offer.price))
-            : 0;
-          const saving = displayedOffer ? worst - displayedOffer.price : 0;
-          const shopCount = new Set(
-            product.offers
-              .filter(
-                (offer) =>
-                  condition === "all" || offer.condition === condition,
-              )
-              .map((offer) => offer.shopId),
-          ).size;
+          const worst = Math.max(
+            ...sameConditionCurrencyOffers.map((offer) => offer.price),
+          );
+          const saving = worst - displayedOffer.price;
+          const shopCount = uniqueMatchingShopCount(
+            product,
+            condition,
+            currency,
+          );
           const showConditionBadge =
-            displayedOffer &&
-            (condition !== "all" || displayedOffer.condition === "used");
+            condition !== "all" || displayedOffer.condition === "used";
+          const stale =
+            hydrated && isOfferStale(displayedOffer.updatedAt, new Date());
 
           return (
             <article
@@ -145,59 +214,67 @@ export default function ProductList({ products }: { products: Product[] }) {
             >
               <Link
                 href={`/product?id=${encodeURIComponent(product.id)}`}
+                prefetch={false}
                 className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
                 aria-label={`عرض تفاصيل ${product.brand} ${product.name} ${product.storage}`}
               >
-              <div className="relative">
-                <ProductMedia product={product} className="h-44 w-full" />
-                <span className="absolute top-3 right-3 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">
-                  <BrandLogo brand={product.brand} className="h-4 w-5" />
-                  <span>{product.brand}</span>
-                </span>
-                {saving > 0 && displayedOffer && (
-                  <span className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
-                    وفّر {formatPrice({ ...displayedOffer, price: saving })}
+                <div className="relative">
+                  <ProductMedia product={product} className="h-44 w-full" />
+                  <span className="absolute top-3 right-3 inline-flex items-center gap-2 rounded-full bg-white/95 px-3 py-1 text-xs font-bold text-slate-700 shadow-sm backdrop-blur">
+                    <BrandLogo brand={product.brand} className="h-4 w-5" />
+                    <span>{product.brand}</span>
                   </span>
-                )}
-              </div>
+                  {saving > 0 && (
+                    <span className="absolute top-3 left-3 rounded-full bg-emerald-500 px-3 py-1 text-xs font-bold text-white shadow-sm">
+                      وفّر {formatPrice({ ...displayedOffer, price: saving })}
+                    </span>
+                  )}
+                </div>
 
-              <div className="p-5">
-                <h2 className="text-lg font-extrabold">{product.name}</h2>
-                <span className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
-                  {product.storage}
-                </span>
+                <div className="p-5">
+                  <h2 className="text-lg font-extrabold">{product.name}</h2>
+                  <span className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
+                    {product.storage}
+                  </span>
 
-                <div className="mt-4 flex items-end justify-between border-t border-slate-100 pt-4">
-                  <div>
-                    <div className="flex items-center gap-2">
-                      <p className="text-xs text-slate-400">
-                        {condition === "all" && displayedCondition === "new"
-                          ? "أرخص سعر جديد"
-                          : "أرخص سعر"}
-                      </p>
-                      {showConditionBadge && (
-                        <span
-                          className={`rounded-full px-2 py-0.5 text-xs font-bold ${
-                            displayedOffer.condition === "new"
-                              ? "bg-emerald-100 text-emerald-800"
-                              : "bg-amber-100 text-amber-800"
-                          }`}
-                        >
-                          {conditionLabel(displayedOffer.condition)}
-                        </span>
-                      )}
-                    </div>
-                    {displayedOffer && (
+                  <div className="mt-4 flex items-end justify-between gap-3 border-t border-slate-100 pt-4">
+                    <div>
+                      <div className="flex flex-wrap items-center gap-2">
+                        <p className="text-xs text-slate-400">
+                          {condition === "all" &&
+                          displayedOffer.condition === "new"
+                            ? "أرخص سعر جديد"
+                            : "أرخص سعر"}
+                        </p>
+                        {showConditionBadge && (
+                          <span
+                            className={`rounded-full px-2 py-0.5 text-xs font-bold ${
+                              displayedOffer.condition === "new"
+                                ? "bg-emerald-100 text-emerald-800"
+                                : "bg-amber-100 text-amber-800"
+                            }`}
+                          >
+                            {conditionLabel(displayedOffer.condition)}
+                          </span>
+                        )}
+                      </div>
                       <p className="text-2xl font-extrabold text-emerald-600">
                         {formatPrice(displayedOffer)}
                       </p>
-                    )}
+                      <div className="mt-1 flex flex-wrap items-center gap-2 text-xs text-slate-400">
+                        <span>آخر تحديث: {displayedOffer.updatedAt}</span>
+                        {stale && (
+                          <span className="rounded-full bg-red-100 px-2 py-0.5 font-bold text-red-700">
+                            سعر قديم
+                          </span>
+                        )}
+                      </div>
+                    </div>
+                    <p className="shrink-0 text-xs text-slate-500">
+                      {shopCount} محل
+                    </p>
                   </div>
-                  <p className="text-xs text-slate-500">
-                    {shopCount} محل
-                  </p>
                 </div>
-              </div>
               </Link>
               <div className="px-5 pb-5">
                 <CompareButton product={product} className="w-full" />
@@ -205,10 +282,22 @@ export default function ProductList({ products }: { products: Product[] }) {
             </article>
           );
         })}
-        {filtered.length === 0 && (
-          <p className="col-span-full py-10 text-center text-slate-500">
-            ما في نتائج مطابقة، جرّب كلمة ثانية.
-          </p>
+        {items.length === 0 && (
+          <div className="col-span-full rounded-2xl border border-dashed border-slate-300 bg-white px-5 py-12 text-center">
+            <h2 className="text-xl font-extrabold text-slate-800">
+              لا توجد نتائج مطابقة
+            </h2>
+            <p className="mt-2 text-sm text-slate-500">
+              جرّب تغيير البحث أو الفلاتر لعرض أجهزة أخرى.
+            </p>
+            <button
+              type="button"
+              onClick={resetFilters}
+              className="mt-5 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
+            >
+              مسح الفلاتر وعرض الكل
+            </button>
+          </div>
         )}
       </div>
     </>

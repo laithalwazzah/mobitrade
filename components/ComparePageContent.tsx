@@ -38,7 +38,7 @@ export default function ComparePageContent() {
         <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
           <h1 className="text-2xl font-extrabold">لا توجد أجهزة للمقارنة</h1>
           <p className="mt-2 text-slate-500">اختر جهازين من القائمة لتظهر المقارنة هنا.</p>
-          <Link href="/" className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">اختيار الأجهزة</Link>
+          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">اختيار الأجهزة</Link>
         </div>
       </main>
     );
@@ -51,7 +51,7 @@ export default function ComparePageContent() {
         <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
           <h1 className="text-2xl font-extrabold">{waitingForLive ? "جارٍ تحميل الأجهزة..." : "اختر جهازاً ثانياً"}</h1>
           <p className="mt-2 text-slate-500">تحتاج المقارنة إلى جهازين مختلفين.</p>
-          <Link href="/" className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للقائمة</Link>
+          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للقائمة</Link>
         </div>
       </main>
     );
@@ -85,7 +85,7 @@ export default function ComparePageContent() {
                       <BrandLogo brand={product.brand} className="h-5 w-7" />
                       {product.brand}
                     </p>
-                    <Link href={`/product?id=${encodeURIComponent(product.id)}`} className="mt-1 inline-block text-xl font-extrabold hover:text-emerald-700">{product.name}</Link>
+                    <Link href={`/product?id=${encodeURIComponent(product.id)}`} prefetch={false} className="mt-1 inline-block text-xl font-extrabold hover:text-emerald-700">{product.name}</Link>
                     <p className="mt-1 text-sm text-slate-500">{product.storage} · {product.network ?? "غير متوفر"}</p>
                     <button type="button" onClick={() => remove(product)} className="mt-3 text-xs font-bold text-red-600 hover:underline">إزالة من المقارنة</button>
                   </th>

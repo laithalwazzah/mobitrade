@@ -355,6 +355,7 @@ export default function AddPriceForm() {
                 <Link
                   key={product.id}
                   href={`/product?id=${encodeURIComponent(product.id)}`}
+                  prefetch={false}
                   className="rounded-full bg-white px-4 py-2 text-sm font-bold text-emerald-800 ring-1 ring-emerald-200"
                 >
                   {product.label}
@@ -362,6 +363,7 @@ export default function AddPriceForm() {
               ))}
               <Link
                 href="/"
+                prefetch={false}
                 className="rounded-full bg-emerald-700 px-4 py-2 text-sm font-bold text-white"
               >
                 الصفحة الرئيسية

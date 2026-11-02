@@ -223,7 +223,7 @@ function CompareTray() {
         </div>
       )}
       {selectedProducts.length === 2 ? (
-        <Link href="/compare" className="mt-3 block rounded-full bg-emerald-500 px-4 py-2 text-center text-sm font-bold text-slate-950 hover:bg-emerald-400">
+        <Link href="/compare" prefetch={false} className="mt-3 block rounded-full bg-emerald-500 px-4 py-2 text-center text-sm font-bold text-slate-950 hover:bg-emerald-400">
           افتح المقارنة
         </Link>
       ) : (
