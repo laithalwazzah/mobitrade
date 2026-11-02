@@ -268,7 +268,7 @@ export default function OfferFormRow({
           >
             السعر
           </label>
-          <div className="mt-1 flex gap-2">
+          <div className="mt-1 flex flex-col gap-2 min-[400px]:flex-row">
             <input
               id={`${value.id}-price`}
               required
@@ -283,14 +283,14 @@ export default function OfferFormRow({
               aria-describedby={errors.price ? `${value.id}-price-error` : undefined}
               className={`${fieldClassName} mt-0 min-w-0 flex-1`}
             />
-            <div className="flex shrink-0 rounded-xl bg-slate-100 p-1">
+            <div className="flex min-h-12 shrink-0 rounded-xl bg-slate-100 p-1">
               {(["USD", "SYP"] as const).map((currency) => (
                 <button
                   key={currency}
                   type="button"
                   aria-pressed={value.currency === currency}
                   onClick={() => onChange({ currency })}
-                  className={`rounded-lg px-3 text-sm font-bold transition ${
+                  className={`min-h-11 flex-1 rounded-lg px-3 text-sm font-bold transition ${
                     value.currency === currency
                       ? "bg-slate-900 text-white"
                       : "text-slate-600"
@@ -311,7 +311,7 @@ export default function OfferFormRow({
         <button
           type="button"
           onClick={onRemove}
-          className="mt-4 text-sm font-bold text-red-600 hover:underline"
+          className="mt-4 min-h-11 rounded px-2 text-sm font-bold text-red-700 hover:underline"
         >
           حذف هذا الموديل
         </button>

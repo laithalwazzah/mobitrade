@@ -430,10 +430,11 @@ export default function AddPriceForm() {
             onChange={(event) => updateShopInfo({ name: event.target.value })}
             placeholder="مثال: محل الموبايلات"
             aria-invalid={Boolean(errors.shopName)}
+            aria-describedby={errors.shopName ? "shop-name-error" : undefined}
             className={inputClassName}
           />
           {errors.shopName && (
-            <span className="mt-1 block text-sm text-red-600">
+            <span id="shop-name-error" className="mt-1 block text-sm text-red-700">
               {errors.shopName}
             </span>
           )}
@@ -447,10 +448,11 @@ export default function AddPriceForm() {
             onChange={(event) => updateShopInfo({ area: event.target.value })}
             placeholder="مثال: اللاذقية - الزراعة"
             aria-invalid={Boolean(errors.area)}
+            aria-describedby={errors.area ? "shop-area-error" : undefined}
             className={inputClassName}
           />
           {errors.area && (
-            <span className="mt-1 block text-sm text-red-600">{errors.area}</span>
+            <span id="shop-area-error" className="mt-1 block text-sm text-red-700">{errors.area}</span>
           )}
         </label>
 
@@ -462,10 +464,11 @@ export default function AddPriceForm() {
             onChange={(event) => updateShopInfo({ address: event.target.value })}
             placeholder="اسم الشارع أو أقرب معلم"
             aria-invalid={Boolean(errors.address)}
+            aria-describedby={errors.address ? "shop-address-error" : undefined}
             className={inputClassName}
           />
           {errors.address && (
-            <span className="mt-1 block text-sm text-red-600">
+            <span id="shop-address-error" className="mt-1 block text-sm text-red-700">
               {errors.address}
             </span>
           )}
@@ -490,13 +493,14 @@ export default function AddPriceForm() {
             }}
             placeholder="0912345678"
             aria-invalid={Boolean(errors.whatsapp)}
+            aria-describedby={errors.whatsapp ? "shop-whatsapp-hint shop-whatsapp-error" : "shop-whatsapp-hint"}
             className={inputClassName}
           />
-          <span className="mt-1 block text-xs font-normal text-slate-500">
+          <span id="shop-whatsapp-hint" className="mt-1 block text-xs font-normal text-slate-500">
             يمكنك إدخال الرقم المحلي بدءاً بـ 09، مثال: 0912345678.
           </span>
           {errors.whatsapp && (
-            <span className="mt-1 block text-sm text-red-600">
+            <span id="shop-whatsapp-error" className="mt-1 block text-sm text-red-700">
               {errors.whatsapp}
             </span>
           )}
@@ -520,7 +524,7 @@ export default function AddPriceForm() {
               saveShopInfo(EMPTY_SHOP_INFO, false);
               setErrors(EMPTY_ERRORS);
             }}
-            className="text-sm font-bold text-slate-500 underline-offset-4 hover:text-red-600 hover:underline"
+            className="min-h-11 rounded px-2 text-sm font-bold text-slate-600 underline-offset-4 hover:text-red-700 hover:underline"
           >
             مسح بيانات المحل
           </button>
@@ -597,7 +601,7 @@ export default function AddPriceForm() {
           عند نجاح الإرسال إلى Firebase تظهر الأسعار مباشرة في الموقع.
         </p>
         {submitError && (
-          <div className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
+          <div role="alert" className="mt-4 rounded-xl bg-amber-50 p-4 text-sm text-amber-900 ring-1 ring-amber-200">
             <p>{submitError}</p>
             {message && (
               <details className="mt-3">

@@ -38,7 +38,7 @@ export default function ComparePageContent() {
         <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
           <h1 className="text-2xl font-extrabold">لا توجد أجهزة للمقارنة</h1>
           <p className="mt-2 text-slate-500">اختر جهازين من القائمة لتظهر المقارنة هنا.</p>
-          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">اختيار الأجهزة</Link>
+          <Link href="/" prefetch={false} className="mt-5 inline-flex min-h-11 items-center rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">اختيار الأجهزة</Link>
         </div>
       </main>
     );
@@ -51,7 +51,7 @@ export default function ComparePageContent() {
         <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
           <h1 className="text-2xl font-extrabold">{waitingForLive ? "جارٍ تحميل الأجهزة..." : "اختر جهازاً ثانياً"}</h1>
           <p className="mt-2 text-slate-500">تحتاج المقارنة إلى جهازين مختلفين.</p>
-          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للقائمة</Link>
+          <Link href="/" prefetch={false} className="mt-5 inline-flex min-h-11 items-center rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">العودة للقائمة</Link>
         </div>
       </main>
     );
@@ -71,9 +71,9 @@ export default function ComparePageContent() {
       </section>
       <main className="mx-auto w-full max-w-6xl flex-1 px-4 py-10">
         <div className="mb-5 flex justify-end">
-          <button type="button" onClick={clear} className="rounded-full border border-slate-300 px-4 py-2 text-sm font-bold text-slate-600 hover:border-red-300 hover:text-red-700">مسح المقارنة</button>
+          <button type="button" onClick={clear} className="min-h-11 rounded-full border border-slate-300 px-4 py-2 text-sm font-bold text-slate-700 hover:border-red-300 hover:text-red-700">مسح المقارنة</button>
         </div>
-        <div className="overflow-x-auto rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-200">
+        <div role="region" aria-label="جدول مقارنة الأجهزة" tabIndex={0} className="overflow-x-auto rounded-2xl bg-white shadow-xl shadow-slate-900/10 ring-1 ring-slate-200">
           <table className="w-full min-w-[700px] table-fixed border-collapse text-right">
             <thead>
               <tr className="bg-slate-100">
@@ -85,9 +85,9 @@ export default function ComparePageContent() {
                       <BrandLogo brand={product.brand} className="h-5 w-7" />
                       {product.brand}
                     </p>
-                    <Link href={`/product?id=${encodeURIComponent(product.id)}`} prefetch={false} className="mt-1 inline-block text-xl font-extrabold hover:text-emerald-700">{product.name}</Link>
+                    <Link href={`/product?id=${encodeURIComponent(product.id)}`} prefetch={false} className="mt-1 inline-block break-words rounded text-xl font-extrabold hover:text-emerald-700">{product.name}</Link>
                     <p className="mt-1 text-sm text-slate-500">{product.storage} · {product.network ?? "غير متوفر"}</p>
-                    <button type="button" onClick={() => remove(product)} className="mt-3 text-xs font-bold text-red-600 hover:underline">إزالة من المقارنة</button>
+                    <button type="button" onClick={() => remove(product)} className="mt-3 min-h-11 rounded px-2 text-sm font-bold text-red-700 hover:underline">إزالة من المقارنة</button>
                   </th>
                 ))}
               </tr>
@@ -103,7 +103,7 @@ export default function ComparePageContent() {
                   <tr key={key} className="border-t border-slate-200">
                     <th className="p-4 text-sm text-slate-600">{label}</th>
                     {products.map((product, index) => (
-                      <td key={product.id} className={`p-4 align-top text-sm leading-6 ${different ? "bg-amber-50 font-bold text-slate-900" : "text-slate-700"}`}>
+                      <td key={product.id} className={`break-words p-4 align-top text-sm leading-6 ${different ? "bg-amber-50 font-bold text-slate-900" : "text-slate-700"}`}>
                         {specifications[index][key]}
                       </td>
                     ))}

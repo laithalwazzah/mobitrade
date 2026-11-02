@@ -194,7 +194,7 @@ function CompareTray() {
           type="button"
           onClick={() => setIsExpanded(false)}
           aria-label="إغلاق شريط المقارنة"
-          className="grid size-9 shrink-0 place-items-center rounded-full bg-white/10 text-xl leading-none text-white hover:bg-white/20"
+          className="grid size-11 shrink-0 place-items-center rounded-full bg-white/10 text-xl leading-none text-white hover:bg-white/20"
         >
           ×
         </button>
@@ -203,7 +203,7 @@ function CompareTray() {
         {selectedProducts.map((product) => (
           <li key={createProductKey(product)} className="flex items-center justify-between gap-2 rounded-xl bg-white/10 px-3 py-2">
             <span className="min-w-0 truncate text-sm font-bold">{product.brand} {product.name}</span>
-            <button type="button" onClick={() => { remove(product); if (selectedProducts.length === 1) setIsExpanded(false); }} aria-label={`إزالة ${product.name} من المقارنة`} className="shrink-0 rounded-full px-2 py-1 text-xs text-slate-300 hover:bg-white/10 hover:text-white">
+            <button type="button" onClick={() => { remove(product); if (selectedProducts.length === 1) setIsExpanded(false); }} aria-label={`إزالة ${product.name} من المقارنة`} className="min-h-11 shrink-0 rounded-full px-3 py-2 text-sm text-slate-200 hover:bg-white/10 hover:text-white">
               إزالة
             </button>
           </li>
@@ -214,27 +214,27 @@ function CompareTray() {
           <p className="text-xs text-amber-100">القائمة ممتلئة. استبدل جهازاً بـ {candidate.name}:</p>
           <div className="mt-2 flex flex-wrap gap-2">
             {selectedProducts.map((product, index) => (
-              <button key={createProductKey(product)} type="button" onClick={() => replace(index)} className="rounded-full bg-amber-300 px-3 py-1 text-xs font-bold text-slate-900">
+              <button key={createProductKey(product)} type="button" onClick={() => replace(index)} className="min-h-11 rounded-full bg-amber-300 px-3 py-2 text-xs font-bold text-slate-900">
                 استبدل {product.name}
               </button>
             ))}
-            <button type="button" onClick={cancelReplace} className="rounded-full px-3 py-1 text-xs text-slate-300 hover:bg-white/10">إلغاء</button>
+            <button type="button" onClick={cancelReplace} className="min-h-11 rounded-full px-3 py-2 text-sm text-slate-200 hover:bg-white/10">إلغاء</button>
           </div>
         </div>
       )}
       {selectedProducts.length === 2 ? (
-        <Link href="/compare" prefetch={false} className="mt-3 block rounded-full bg-emerald-500 px-4 py-2 text-center text-sm font-bold text-slate-950 hover:bg-emerald-400">
+        <Link href="/compare" prefetch={false} className="mt-3 flex min-h-11 items-center justify-center rounded-full bg-emerald-500 px-4 py-2 text-center text-sm font-bold text-slate-950 hover:bg-emerald-400">
           افتح المقارنة
         </Link>
       ) : (
-        <span aria-disabled="true" className="mt-3 block rounded-full bg-slate-700 px-4 py-2 text-center text-sm font-bold text-slate-400">
+        <span aria-disabled="true" className="mt-3 flex min-h-11 items-center justify-center rounded-full bg-slate-700 px-4 py-2 text-center text-sm font-bold text-slate-300">
           افتح المقارنة
         </span>
       )}
       <button
         type="button"
         onClick={() => { clear(); setIsExpanded(false); }}
-        className="mt-3 w-full text-center text-xs text-slate-300 hover:text-white hover:underline"
+        className="mt-3 min-h-11 w-full rounded-full text-center text-sm text-slate-200 hover:bg-white/10 hover:text-white hover:underline"
       >
         مسح الكل
       </button>

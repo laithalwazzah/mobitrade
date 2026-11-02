@@ -71,6 +71,7 @@ export default function ProductList({ products }: { products: Product[] }) {
           </svg>
           <input
             type="search"
+            aria-label="البحث عن موبايل"
             value={query}
             onChange={(event) => setQuery(event.target.value)}
             placeholder="ابحث عن موبايل... مثلاً آيفون 15"
@@ -85,7 +86,7 @@ export default function ProductList({ products }: { products: Product[] }) {
               type="button"
               aria-pressed={brand === currentBrand}
               onClick={() => setBrand(currentBrand)}
-              className={`inline-flex items-center gap-2 rounded-full px-4 py-1.5 text-sm font-bold transition ${
+              className={`inline-flex min-h-11 items-center gap-2 rounded-full px-4 py-2 text-sm font-bold transition ${
                 brand === currentBrand
                   ? "bg-slate-900 text-white"
                   : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -115,7 +116,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                   type="button"
                   aria-pressed={condition === option.value}
                   onClick={() => setCondition(option.value)}
-                  className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                  className={`min-h-11 rounded-full px-4 py-2 text-sm font-bold transition ${
                     condition === option.value
                       ? "bg-emerald-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -142,7 +143,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                   type="button"
                   aria-pressed={currency === option.value}
                   onClick={() => selectCurrency(option.value)}
-                  className={`rounded-full px-4 py-1.5 text-sm font-bold transition ${
+                  className={`min-h-11 rounded-full px-4 py-2 text-sm font-bold transition ${
                     currency === option.value
                       ? "bg-sky-600 text-white"
                       : "bg-slate-100 text-slate-600 hover:bg-slate-200"
@@ -160,7 +161,7 @@ export default function ProductList({ products }: { products: Product[] }) {
               <select
                 value={sort}
                 onChange={(event) => setSort(event.target.value as CatalogSort)}
-                className="min-w-44 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-slate-800 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
+                className="min-h-11 min-w-44 rounded-xl border border-slate-200 bg-slate-50 px-3 py-2.5 text-slate-800 outline-none focus:border-emerald-500 focus:ring-4 focus:ring-emerald-500/10"
               >
                 <option value="newest">الأحدث أولاً</option>
                 <option value="name">اسم المنتج</option>
@@ -172,7 +173,7 @@ export default function ProductList({ products }: { products: Product[] }) {
             <button
               type="button"
               onClick={resetFilters}
-              className="rounded-full border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-600 transition hover:border-red-300 hover:text-red-700"
+              className="min-h-11 rounded-full border border-slate-300 px-4 py-2.5 text-sm font-bold text-slate-700 transition hover:border-red-300 hover:text-red-700"
             >
               مسح الفلاتر
             </button>
@@ -215,7 +216,7 @@ export default function ProductList({ products }: { products: Product[] }) {
               <Link
                 href={`/product?id=${encodeURIComponent(product.id)}`}
                 prefetch={false}
-                className="block focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
+                className="block rounded-2xl focus-visible:outline-2 focus-visible:outline-offset-2 focus-visible:outline-emerald-600"
                 aria-label={`عرض تفاصيل ${product.brand} ${product.name} ${product.storage}`}
               >
                 <div className="relative">
@@ -232,7 +233,7 @@ export default function ProductList({ products }: { products: Product[] }) {
                 </div>
 
                 <div className="p-5">
-                  <h2 className="text-lg font-extrabold">{product.name}</h2>
+                  <h2 className="break-words text-lg font-extrabold">{product.name}</h2>
                   <span className="mt-2 inline-block rounded-md bg-slate-100 px-2 py-0.5 text-xs text-slate-600">
                     {product.storage}
                   </span>
@@ -293,7 +294,7 @@ export default function ProductList({ products }: { products: Product[] }) {
             <button
               type="button"
               onClick={resetFilters}
-              className="mt-5 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
+              className="mt-5 min-h-11 rounded-full bg-slate-900 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-emerald-700"
             >
               مسح الفلاتر وعرض الكل
             </button>

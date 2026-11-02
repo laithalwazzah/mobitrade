@@ -14,14 +14,16 @@ export default function Footer() {
   );
 
   return (
-    <footer className="bg-slate-900 py-10 text-center">
-      <p className="font-bold text-white">سعّرلي · اللاذقية</p>
-      <p className="mt-2 text-xs text-slate-400">
-        الأسعار إرشادية وقد تتغير. الموقع لا يبيع المنتجات بنفسه.
-      </p>
-      <p className="mt-4 text-xs text-slate-500">
-        © {year} جميع الحقوق محفوظة
-      </p>
+    <footer className="bg-slate-900 px-4 py-10 text-center">
+      <div className="mx-auto max-w-6xl">
+        <p className="font-bold text-white">سعّرلي · اللاذقية</p>
+        <p className="mt-2 text-sm text-slate-300">
+          الأسعار إرشادية وقد تتغير. الموقع لا يبيع المنتجات بنفسه.
+        </p>
+        <p className="mt-4 text-xs text-slate-400">
+          © {year} جميع الحقوق محفوظة
+        </p>
+      </div>
     </footer>
   );
 }

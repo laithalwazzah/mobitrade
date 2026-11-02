@@ -16,12 +16,12 @@ import {
 function MissingProduct({ loading }: { loading: boolean }) {
   return (
     <main className="mx-auto flex w-full max-w-3xl flex-1 items-center px-4 py-16">
-      <div className="w-full rounded-2xl bg-white p-8 text-center shadow-sm ring-1 ring-slate-200">
+      <div aria-live="polite" className="w-full rounded-2xl bg-white p-6 text-center shadow-sm ring-1 ring-slate-200 sm:p-8">
         <h1 className="text-2xl font-extrabold">
           {loading ? "جارٍ تحميل أحدث الأسعار..." : "هذا المنتج غير موجود"}
         </h1>
         {!loading && (
-          <Link href="/" prefetch={false} className="mt-5 inline-block rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">
+          <Link href="/" prefetch={false} className="mt-5 inline-flex min-h-11 items-center rounded-full bg-emerald-600 px-5 py-2 font-bold text-white">
             العودة للرئيسية
           </Link>
         )}
@@ -51,7 +51,7 @@ export default function ProductPageContent() {
                 </span>
                 {product.brand}
               </p>
-              <h1 className="mt-2 text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
+              <h1 className="mt-2 break-words text-3xl font-extrabold sm:text-4xl">{product.name}</h1>
               <span className="mt-3 inline-block rounded-full bg-white/10 px-3 py-1 text-sm">{product.storage}</span>
               {product.network && (
                 <span className="mr-2 mt-3 inline-block rounded-full bg-emerald-400/15 px-3 py-1 text-sm font-bold text-emerald-200">{product.network}</span>
@@ -81,16 +81,16 @@ export default function ProductPageContent() {
                   return (
                     <div
                       key={`${offer.shopId}-${offer.condition}-${offer.currency}`}
-                      className={`animate-fade-up flex items-center justify-between gap-4 rounded-2xl bg-white p-5 shadow-sm ring-1 ${
+                      className={`animate-fade-up flex min-w-0 flex-col items-stretch justify-between gap-4 rounded-2xl bg-white p-4 shadow-sm ring-1 sm:flex-row sm:items-center sm:p-5 ${
                         isBest
                           ? `ring-2 ${isNew ? "ring-emerald-500 shadow-emerald-500/10" : "ring-amber-400 shadow-amber-500/10"}`
                           : "ring-slate-200"
                       }`}
                       style={{ animationDelay: `${(groupIndex + index) * 80}ms` }}
                     >
-                      <div>
+                      <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Link href={`/shop?id=${encodeURIComponent(shop.id)}`} prefetch={false} className="text-lg font-extrabold hover:text-emerald-600">{shop.name}</Link>
+                          <Link href={`/shop?id=${encodeURIComponent(shop.id)}`} prefetch={false} className="break-words rounded text-lg font-extrabold hover:text-emerald-600">{shop.name}</Link>
                           <span className={`rounded-full px-2.5 py-0.5 text-xs font-bold ${isNew ? "bg-emerald-100 text-emerald-800" : "bg-amber-100 text-amber-800"}`}>
                             {conditionLabel(offer.condition)}
                           </span>
@@ -106,11 +106,11 @@ export default function ProductPageContent() {
                           </p>
                         )}
                       </div>
-                      <div className="text-left">
+                      <div className="shrink-0 text-right sm:text-left">
                         <p className={`text-2xl font-extrabold ${isBest && isNew ? "text-emerald-600" : isBest ? "text-amber-700" : "text-slate-800"}`}>
                           {formatPrice(offer)}
                         </p>
-                        <a href={`https://wa.me/${shop.whatsapp}?text=${message}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-block rounded-full bg-green-600 px-4 py-1.5 text-sm font-bold text-white transition hover:bg-green-700">واتساب</a>
+                        <a href={`https://wa.me/${shop.whatsapp}?text=${message}`} target="_blank" rel="noopener noreferrer" className="mt-2 inline-flex min-h-11 items-center rounded-full bg-green-600 px-4 py-2 text-sm font-bold text-white transition hover:bg-green-700">واتساب</a>
                       </div>
                     </div>
                   );

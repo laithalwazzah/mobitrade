@@ -3,8 +3,8 @@ import Link from "next/link";
 export default function Header() {
   return (
     <header className="sticky top-0 z-50 border-b border-white/10 bg-slate-900/80 backdrop-blur-md">
-      <nav className="mx-auto flex max-w-6xl items-center justify-between px-4 py-3">
-        <Link href="/" prefetch={false} className="flex items-center gap-3">
+      <nav aria-label="التنقل الرئيسي" className="mx-auto flex max-w-6xl items-center justify-between gap-2 px-3 py-3 sm:px-4">
+        <Link href="/" prefetch={false} className="flex min-h-11 min-w-0 items-center gap-2 rounded-xl sm:gap-3">
           <span className="flex h-10 w-10 items-center justify-center rounded-xl bg-emerald-500 text-slate-900">
             <svg
               viewBox="0 0 24 24"
@@ -14,6 +14,7 @@ export default function Header() {
               strokeWidth="2"
               strokeLinecap="round"
               strokeLinejoin="round"
+              aria-hidden="true"
             >
               <rect x="7" y="2" width="10" height="20" rx="2.5" />
               <path d="M11 18h2" />
@@ -23,7 +24,7 @@ export default function Header() {
             <span className="block text-lg font-extrabold text-white">
               سعّرلي
             </span>
-            <span className="block text-xs text-slate-400">
+            <span className="hidden text-xs text-slate-400 min-[360px]:block">
               موبايلات اللاذقية
             </span>
           </span>
@@ -31,7 +32,7 @@ export default function Header() {
         <Link
           href="/add"
           prefetch={false}
-          className="rounded-full border border-emerald-400/40 px-5 py-2 text-sm font-bold text-emerald-300 transition hover:bg-emerald-400 hover:text-slate-900"
+          className="inline-flex min-h-11 shrink-0 items-center rounded-full border border-emerald-400/40 px-3 py-2 text-sm font-bold text-emerald-300 transition hover:bg-emerald-400 hover:text-slate-900 sm:px-5"
         >
           أضف سعر
         </Link>

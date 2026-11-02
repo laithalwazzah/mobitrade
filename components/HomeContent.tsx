@@ -37,13 +37,13 @@ export default function HomeContent() {
             مباشرة عبر واتساب.
           </p>
           <div
-            className="animate-fade-up mt-10 flex justify-center gap-3 sm:gap-6"
+            className="animate-fade-up mx-auto mt-10 grid max-w-xl grid-cols-3 gap-2 sm:gap-6"
             style={{ animationDelay: "200ms" }}
           >
             {stats.map((stat) => (
               <div
                 key={stat.label}
-                className="min-w-24 rounded-2xl border border-white/10 bg-white/5 px-5 py-3 backdrop-blur"
+                className="min-w-0 rounded-2xl border border-white/10 bg-white/5 px-2 py-3 backdrop-blur sm:px-5"
               >
                 <p className="text-2xl font-extrabold text-emerald-300">
                   {stat.value}
@@ -56,7 +56,7 @@ export default function HomeContent() {
       </section>
       <main className="relative z-10 mx-auto -mt-14 w-full max-w-6xl flex-1 px-4 pb-16">
         {status === "error" && (
-          <p className="mb-3 text-center text-xs text-amber-700">
+          <p role="status" className="mb-3 text-center text-sm text-amber-800">
             تعذر تحميل أحدث الأسعار، يتم عرض البيانات المحفوظة
           </p>
         )}
