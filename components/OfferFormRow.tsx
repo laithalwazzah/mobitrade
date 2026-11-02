@@ -69,7 +69,7 @@ export default function OfferFormRow({
   }
 
   return (
-    <fieldset className="rounded-2xl border border-slate-200 p-4 sm:p-5">
+    <fieldset className="min-w-0 rounded-2xl border border-slate-200 p-4 sm:p-5">
       <legend className="px-2 text-lg font-extrabold text-slate-900">
         الموديل {index + 1}
       </legend>
@@ -283,14 +283,14 @@ export default function OfferFormRow({
               aria-describedby={errors.price ? `${value.id}-price-error` : undefined}
               className={`${fieldClassName} mt-0 min-w-0 flex-1`}
             />
-            <div className="flex min-h-12 shrink-0 rounded-xl bg-slate-100 p-1">
+            <div className="flex min-h-12 w-full min-w-0 shrink-0 rounded-xl bg-slate-100 p-1 min-[400px]:w-auto">
               {(["USD", "SYP"] as const).map((currency) => (
                 <button
                   key={currency}
                   type="button"
                   aria-pressed={value.currency === currency}
                   onClick={() => onChange({ currency })}
-                  className={`min-h-11 flex-1 rounded-lg px-3 text-sm font-bold transition ${
+                  className={`min-h-11 min-w-0 flex-1 whitespace-nowrap rounded-lg px-2 text-sm font-bold transition min-[400px]:px-3 ${
                     value.currency === currency
                       ? "bg-slate-900 text-white"
                       : "text-slate-600"

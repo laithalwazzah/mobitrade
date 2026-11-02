@@ -74,6 +74,57 @@ test("long Arabic and English form content stays inside the 320px viewport", asy
   await expect(page.getByRole("heading", { name: "بيانات المحل" })).toBeVisible();
 });
 
+test("price currency labels stay on one line at 320px and 375px", async ({ page }) => {
+  for (const width of [320, 375]) {
+    await page.setViewportSize({ width, height: 812 });
+    await page.goto("/add");
+    const row = page.locator("fieldset").first();
+    await row.getByLabel("السعر").fill("999999999999999999999999");
+    const buttons = [
+      row.getByRole("button", { name: "دولار", exact: true }),
+      row.getByRole("button", { name: "ليرة", exact: true }),
+    ];
+
+    const boxes = [];
+    for (const button of buttons) {
+      const metrics = await button.evaluate((element) => {
+        const buttonRect = element.getBoundingClientRect();
+        const range = document.createRange();
+        range.selectNodeContents(element);
+        const textRects = Array.from(range.getClientRects());
+        return {
+          button: {
+            left: buttonRect.left,
+            right: buttonRect.right,
+            height: buttonRect.height,
+          },
+          textRects: textRects.map((rect) => ({
+            left: rect.left,
+            right: rect.right,
+          })),
+          whiteSpace: getComputedStyle(element).whiteSpace,
+          direction: getComputedStyle(element).direction,
+        };
+      });
+      expect(metrics.whiteSpace).toBe("nowrap");
+      expect(metrics.direction).toBe("rtl");
+      expect(metrics.button.height).toBeGreaterThanOrEqual(44);
+      expect(metrics.textRects).toHaveLength(1);
+      expect(metrics.textRects[0].left).toBeGreaterThanOrEqual(metrics.button.left);
+      expect(metrics.textRects[0].right).toBeLessThanOrEqual(metrics.button.right);
+      boxes.push(metrics.button);
+    }
+
+    expect(Math.abs((boxes[0].right - boxes[0].left) - (boxes[1].right - boxes[1].left))).toBeLessThanOrEqual(1);
+    await buttons[1].focus();
+    await expect(buttons[1]).toBeFocused();
+    await buttons[1].press("Enter");
+    await expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
+    await expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
+    expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
+  }
+});
+
 test("skip link, landmarks, focus visibility and keyboard controls are accessible", async ({ page }) => {
   await page.goto("/");
   await page.keyboard.press("Tab");
