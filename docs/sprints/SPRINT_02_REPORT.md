@@ -1,12 +1,58 @@
 # Sprint 02 — Visual Quality, Accessibility, SEO, and Performance Report
 
-Sprint status: **CLOSED — OWNER APPROVED WITH ACCEPTED DEFERRED TEST**
+Sprint status: **CLOSED — OWNER APPROVED AFTER CURRENCY HOTFIX**
 
 Approval date: **2026-11-02**
 
-Owner visual review: **APPROVED**
+Owner visual review: **APPROVED after targeted currency-hotfix QA**
 
 Implementation commit: **`3902aae49b23a538a1cff3eeab2eb1b0164af2ac`**
+
+Prior documentation closure commit: **`5a11a32a19808badcb793f2f674f32156b25b319`**
+
+Currency hotfix commit: **`ffe79c9465effafe311acf5fb16905edc341edf0`**
+
+The existing commits were not reset, amended, or rewritten.
+
+## Reopened defect — price currency selector
+
+The owner reported that “دولار” wrapped onto two lines on a narrow screen.
+
+Root cause: the currency buttons inherited `white-space: normal` and the selector/fieldset did not have a complete narrow-width min-size contract. Native 320px/375px happened to fit in headless Chromium, but an effective 200%-zoom layout reproduced two text lines for both labels; the 160px effective viewport also exposed 6px of fieldset overflow.
+
+Fix:
+
+- The existing below-400px vertical price layout is retained.
+- The currency selector now owns the available narrow width with `w-full min-w-0` and returns to automatic width at 400px and above.
+- Both currency buttons remain equal flex items, use `min-w-0 whitespace-nowrap`, retain 14px text and 44px touch height, and use responsive padding.
+- The offer fieldset uses `min-w-0`, preventing zoom/narrow-layout intrinsic overflow.
+- No form state, validation, Firebase payload, price value, or desktop behavior changed.
+
+Reopened verification:
+
+| Check | Result | Evidence |
+|---|---|---|
+| Reproduction before edit | PASS | `white-space: normal`; two label line rectangles at effective 200% zoom for 320px/375px devices. |
+| `npm run lint` | PASS | ESLint completed without errors. |
+| `npm test` | PASS | 24 passed, 0 failed. |
+| `npm run build` | PASS | 9/9 static routes generated; environment-free verification build also passed. |
+| Initial Sprint 02 E2E run against the environment-bearing export | FAIL (test environment only) | 16 passed and 2 responsive cases reported expected Firebase console errors after the suite intentionally blocked Firestore. No currency/layout assertion failed. |
+| Sprint 02 E2E | PASS | 18 passed, 0 failed after adding the two-project currency regression. |
+| Final Sprint 02 + form + responsive regression | PASS | 34 passed, 0 failed. |
+| 320px and 375px currency test | PASS | One line, equal widths, contained text, RTL, focus/selected state, 44px height, long price, no overflow. |
+| Effective 200% zoom stress check | PASS | Labels stayed contained; 160px and 188px effective viewports had no horizontal overflow. |
+| Real Firebase/submission testing | NOT RUN | Explicitly prohibited and unrelated to the layout-only fix. |
+| Targeted browser QA | PASS | Four of four viewport/zoom combinations passed with screenshot and JSON evidence. |
+| Owner visual sign-off | PASS | Owner approved the currency-selector hotfix on 2026-11-02. |
+
+Targeted QA evidence:
+
+- PASS — 320px at normal zoom.
+- PASS — 375px at normal zoom.
+- PASS — 320px at effective 200% zoom (160px CSS viewport rendered at 2× scale).
+- PASS — 375px at effective 200% zoom (188px CSS viewport rendered at 2× scale).
+- In every case, “دولار” and “ليرة” stayed single-line and fully inside equal-width buttons; touch height was 44px, font size remained 14px, focus outline was 3px, selected/unselected states toggled by keyboard, RTL order was correct, the long price remained intact, and document scroll width equaled client width.
+- Screenshots and `results.json`: `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/`.
 
 ## Manual QA execution — 2026-11-02
 
@@ -129,7 +175,7 @@ The increase is explained by the new 404/robots output, page metadata, accessibi
 
 ## Remaining issues
 
-No open Sprint 02 implementation defects. The owner accepted the deferred custom-live-product UI branch based on passing pure replacement/unknown-product unit coverage and passing browser unavailable-image fallback evidence. The real branch is scheduled for Sprint 07 and final release verification for Sprint 09.
+No open Sprint 02 implementation defects remain after the currency-selector fix, automated regressions, targeted 4/4 browser QA, and owner approval. The previously accepted custom-live-product deferral remains scheduled for Sprint 07 and final verification in Sprint 09, along with the existing Sprint 09 release checks.
 
 ## Manual evidence
 

@@ -1,8 +1,14 @@
 # Sprint 02 — Visual Quality, Accessibility, SEO, and Performance Manual QA
 
-Sprint status: **CLOSED — OWNER APPROVED WITH ACCEPTED DEFERRED TEST**
+Sprint status: **CLOSED — OWNER APPROVED AFTER CURRENCY HOTFIX**
 
-Owner visual approval: **APPROVED on 2026-11-02**
+Owner approval: **APPROVED on 2026-11-02 after targeted currency-hotfix QA.**
+
+Existing closure commits remain unchanged:
+
+- Implementation: `3902aae49b23a538a1cff3eeab2eb1b0164af2ac`
+- Documentation closure: `5a11a32a19808badcb793f2f674f32156b25b319`
+- Currency hotfix: `ffe79c9465effafe311acf5fb16905edc341edf0`
 
 This is the authoritative Windows PowerShell checklist. Run it from the repository root. Do not submit the `/add` form and do not run real Firestore tests.
 
@@ -158,4 +164,61 @@ Manual QA owner/reviewer: Automated browser QA by Codex; visual results approved
 
 Date: 2026-11-02
 
-Final status: **CLOSED — OWNER APPROVED WITH ACCEPTED DEFERRED TEST**. Truthful totals remain 9 PASS, 0 FAIL, and 1 OWNER-ACCEPTED DEFERRED. The custom-live-product branch moves to Sprint 07 and receives final release verification in Sprint 09.
+Prior closure status: **CLOSED — OWNER APPROVED WITH ACCEPTED DEFERRED TEST**. Truthful totals were 9 PASS, 0 FAIL, and 1 OWNER-ACCEPTED DEFERRED. The custom-live-product branch remains assigned to Sprint 07 with final release verification in Sprint 09.
+
+## Reopened responsive defect — currency selector
+
+Owner report: the Arabic currency label “دولار” wrapped onto two lines on a narrow screen.
+
+Status: **PASS — OWNER APPROVED**
+
+Reproduction before the fix:
+
+- At native 320px and 375px the labels fit, but computed `white-space` was `normal`, so wrapping was allowed.
+- Under an effective 200% browser-zoom layout for those device widths (160px and 188px CSS viewports), both “دولار” and “ليرة” produced two text-line rectangles. At 160px the form fieldset also widened the document by 6px.
+
+Fix verification:
+
+1. Open `/add` at 320px and 375px.
+2. Enter a long price such as `999999999999999999999999`.
+3. Confirm the price input is stacked above the full-width currency selector.
+4. Confirm “دولار” and “ليرة” each remain on one line, split the selector width equally, and remain inside their buttons.
+5. Tab to each currency button and confirm the focus ring, then activate each and confirm the selected state changes.
+6. Repeat at browser zoom and confirm the page does not scroll horizontally.
+
+Expected: RTL alignment remains correct; the text size remains readable; each button is at least 44px high; labels use `white-space: nowrap`; long prices, focus, selected state, validation, and desktop layout continue to work.
+
+Automated evidence: the new Playwright regression passed at 320px and 375px in both mobile and desktop projects. It asserted one text rectangle per label, containment inside each button, equal widths, RTL direction, `white-space: nowrap`, focus/selected state, 44px touch height, long price input, and no horizontal overflow. The 200%-zoom stress check also kept both labels contained and removed the prior 160px overflow.
+
+Reopened verification totals:
+
+| Result | Total |
+|---|---:|
+| Automated regression PASS | 1 |
+| Targeted browser-QA combinations PASS | 4 |
+| Owner approval PASS | 1 |
+| FAIL | 0 |
+
+Targeted browser-QA execution on 2026-11-02:
+
+| Combination | Result | Evidence |
+|---|---|---|
+| 320px, normal zoom | PASS | One line per label; 107px equal button widths; 44px height; 14px text; 3px focus outline; scroll width 320 = client width 320. |
+| 375px, normal zoom | PASS | One line per label; 134.5px equal button widths; 44px height; 14px text; 3px focus outline; scroll width 375 = client width 375. |
+| 320px, effective 200% zoom | PASS | One line per label; 46.1875px equal button widths; 44px height; contained text; scroll width 160 = client width 160. |
+| 375px, effective 200% zoom | PASS | One line per label; 46.1875px equal button widths; 44px height; contained text; scroll width 188 = client width 188. |
+
+All four checks used the long price `999999999999999999999999`. Initial USD-selected/SYP-unselected state passed; keyboard focus and activation changed SYP to selected, then Space restored USD selection. RTL order placed USD on the right. Each label had exactly one text rectangle wholly inside its button. No Firebase request or submission was performed.
+
+Screenshots:
+
+- `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/320-normal.png`
+- `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/375-normal.png`
+- `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/320-zoom-200.png`
+- `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/375-zoom-200.png`
+
+Machine-readable evidence: `test-artifacts/sprint02-currency-hotfix-manual-2026-11-02/results.json`.
+
+Owner approval: **APPROVED on 2026-11-02**. Targeted manual QA remains truthfully recorded as 4/4 PASS and 0 FAIL. The previous 9 PASS, 0 FAIL, and 1 OWNER-ACCEPTED DEFERRED results remain unchanged, including the custom-live-product assignments to Sprint 07 and Sprint 09.
+
+Current final status: **CLOSED — OWNER APPROVED AFTER CURRENCY HOTFIX**.
