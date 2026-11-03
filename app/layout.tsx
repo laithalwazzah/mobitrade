@@ -5,6 +5,7 @@ import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import CatalogProvider from "@/components/CatalogProvider";
 import CompareProvider from "@/components/CompareProvider";
+import AuthProvider from "@/components/AuthProvider";
 
 const cairo = Cairo({
   subsets: ["arabic", "latin"],
@@ -40,15 +41,17 @@ export default function RootLayout({
         <a href="#main-content" className="skip-link">
           تخطَّ إلى المحتوى الرئيسي
         </a>
-        <CatalogProvider>
-          <CompareProvider>
+        <AuthProvider>
+          <CatalogProvider>
+            <CompareProvider>
             <Header />
             <div id="main-content" tabIndex={-1} className="flex min-h-0 min-w-0 flex-1 flex-col">
               {children}
             </div>
             <Footer />
-          </CompareProvider>
-        </CatalogProvider>
+            </CompareProvider>
+          </CatalogProvider>
+        </AuthProvider>
       </body>
     </html>
   );

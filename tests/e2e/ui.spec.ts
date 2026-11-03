@@ -34,12 +34,12 @@ test("1.1 unknown runtime id shows loading before not-found", async ({ page }) =
   await expect(page.getByRole("heading", { name: "هذا المنتج غير موجود" })).toBeVisible();
 });
 
-test("1.2 add headings are not overlapped at 375, 768 and 1280", async ({ page }, testInfo) => {
+test("1.2 merchant login gate is not overlapped at 375, 768 and 1280", async ({ page }, testInfo) => {
   const clean = watchPage(page);
   for (const width of [375, 768, 1280]) {
     await page.setViewportSize({ width, height: 812 });
     await page.goto("/add");
-    for (const headingText of ["بيانات المحل", "الأسعار والموديلات"]) {
+    for (const headingText of ["بوابة أصحاب المحلات"]) {
       const heading = page.getByRole("heading", { name: headingText });
       await heading.scrollIntoViewIfNeeded();
       const box = await heading.boundingBox();

@@ -63,64 +63,13 @@ test("Sprint 02 responsive layouts have no page overflow at required widths", as
   clean();
 });
 
-test("long Arabic and English form content stays inside the 320px viewport", async ({ page }) => {
-  await page.setViewportSize({ width: 320, height: 812 });
-  await page.goto("/add");
-  const longValue = "TEST نص عربي طويل Long-English-Content-Without-Spaces-ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  await page.getByLabel("اسم المحل").fill(longValue);
-  await page.getByLabel("المنطقة أو الحي").fill(longValue);
-  await page.getByLabel("العنوان التفصيلي").fill(longValue.repeat(2));
-  await expectNoPageOverflow(page);
-  await expect(page.getByRole("heading", { name: "بيانات المحل" })).toBeVisible();
-});
-
-test("price currency labels stay on one line at 320px and 375px", async ({ page }) => {
+test("merchant unavailable gate stays inside narrow viewports", async ({ page }) => {
   for (const width of [320, 375]) {
     await page.setViewportSize({ width, height: 812 });
     await page.goto("/add");
-    const row = page.locator("fieldset").first();
-    await row.getByLabel("السعر").fill("999999999999999999999999");
-    const buttons = [
-      row.getByRole("button", { name: "دولار", exact: true }),
-      row.getByRole("button", { name: "ليرة", exact: true }),
-    ];
-
-    const boxes = [];
-    for (const button of buttons) {
-      const metrics = await button.evaluate((element) => {
-        const buttonRect = element.getBoundingClientRect();
-        const range = document.createRange();
-        range.selectNodeContents(element);
-        const textRects = Array.from(range.getClientRects());
-        return {
-          button: {
-            left: buttonRect.left,
-            right: buttonRect.right,
-            height: buttonRect.height,
-          },
-          textRects: textRects.map((rect) => ({
-            left: rect.left,
-            right: rect.right,
-          })),
-          whiteSpace: getComputedStyle(element).whiteSpace,
-          direction: getComputedStyle(element).direction,
-        };
-      });
-      expect(metrics.whiteSpace).toBe("nowrap");
-      expect(metrics.direction).toBe("rtl");
-      expect(metrics.button.height).toBeGreaterThanOrEqual(44);
-      expect(metrics.textRects).toHaveLength(1);
-      expect(metrics.textRects[0].left).toBeGreaterThanOrEqual(metrics.button.left);
-      expect(metrics.textRects[0].right).toBeLessThanOrEqual(metrics.button.right);
-      boxes.push(metrics.button);
-    }
-
-    expect(Math.abs((boxes[0].right - boxes[0].left) - (boxes[1].right - boxes[1].left))).toBeLessThanOrEqual(1);
-    await buttons[1].focus();
-    await expect(buttons[1]).toBeFocused();
-    await buttons[1].press("Enter");
-    await expect(buttons[1]).toHaveAttribute("aria-pressed", "true");
-    await expect(buttons[0]).toHaveAttribute("aria-pressed", "false");
+    await expect(page).toHaveURL(/\/add$/);
+    await expect(page.getByRole("heading", { name: "بوابة أصحاب المحلات" })).toBeVisible();
+    await expect(page.getByText(/خدمة تسجيل الدخول غير متاحة/)).toBeVisible();
     expect(await page.evaluate(() => document.documentElement.scrollWidth <= document.documentElement.clientWidth)).toBe(true);
   }
 });
@@ -186,7 +135,7 @@ test("404 and invalid runtime ids provide friendly recovery", async ({ page }) =
 test("metadata, robots and query-based internal routes are correct", async ({ page, request }) => {
   const expectations = [
     ["/", /أسعار الموبايلات في اللاذقية/],
-    ["/add", /إضافة أسعار محل/],
+    ["/add", /بوابة أصحاب المحلات/],
     ["/product?id=p2", /تفاصيل الموبايل والأسعار/],
     ["/shop?id=shop3", /تفاصيل المحل وعروضه/],
     ["/compare", /مقارنة الموبايلات/],

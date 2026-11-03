@@ -1,11 +1,17 @@
-import { getApps, initializeApp, type FirebaseOptions } from "firebase/app";
+import {
+  getApps,
+  initializeApp,
+  type FirebaseApp,
+  type FirebaseOptions,
+} from "firebase/app";
 import { getFirestore, type Firestore } from "firebase/firestore";
 
+let firebaseApp: FirebaseApp | null | undefined;
 let firestore: Firestore | null | undefined;
 
-export function getFirebaseFirestore(): Firestore | null {
+export function getFirebaseApp(): FirebaseApp | null {
   if (typeof window === "undefined") return null;
-  if (firestore !== undefined) return firestore;
+  if (firebaseApp !== undefined) return firebaseApp;
 
   const config: FirebaseOptions = {
     apiKey: process.env.NEXT_PUBLIC_FIREBASE_API_KEY,
@@ -15,13 +21,24 @@ export function getFirebaseFirestore(): Firestore | null {
   };
 
   if (Object.values(config).some((value) => !value)) {
+    firebaseApp = null;
+    return firebaseApp;
+  }
+
+  firebaseApp =
+    getApps().find((existingApp) => existingApp.name === "[DEFAULT]") ??
+    initializeApp(config);
+  return firebaseApp;
+}
+
+export function getFirebaseFirestore(): Firestore | null {
+  if (typeof window === "undefined") return null;
+  if (firestore !== undefined) return firestore;
+  const app = getFirebaseApp();
+  if (!app) {
     firestore = null;
     return firestore;
   }
-
-  const app =
-    getApps().find((existingApp) => existingApp.name === "[DEFAULT]") ??
-    initializeApp(config);
   firestore = getFirestore(app);
   return firestore;
 }
