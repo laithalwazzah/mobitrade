@@ -1,6 +1,8 @@
 # Sprint 04 — Merchant Approval Manual QA
 
-Sprint status: **READY FOR OWNER REVIEW**
+Sprint status: **CLOSED — OWNER APPROVED**
+
+Owner approval date: **2026-11-03**
 
 هذه القائمة هي مرجع QA اليدوي الرسمي. استخدم Emulator وبيانات Sprint 04 الوهمية فقط. لا تستخدم Firebase الحقيقي ولا تنشر أسعاراً.
 
@@ -144,4 +146,4 @@ Evidence: `dir=rtl`, خمسة labels، focus بلوحة المفاتيح، خم�
 | FAIL | 0 |
 | BLOCKED | 0 |
 
-هذه نتائج QA محلية نفذها الوكيل وليست موافقة المالك أو إغلاقاً للسبرنت.
+أغلق المالك Sprint 04 بعد مراجعة التدفق الرئيسي والواجهة والسلوك يدوياً. النتيجة النهائية: Agent local QA ‏10/10 PASS، و0 FAIL، و0 BLOCKED، مع موافقة المالك بتاريخ 2026-11-03. التخزين الحالي للوثيقة كـFirestore `Bytes` مؤقت، ويبقى نقله إلى object storage خاص وآمن ضمن TODO الإنتاج، دون اختيار مزود في هذا السبرنت.

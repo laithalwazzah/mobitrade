@@ -1,6 +1,10 @@
 # Sprint 04 — Merchant Approval Report
 
-Status: **READY FOR OWNER REVIEW**
+Status: **CLOSED — OWNER APPROVED**
+
+Owner approval date: **2026-11-03**
+
+Implementation commit: `4ad277dff38357cf1553e8df09e585bdc31ea101`
 
 ## تغطية المتطلبات
 
@@ -85,4 +89,10 @@ Status: **READY FOR OWNER REVIEW**
 
 ## حالة إعداد Firebase التي أبلغ عنها المالك
 
-أبلغ المالك أن `firestore.rules` وإعفاء فهرسة `merchantDocuments.bytes` المراجعين نُشرا إلى مشروع `mobitrade-35ee9`. سُجلت هذه المعلومة كما وردت فقط؛ لم ينفذ الوكيل أي اتصال أو قراءة أو كتابة أو تحقق حي. يبقى تعيين `admin: true` من بيئة خادم موثوقة وفحص المالك البصري قبل الإغلاق. التفاصيل في `SPRINT_04_FIREBASE_SETUP.md`.
+أبلغ المالك أن `firestore.rules` وإعفاء فهرسة `merchantDocuments.bytes` المراجعين نُشرا إلى مشروع `mobitrade-35ee9`. سُجلت هذه المعلومة كما وردت فقط؛ لم ينفذ الوكيل أي اتصال أو قراءة أو كتابة أو تحقق حي. يجب أن يبقى تعيين `admin: true` من بيئة خادم موثوقة. التفاصيل في `SPRINT_04_FIREBASE_SETUP.md`.
+
+## إغلاق المالك
+
+راجع المالك التدفق الرئيسي والواجهة والسلوك يدوياً ووافق عليها بتاريخ 2026-11-03. النتائج النهائية: QA محلي للوكيل 10/10 PASS و0 FAIL و0 BLOCKED، Unit ‏41/41، Rules Emulator ‏8/8، Sprint 04 E2E ‏18/18، والانحدارات غير الحية ‏88/88. لا توجد عيوب تنفيذ مفتوحة في Sprint 04.
+
+تخزين السجل التجاري داخل `merchantDocuments/{uid}` كـFirestore `Bytes` حل مؤقت. قبل الإنتاج يجب نقله إلى object storage خاص وآمن مع سياسة وصول واحتفاظ ومسح محتوى مناسبة؛ لم يُختر أو يُدمج مزود في Sprint 04.
