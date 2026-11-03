@@ -1,8 +1,8 @@
 # Sprint 03 — Firebase Authentication and Session Management Manual QA
 
-Sprint status: **READY FOR OWNER REVIEW**
+Sprint status: **CLOSED — OWNER APPROVED**
 
-Owner QA date: **2026-11-03**
+Owner approval date: **2026-11-03**
 
 هذه القائمة هي سجل QA اليدوي الرسمي. لم يُسجّل أي بريد شخصي، ولم تُنفّذ كتابة إلى Firestore أو عملية نشر أسعار.
 
@@ -89,4 +89,4 @@ Evidence: تحقق المالك يدوياً على `375×812` و`1280×800` ب�
 | FAIL | 0 |
 | BLOCKED / NOT RUN | 0 |
 
-النتيجة النهائية: **10/10 PASS — READY FOR OWNER REVIEW**.
+النتيجة النهائية: **10/10 PASS — CLOSED — OWNER APPROVED**.
