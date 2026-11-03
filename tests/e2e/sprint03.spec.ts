@@ -6,6 +6,7 @@ async function installMock(page: Page, options: { initialUser?: TestUser | null;
   await page.addInitScript((config) => {
     window.__SA3ERLI_AUTH_TEST__ = { enabled: true, ...config };
     window.__SA3ERLI_AUTH_TEST_EVENTS__ = [];
+    window.__SA3ERLI_MERCHANT_TEST__ = { enabled: true, status: "none" };
   }, options);
 }
 
@@ -62,8 +63,8 @@ test("verification resend and reload gate merchant access", async ({ page }) => 
   await expect(page.getByRole("status")).toContainText("أُعيد إرسال");
   await page.getByRole("button", { name: "تحققت من بريدي" }).click();
   await expect(page).toHaveURL(/\/add/);
-  await expect(page.getByRole("heading", { name: "موافقة صاحب المحل مطلوبة" })).toBeVisible();
-  await expect(page.locator("form")).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: "طلب اعتماد محل" })).toBeVisible();
+  await expect(page.getByRole("button", { name: /أرسل الأسعار/ })).toHaveCount(0);
 });
 
 test("Google success, cancellation, failure and collision are truthful", async ({ page }) => {

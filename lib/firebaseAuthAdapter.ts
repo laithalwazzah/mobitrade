@@ -2,7 +2,6 @@ import {
   GoogleAuthProvider,
   browserLocalPersistence,
   createUserWithEmailAndPassword,
-  getAuth,
   onAuthStateChanged,
   sendEmailVerification,
   sendPasswordResetEmail,
@@ -12,7 +11,7 @@ import {
   signOut,
   type User,
 } from "firebase/auth";
-import { getFirebaseApp } from "@/lib/firebase";
+import { getFirebaseAuth } from "@/lib/firebase";
 import {
   SafeAuthError,
   type AuthAdapter,
@@ -68,9 +67,8 @@ function createUnavailableAdapter(): AuthAdapter {
 }
 
 function createFirebaseAdapter(): AuthAdapter {
-  const app = getFirebaseApp();
-  if (!app) return createUnavailableAdapter();
-  const auth = getAuth(app);
+  const auth = getFirebaseAuth();
+  if (!auth) return createUnavailableAdapter();
   const persistenceReady = setPersistence(auth, browserLocalPersistence);
 
   return {

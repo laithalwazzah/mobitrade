@@ -7,10 +7,15 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --import tsx --test tests/core.test.ts tests/sprint01.test.ts tests/sprint03.test.ts",
+    "test": "node --import tsx --test tests/core.test.ts tests/sprint01.test.ts tests/sprint03.test.ts tests/sprint04.test.ts",
     "test:e2e": "playwright test",
     "test:firestore": "node --import tsx --test tests/firestore-rest.test.ts",
-    "test:rules": "node --import tsx --test tests/firestore-emulator.test.ts"
+    "test:rules": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-firestore-emulator.ps1",
+    "test:rules:unit": "node --import tsx --test tests/firestore-emulator.test.ts",
+    "qa:sprint04": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-sprint04-qa.ps1",
+    "qa:sprint04:auto": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-sprint04-auto-qa.ps1",
+    "qa:sprint04:reset": "node --import tsx tests/qa/sprint04-seed.ts reset",
+    "qa:sprint04:reseed": "node --import tsx tests/qa/sprint04-seed.ts"
   },
   "dependencies": {
     "firebase": "^11.10.0",

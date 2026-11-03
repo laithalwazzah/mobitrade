@@ -1,0 +1,6 @@
+{
+  "indexes": [],
+  "fieldOverrides": [
+    { "collectionGroup": "merchantDocuments", "fieldPath": "bytes", "indexes": [] }
+  ]
+}
