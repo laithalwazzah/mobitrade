@@ -1,6 +1,10 @@
 # Sprint 05 — Trusted Backend Foundation Report
 
-Status: **READY FOR OWNER REVIEW**
+Status: **CLOSED — OWNER APPROVED**
+
+Owner approval date: **2026-11-04**
+
+Implementation and QA commit: `cbd006d4a0a81ea604f94bbdeaf9e5ce5157e2aa`
 
 ## Requirement coverage
 
@@ -48,7 +52,7 @@ Status: **READY FOR OWNER REVIEW**
 - Verified-email/admin guards, exact-origin CORS, rate limiting, body limits, structured-log redaction, and correlation IDs passed.
 - The existing frontend and local login remained functional on desktop and mobile.
 - Shutdown completed cleanly and all required ports were confirmed free.
-- Final manual total: **10/10 PASS, 0 FAIL, 0 BLOCKED**. Sprint 05 remains open pending explicit owner closure approval.
+- Final manual total: **10/10 PASS, 0 FAIL, 0 BLOCKED**. The owner approved and closed Sprint 05 on **2026-11-04**.
 
 ## Security evidence
 
@@ -63,7 +67,7 @@ Status: **READY FOR OWNER REVIEW**
 - Readiness confirms validated Firebase Admin initialization, not a live external round trip, so probes do not create avoidable authentication traffic.
 - Email verification and admin guards are foundations without business routes in Sprint 05; their real endpoint integration belongs to Sprint 06.
 - Historical `form.spec.ts` and `failure.spec.ts` target the pre-Sprint-03 public price form and are not part of the current 88-test non-live regression set; `/add` must remain gated by Sprint 03/04. `live.spec.ts` remains prohibited because it writes to real Firestore.
-- Manual QA is complete; explicit owner closure approval is still required before changing the sprint to CLOSED.
+- No open Sprint 05 implementation or QA blocker remains after automated verification, 10/10 manual PASS, and owner approval.
 
 ## Defects found and fixed
 

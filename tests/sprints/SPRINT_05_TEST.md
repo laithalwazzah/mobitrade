@@ -1,6 +1,8 @@
 # Sprint 05 — Authoritative manual QA checklist
 
-Sprint status: **READY FOR OWNER REVIEW**
+Sprint status: **CLOSED — OWNER APPROVED**
+
+Owner approval date: **2026-11-04**
 
 Use PowerShell from the repository root. Do not use a live Firebase project or real accounts. Prepare once with `npm run qa:sprint05`; keep that session open while running cases 1–9 from a second PowerShell window, then press Enter in the first window for case 10.
 
@@ -115,7 +117,7 @@ Get-NetTCPConnection -State Listen -ErrorAction SilentlyContinue | Where-Object 
 - Total: **10/10 PASS**.
 - Failed: **0**.
 - Blocked: **0**.
-- Sprint disposition: **READY FOR OWNER REVIEW**. This records completed manual QA but does not close Sprint 05.
+- Sprint disposition: **CLOSED — OWNER APPROVED** on **2026-11-04**. The owner accepted all ten manual QA cases after reviewing the completed workflow.
 
 ## Automated evidence before manual QA
 
