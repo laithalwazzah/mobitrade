@@ -22,6 +22,11 @@
 
 # production
 /build
+/backend/dist/
+/backend/coverage/
+/backend/.env
+/backend/*.log
+/backend/node_modules/
 
 # misc
 .DS_Store

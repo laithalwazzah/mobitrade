@@ -15,7 +15,12 @@
     "qa:sprint04": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-sprint04-qa.ps1",
     "qa:sprint04:auto": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-sprint04-auto-qa.ps1",
     "qa:sprint04:reset": "node --import tsx tests/qa/sprint04-seed.ts reset",
-    "qa:sprint04:reseed": "node --import tsx tests/qa/sprint04-seed.ts"
+    "qa:sprint04:reseed": "node --import tsx tests/qa/sprint04-seed.ts",
+    "backend:lint": "npm --prefix backend run lint",
+    "backend:test": "npm --prefix backend test",
+    "backend:build": "npm --prefix backend run build",
+    "backend:test:emulator": "npm --prefix backend run test:emulator",
+    "qa:sprint05": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/run-local.ps1"
   },
   "dependencies": {
     "firebase": "^11.10.0",
