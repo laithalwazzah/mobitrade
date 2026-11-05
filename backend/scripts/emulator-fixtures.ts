@@ -6,6 +6,10 @@ export const DUMMY_PASSWORD = "Sprint05-Dummy-Only!";
 export const fixtureAccounts = {
   unverified: { email: "unverified-owner@example.test", emailVerified: false, admin: false },
   owner: { email: "verified-owner@example.test", emailVerified: true, admin: false },
+  pending: { email: "pending-owner@example.test", emailVerified: true, admin: false },
+  approved: { email: "approved-owner@example.test", emailVerified: true, admin: false },
+  rejected: { email: "rejected-owner@example.test", emailVerified: true, admin: false },
+  secondOwner: { email: "second-owner@example.test", emailVerified: true, admin: false },
   admin: { email: "admin-reviewer@example.test", emailVerified: true, admin: true },
 } as const;
 
@@ -20,6 +24,10 @@ export function requireSafeEmulatorEnvironment(env: NodeJS.ProcessEnv = process.
   const host = env.FIREBASE_AUTH_EMULATOR_HOST ?? "";
   if (!/^(127\.0\.0\.1|localhost|\[::1\]):9099$/.test(host)) {
     throw new Error("Only the loopback Auth Emulator on port 9099 is allowed");
+  }
+  const firestoreHost = env.FIRESTORE_EMULATOR_HOST ?? "";
+  if (!/^(127\.0\.0\.1|localhost|\[::1\]):8080$/.test(firestoreHost)) {
+    throw new Error("Only the loopback Firestore Emulator on port 8080 is allowed");
   }
   return host;
 }

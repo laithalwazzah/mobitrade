@@ -56,11 +56,11 @@ test("duplicate and document errors map to safe Arabic messages", () => {
   assert.doesNotMatch(mapMerchantError(new Error("SECRET")), /SECRET/);
 });
 
-test("adapter writes Bytes and both records through one atomic batch without Base64", () => {
+test("merchant adapter sends multipart data to the trusted API without direct Firestore access", () => {
   const source = readFileSync("lib/firebaseMerchantAdapter.ts", "utf8");
-  for (const required of ["Bytes.fromUint8Array", "writeBatch(db)", 'batch.set(doc(db, "merchantApplications", uid)', 'batch.set(doc(db, "merchantDocuments", uid)', "await batch.commit()", "serverTimestamp()"] as const) assert.ok(source.includes(required), required);
+  for (const required of ["FormData", 'body.set("document", file', 'request("/merchant-applications"', "user.getIdToken()", "Authorization"] as const) assert.ok(source.includes(required), required);
   assert.equal(/base64|btoa\(|readAsDataURL/i.test(source), false);
-  assert.equal((source.match(/batch\.commit\(/g) ?? []).length, 1);
+  assert.equal(source.includes("firebase/firestore"), false);
 });
 
 test("batch payload has exact safe keys, shared timestamp, and no undefined values", () => {
@@ -75,21 +75,17 @@ test("batch payload has exact safe keys, shared timestamp, and no undefined valu
   assert.equal(JSON.stringify(records).includes("undefined"), false);
 });
 
-test("Firestore rules enforce ownership, authorization, atomicity, privacy, and immutable status", () => {
+test("Firestore rules reserve merchant business data for the backend while preserving approval checks", () => {
   const rules = readFileSync("firestore.rules", "utf8");
   for (const required of [
     "request.auth.token.email_verified == true",
     "match /merchantApplications/{uid}",
     "match /merchantDocuments/{uid}",
-    "'admin' in request.auth.token && request.auth.token.admin == true",
-    "getAfter(/databases/$(db)/documents/merchantDocuments/$(uid))",
-    "getAfter(/databases/$(db)/documents/merchantApplications/$(uid))",
-    "record.bytes is bytes",
-    "record.bytes.size() <= 700 * 1024",
-    "record.size == record.bytes.size()",
-    "request.resource.data.status == 'pending'",
-    "allow update, delete: if false",
+    "match /merchantApplicationAudits/{id}",
+    "allow read, write: if false",
     "isApprovedMerchant()",
+    "match /liveOffers/{id}",
+    "allow read: if true",
   ] as const) assert.ok(rules.includes(required), required);
   assert.equal(rules.includes("allow create: if true"), false);
   assert.equal(rules.includes("match /merchantApplications/{uid} {\n      allow get: if true"), false);
@@ -129,12 +125,12 @@ test("emulator QA code is pinned to demo identity and loopback services with no 
   assert.ok(seedSource.includes("FIRESTORE_EMULATOR_HOST"));
 });
 
-test("manual QA failure scenarios are emulator-only and allow read retry recovery", () => {
+test("manual QA failure scenarios stay local and API failures remain retryable", () => {
   const source = readFileSync("lib/firebaseMerchantAdapter.ts", "utf8");
-  assert.ok(source.includes("isFirebaseEmulatorModeActive()"));
-  assert.ok(source.includes('qaScenario === "document-failure"'));
-  assert.ok(source.includes('qaScenario === "write-failure"'));
-  assert.ok(source.includes('qaScenario === "slow-submit"'));
-  assert.ok(source.includes("__SA3ERLI_MERCHANT_QA_READ_FAILURE_USED__"));
-  assert.equal((source.match(/new URLSearchParams\(window\.location\.search\)/g) ?? []).length, 1);
+  assert.ok(source.includes("window.__SA3ERLI_MERCHANT_TEST__"));
+  assert.ok(source.includes('current.submit === "document-failure"'));
+  assert.ok(source.includes('current.submit === "write-failure"'));
+  assert.ok(source.includes("submitDelayMs"));
+  assert.ok(source.includes("onError"));
+  assert.ok(source.includes("AbortController"));
 });

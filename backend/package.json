@@ -11,9 +11,11 @@
     "test": "node --import tsx --test test/unit/config.test.ts test/unit/redaction.test.ts test/unit/guards.test.ts test/integration/api.test.ts",
     "test:unit": "node --import tsx --test test/unit/config.test.ts test/unit/redaction.test.ts test/unit/guards.test.ts",
     "test:integration": "node --import tsx --test test/integration/api.test.ts",
-    "test:e2e:emulator": "node --import tsx --test test/e2e/emulator.test.ts",
+    "test:e2e:emulator": "tsc -p tsconfig.test.json && node --test .test-dist/test/e2e/emulator.test.js",
     "test:emulator": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-emulator-tests.ps1",
-    "seed:emulator": "tsx scripts/seed-auth-emulator.ts"
+    "seed:emulator": "tsx scripts/seed-auth-emulator.ts",
+    "seed:sprint06": "tsx scripts/seed-sprint06-emulator.ts",
+    "verify:sprint06:atomicity": "tsx scripts/verify-sprint06-atomicity.ts"
   },
   "dependencies": {
     "@nestjs/common": "11.2.8",
@@ -21,6 +23,8 @@
     "@nestjs/platform-express": "11.2.8",
     "@nestjs/swagger": "11.4.7",
     "@nestjs/throttler": "^6.7.1",
+    "class-transformer": "^0.5.1",
+    "class-validator": "^0.15.1",
     "express": "^5.1.0",
     "firebase-admin": "13.10.0",
     "helmet": "^8.1.0",
@@ -30,6 +34,7 @@
   "devDependencies": {
     "@nestjs/testing": "11.2.8",
     "@types/express": "^5.0.5",
+    "@types/multer": "^2.3.0",
     "@types/node": "^20.19.25",
     "@types/supertest": "^6.0.3",
     "supertest": "^7.1.4",

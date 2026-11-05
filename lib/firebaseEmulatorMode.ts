@@ -1,4 +1,4 @@
-export const FIREBASE_EMULATOR_PROJECT_ID = "demo-sa3erli-sprint04";
+export const FIREBASE_EMULATOR_PROJECT_ID = "demo-sa3erli-sprint05";
 export const FIRESTORE_EMULATOR_HOST = "127.0.0.1";
 export const FIRESTORE_EMULATOR_PORT = 8080;
 export const AUTH_EMULATOR_URL = "http://127.0.0.1:9099";

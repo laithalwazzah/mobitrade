@@ -23,6 +23,7 @@
 # production
 /build
 /backend/dist/
+/backend/.test-dist/
 /backend/coverage/
 /backend/.env
 /backend/*.log

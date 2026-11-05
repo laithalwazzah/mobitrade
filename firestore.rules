@@ -9,52 +9,16 @@ service cloud.firestore {
         && exists(/databases/$(db)/documents/merchantApplications/$(request.auth.uid))
         && merchant().ownerId == request.auth.uid && merchant().status == 'approved';
     }
-    function validShop(shop) {
-      return shop.keys().hasOnly(['name','area','address','whatsapp'])
-        && shop.name is string && shop.name.size() > 0 && shop.name.size() <= 80
-        && shop.area is string && shop.area.size() > 0 && shop.area.size() <= 80
-        && shop.address is string && shop.address.size() > 0 && shop.address.size() <= 160
-        && shop.whatsapp is string && shop.whatsapp.matches('^9639[0-9]{8}$');
-    }
-    function validDocument(record) {
-      return record.keys().hasOnly(['bytes','fileName','contentType','size','createdAt'])
-        && record.bytes is bytes && record.bytes.size() > 0 && record.bytes.size() <= 700 * 1024
-        && record.size is int && record.size == record.bytes.size()
-        && record.contentType in ['image/jpeg','image/png','image/webp']
-        && ((record.contentType == 'image/jpeg' && record.fileName == 'commercial-record.jpg')
-          || (record.contentType == 'image/png' && record.fileName == 'commercial-record.png')
-          || (record.contentType == 'image/webp' && record.fileName == 'commercial-record.webp'))
-        && record.createdAt == request.time;
-    }
-
     match /merchantApplications/{uid} {
-      allow get: if isAdmin() || (signedInVerified() && request.auth.uid == uid);
-      allow list: if isAdmin();
-      allow create: if signedInVerified() && request.auth.uid == uid
-        && request.resource.data.keys().hasOnly(['ownerId','shop','status','submittedAt'])
-        && request.resource.data.ownerId == uid && request.resource.data.status == 'pending'
-        && request.resource.data.submittedAt == request.time && validShop(request.resource.data.shop)
-        && validDocument(getAfter(/databases/$(db)/documents/merchantDocuments/$(uid)).data);
-      allow update: if isAdmin() && resource.data.status == 'pending'
-        && request.resource.data.keys().hasOnly(['ownerId','shop','status','submittedAt','reviewedAt','reviewerId','rejectionReason'])
-        && request.resource.data.ownerId == resource.data.ownerId && request.resource.data.shop == resource.data.shop
-        && request.resource.data.submittedAt == resource.data.submittedAt
-        && request.resource.data.reviewerId == request.auth.uid && request.resource.data.reviewedAt == request.time
-        && ((request.resource.data.status == 'approved' && !('rejectionReason' in request.resource.data))
-          || (request.resource.data.status == 'rejected' && request.resource.data.rejectionReason is string
-            && request.resource.data.rejectionReason.size() > 0 && request.resource.data.rejectionReason.size() <= 500));
-      allow delete: if false;
+      allow read, write: if false;
     }
 
     match /merchantDocuments/{uid} {
-      allow get: if isAdmin() || (signedInVerified() && request.auth.uid == uid);
-      allow list: if isAdmin();
-      allow create: if signedInVerified() && request.auth.uid == uid
-        && validDocument(request.resource.data)
-        && getAfter(/databases/$(db)/documents/merchantApplications/$(uid)).data.ownerId == uid
-        && getAfter(/databases/$(db)/documents/merchantApplications/$(uid)).data.status == 'pending'
-        && getAfter(/databases/$(db)/documents/merchantApplications/$(uid)).data.submittedAt == request.time;
-      allow update, delete: if false;
+      allow read, write: if false;
+    }
+
+    match /merchantApplicationAudits/{id} {
+      allow read, write: if false;
     }
 
     match /liveOffers/{id} {

@@ -7,7 +7,7 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "test": "node --import tsx --test tests/core.test.ts tests/sprint01.test.ts tests/sprint03.test.ts tests/sprint04.test.ts",
+    "test": "node --import tsx --test tests/core.test.ts tests/sprint01.test.ts tests/sprint03.test.ts tests/sprint04.test.ts tests/sprint06.test.ts",
     "test:e2e": "playwright test",
     "test:firestore": "node --import tsx --test tests/firestore-rest.test.ts",
     "test:rules": "powershell -NoProfile -ExecutionPolicy Bypass -File tests/run-firestore-emulator.ps1",
@@ -20,7 +20,10 @@
     "backend:test": "npm --prefix backend test",
     "backend:build": "npm --prefix backend run build",
     "backend:test:emulator": "npm --prefix backend run test:emulator",
-    "qa:sprint05": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/run-local.ps1"
+    "qa:sprint05": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/run-local.ps1",
+    "qa:sprint06": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/run-sprint06.ps1",
+    "qa:sprint06:verify-atomicity": "powershell -NoProfile -ExecutionPolicy Bypass -File backend/scripts/verify-sprint06-atomicity.ps1",
+    "test:sprint06:integrated": "powershell -NoProfile -ExecutionPolicy Bypass -Command \"$env:SPRINT06_AUTOMATED='1'; & backend/scripts/run-sprint06.ps1\""
   },
   "dependencies": {
     "firebase": "^11.10.0",

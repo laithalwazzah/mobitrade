@@ -13,6 +13,7 @@ export type MerchantApplication = {
   submittedAt: string | null;
   reviewedAt?: string | null;
   rejectionReason?: string;
+  version: number;
 };
 export type MerchantApplicationInput = { name: string; area: string; address: string; whatsapp: string };
 export type MerchantFile = { name: string; type: string; size: number };
@@ -47,6 +48,10 @@ export function hasMerchantValidationErrors(errors: MerchantValidationErrors) {
 }
 
 function dateFrom(value: unknown): string | null {
+  if (typeof value === "string") {
+    const date = new Date(value);
+    return Number.isNaN(date.valueOf()) ? null : date.toISOString();
+  }
   if (typeof value === "object" && value !== null && "toDate" in value && typeof value.toDate === "function") {
     const date = value.toDate();
     return date instanceof Date && !Number.isNaN(date.valueOf()) ? date.toISOString() : null;
@@ -67,6 +72,7 @@ export function parseMerchantApplication(value: unknown, ownerId: string): Merch
     shop: candidate as MerchantShop,
     status: data.status as MerchantApplicationStatus,
     submittedAt: dateFrom(data.submittedAt),
+    version: typeof data.version === "number" && Number.isInteger(data.version) && data.version > 0 ? data.version : 1,
   };
   if (typeof data.rejectionReason === "string") application.rejectionReason = data.rejectionReason;
   if (data.reviewedAt !== undefined) application.reviewedAt = dateFrom(data.reviewedAt);

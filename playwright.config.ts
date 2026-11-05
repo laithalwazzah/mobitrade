@@ -2,6 +2,7 @@ import { defineConfig } from "@playwright/test";
 
 export default defineConfig({
   testDir: "./tests/e2e",
+  testIgnore: ["failure.spec.ts", "form.spec.ts", "live.spec.ts", "sprint04-emulator.spec.ts", "sprint06-emulator.spec.ts"],
   fullyParallel: false,
   workers: 1,
   timeout: 45_000,

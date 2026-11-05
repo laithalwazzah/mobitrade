@@ -18,8 +18,30 @@ export class ApiExceptionFilter implements ExceptionFilter {
     const context = host.switchToHttp();
     const request = context.getRequest<Request>();
     const response = context.getResponse<Response>();
-    const status = exception instanceof HttpException ? exception.getStatus() : HttpStatus.INTERNAL_SERVER_ERROR;
-    const raw = exception instanceof HttpException ? exception.getResponse() : null;
+    const exceptionCode = typeof exception === "object" && exception !== null && "code" in exception
+      ? String((exception as { code: unknown }).code)
+      : "";
+    const httpStatus = exception instanceof HttpException ? exception.getStatus() : null;
+    const httpRaw = exception instanceof HttpException ? exception.getResponse() : null;
+    const httpBody = typeof httpRaw === "object" && httpRaw !== null ? httpRaw as ErrorResponseBody : {};
+    const isFileTooLarge = exceptionCode === "LIMIT_FILE_SIZE" || (
+      httpStatus === HttpStatus.PAYLOAD_TOO_LARGE &&
+      httpBody.code === undefined &&
+      httpBody.message === "File too large"
+    );
+    const status = isFileTooLarge
+      ? HttpStatus.PAYLOAD_TOO_LARGE
+      : httpStatus !== null
+        ? httpStatus
+        : HttpStatus.INTERNAL_SERVER_ERROR;
+    const raw = isFileTooLarge
+      ? {
+          code: "merchant/document-too-large",
+          message: "حجم صورة السجل التجاري يجب ألا يتجاوز 700 كيلوبايت.",
+        }
+      : httpRaw !== null
+        ? httpRaw
+        : null;
     const body = typeof raw === "object" && raw !== null ? raw as ErrorResponseBody : {};
     const message = Array.isArray(body.message) ? body.message.join("، ") : body.message;
 

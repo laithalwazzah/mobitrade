@@ -3,14 +3,22 @@ import { afterEach, describe, it } from "node:test";
 import type { INestApplication } from "@nestjs/common";
 import request from "supertest";
 import { createApplication } from "../../src/bootstrap";
-import { FakeTokenVerifier, testConfig } from "../helpers/fakes";
+import { FakeMerchantRepository, FakeTokenVerifier, identities, testConfig } from "../helpers/fakes";
 
 const applications: INestApplication[] = [];
 
-async function application(options: Parameters<typeof testConfig>[0] = {}, verifier = new FakeTokenVerifier()) {
-  const app = await createApplication(testConfig(options), verifier);
+async function application(options: Parameters<typeof testConfig>[0] = {}, verifier = new FakeTokenVerifier(), repository = new FakeMerchantRepository()) {
+  const app = await createApplication(testConfig(options), verifier, repository);
   applications.push(app);
-  return { app, verifier, http: request(app.getHttpServer()) };
+  return { app, verifier, repository, http: request(app.getHttpServer()) };
+}
+
+const png = (size = 32) => Buffer.concat([Buffer.from([0x89, 0x50, 0x4e, 0x47, 0x0d, 0x0a, 0x1a, 0x0a]), Buffer.alloc(Math.max(0, size - 8))]);
+const validFields = { name: "  TEST   Shop  ", area: "  Lattakia ", address: "  TEST Address ", whatsapp: "0911111111" };
+function createRequest(http: ReturnType<typeof request>, file = png(), type = "image/png") {
+  let operation = http.post("/api/v1/merchant-applications").set("Authorization", "Bearer user");
+  for (const [key, value] of Object.entries(validFields)) operation = operation.field(key, value);
+  return operation.attach("document", file, { filename: "claimed.png", contentType: type });
 }
 
 afterEach(async () => {
@@ -114,5 +122,135 @@ describe("trusted API foundation", () => {
     const response = await http.get("/api/v1/health/live").expect(200);
     assert.equal(response.headers["x-content-type-options"], "nosniff");
     assert.equal(response.headers["x-frame-options"], "SAMEORIGIN");
+  });
+});
+
+describe("merchant application APIs", () => {
+  it("requires authentication and verified email", async () => {
+    const { http } = await application();
+    await http.get("/api/v1/merchant-applications/me").expect(401);
+    await http.get("/api/v1/merchant-applications/me").set("Authorization", "Bearer unverified").expect(403);
+    await http.post("/api/v1/merchant-applications").set("Authorization", "Bearer unverified").expect(403);
+  });
+
+  it("normalizes fields and creates metadata and private bytes atomically", async () => {
+    const { http, repository } = await application();
+    const response = await createRequest(http).expect(201);
+    assert.equal(response.body.application.shop.name, "TEST Shop");
+    assert.equal(response.body.application.shop.whatsapp, "963911111111");
+    assert.equal(response.body.application.status, "pending");
+    assert.equal(response.body.application.version, 1);
+    assert.equal("bytes" in response.body.application, false);
+    assert.equal(repository.applications.size, 1);
+    assert.equal(repository.documents.get(identities.user.uid)?.bytes.equals(png()), true);
+    const mine = await http.get("/api/v1/merchant-applications/me").set("Authorization", "Bearer user").expect(200);
+    assert.equal(mine.body.application.ownerId, identities.user.uid);
+    assert.equal(JSON.stringify(mine.body).includes("bytes"), false);
+  });
+
+  it("validates real signatures, declared type, exact size boundaries, and strict fields", async () => {
+    await createRequest((await application()).http, Buffer.from("not an image")).expect(400);
+    await createRequest((await application()).http, png(), "image/jpeg").expect(400);
+    const boundary = await createRequest((await application()).http, png(700 * 1024)).expect(201);
+    assert.equal(boundary.body.application.status, "pending");
+    const oversized = await createRequest((await application()).http, png(700 * 1024 + 1)).expect(413);
+    assert.equal(oversized.body.error.code, "merchant/document-too-large");
+    assert.equal(oversized.body.error.message, "حجم صورة السجل التجاري يجب ألا يتجاوز 700 كيلوبايت.");
+    assert.equal(oversized.body.error.status, 413);
+    assert.match(oversized.body.error.correlationId, /^[a-f0-9-]{36}$/);
+    assert.equal(JSON.stringify(oversized.body).includes("File too large"), false);
+    const { http } = await application();
+    await http.post("/api/v1/merchant-applications").set("Authorization", "Bearer user")
+      .field(validFields).field("unexpected", "nope")
+      .attach("document", png(), { filename: "x.png", contentType: "image/png" }).expect(400);
+  });
+
+  it("rejects duplicate and partial records and recovers after a failed atomic create", async () => {
+    const repository = new FakeMerchantRepository();
+    const { http } = await application({}, new FakeTokenVerifier(), repository);
+    await createRequest(http).expect(201);
+    const duplicate = await createRequest(http).expect(409);
+    assert.equal(duplicate.body.error.code, "merchant/duplicate");
+
+    const partial = new FakeMerchantRepository();
+    partial.documents.set(identities.user.uid, { bytes: png(), fileName: "commercial-record.png", contentType: "image/png", size: 32, createdAt: new Date().toISOString() });
+    const partialApp = await application({}, new FakeTokenVerifier(), partial);
+    assert.equal((await createRequest(partialApp.http).expect(409)).body.error.code, "merchant/inconsistent-record");
+
+    const failing = new FakeMerchantRepository();
+    failing.failNextCreate = true;
+    const retryApp = await application({}, new FakeTokenVerifier(), failing);
+    await createRequest(retryApp.http).expect(500);
+    assert.equal(failing.applications.size, 0);
+    assert.equal(failing.documents.size, 0);
+    await createRequest(retryApp.http).expect(201);
+  });
+
+  it("keeps admin list, detail, and private document admin-only", async () => {
+    const { http } = await application();
+    await createRequest(http).expect(201);
+    await http.get("/api/v1/admin/merchant-applications").set("Authorization", "Bearer user").expect(403);
+    const list = await http.get("/api/v1/admin/merchant-applications?status=pending&limit=1").set("Authorization", "Bearer admin").expect(200);
+    assert.equal(list.body.items.length, 1);
+    assert.equal(JSON.stringify(list.body).includes("bytes"), false);
+    const detail = await http.get(`/api/v1/admin/merchant-applications/${identities.user.uid}`).set("Authorization", "Bearer admin").expect(200);
+    assert.equal("bytes" in detail.body.application, false);
+    const denied = await http.get(`/api/v1/admin/merchant-applications/${identities.user.uid}/document`).set("Authorization", "Bearer user").expect(403);
+    assert.equal(denied.body.error.code, "auth/admin-required");
+    const document = await http.get(`/api/v1/admin/merchant-applications/${identities.user.uid}/document`).set("Authorization", "Bearer admin").expect(200);
+    assert.equal(document.headers["cache-control"], "private, no-store, max-age=0");
+    assert.equal(document.headers["content-type"], "image/png");
+    assert.deepEqual(document.body, png());
+  });
+
+  it("paginates safely and rejects invalid filters and cursors", async () => {
+    const repository = new FakeMerchantRepository();
+    for (const [index, uid] of ["owner-a", "owner-b", "owner-c"].entries()) {
+      repository.applications.set(uid, { ownerId: uid, shop: { name: uid, area: "A", address: "B", whatsapp: `96391111111${index}` }, status: index === 2 ? "approved" : "pending", submittedAt: `2026-11-0${index + 1}T00:00:00.000Z`, version: 1 });
+    }
+    const { http } = await application({}, new FakeTokenVerifier(), repository);
+    const first = await http.get("/api/v1/admin/merchant-applications?status=pending&limit=1").set("Authorization", "Bearer admin").expect(200);
+    assert.equal(first.body.items.length, 1);
+    assert.ok(first.body.nextPageToken);
+    const second = await http.get(`/api/v1/admin/merchant-applications?status=pending&limit=1&pageToken=${first.body.nextPageToken}`).set("Authorization", "Bearer admin").expect(200);
+    assert.equal(second.body.items.length, 1);
+    assert.notEqual(first.body.items[0].ownerId, second.body.items[0].ownerId);
+    await http.get("/api/v1/admin/merchant-applications?status=invalid").set("Authorization", "Bearer admin").expect(400);
+    await http.get("/api/v1/admin/merchant-applications?pageToken=YWJj").set("Authorization", "Bearer admin").expect(400);
+  });
+
+  it("makes pending-only audited decisions with optimistic concurrency", async () => {
+    const { http, repository } = await application();
+    await createRequest(http).expect(201);
+    const uid = identities.user.uid;
+    await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer user").send({ decision: "approved", expectedVersion: 1 }).expect(403);
+    await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer admin").send({ decision: "rejected", expectedVersion: 1 }).expect(400);
+    await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer admin").send({ decision: "approved", reason: "not allowed", expectedVersion: 1 }).expect(400);
+    await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer admin").send({ decision: "approved", expectedVersion: 2 }).expect(409);
+    const approved = await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer admin").send({ decision: "approved", expectedVersion: 1 }).expect(200);
+    assert.equal(approved.body.application.version, 2);
+    assert.equal(repository.audits.length, 1);
+    await http.patch(`/api/v1/admin/merchant-applications/${uid}/decision`).set("Authorization", "Bearer admin").send({ decision: "rejected", reason: "late", expectedVersion: 2 }).expect(409);
+  });
+
+  it("documents all Sprint 06 routes in OpenAPI", async () => {
+    const { http } = await application();
+    const specification = await http.get("/api/v1/docs-json").expect(200);
+    for (const route of ["/api/v1/merchant-applications", "/api/v1/merchant-applications/me", "/api/v1/admin/merchant-applications", "/api/v1/admin/merchant-applications/{uid}", "/api/v1/admin/merchant-applications/{uid}/document", "/api/v1/admin/merchant-applications/{uid}/decision"]) {
+      assert.ok(specification.body.paths[route], route);
+    }
+    const parameters = specification.body.paths["/api/v1/admin/merchant-applications"].get.parameters;
+    assert.deepEqual(parameters.map((parameter: { name: string }) => parameter.name).sort(), ["limit", "pageToken", "status"]);
+    const status = parameters.find((parameter: { name: string }) => parameter.name === "status");
+    assert.equal(status.required, false);
+    assert.deepEqual(status.schema.enum, ["pending", "approved", "rejected"]);
+    const limit = parameters.find((parameter: { name: string }) => parameter.name === "limit");
+    assert.equal(limit.schema.minimum, 1);
+    assert.equal(limit.schema.maximum, 50);
+    assert.equal(limit.schema.default, 20);
+    const pageToken = parameters.find((parameter: { name: string }) => parameter.name === "pageToken");
+    assert.equal(pageToken.required, false);
+    assert.equal(pageToken.schema.maxLength, 512);
+    assert.equal(parameters.some((parameter: { name: string }) => ["page", "pageSize"].includes(parameter.name)), false);
   });
 });

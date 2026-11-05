@@ -6,6 +6,8 @@ $asciiProject = Join-Path $temporaryRoot "project"
 $previousLocation = Get-Location
 $exitCode = 1
 $env:DEBUG = ""
+$env:FIREBASE_CLI_DISABLE_UPDATE_CHECK = "true"
+$env:CI = "1"
 
 try {
   New-Item -ItemType Directory -Path $temporaryRoot | Out-Null

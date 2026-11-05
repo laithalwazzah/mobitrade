@@ -1,4 +1,4 @@
-const SENSITIVE_KEYS = /^(authorization|cookie|set-cookie|password|token|idtoken|accesstoken|refreshtoken|email|phone|whatsapp)$/i;
+const SENSITIVE_KEYS = /^(authorization|cookie|set-cookie|password|token|idtoken|accesstoken|refreshtoken|email|phone|whatsapp|name|address|shop|document|bytes|buffer|filename)$/i;
 
 export function redact(value: unknown, seen = new WeakSet<object>()): unknown {
   if (typeof value === "string") {

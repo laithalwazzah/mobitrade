@@ -40,7 +40,7 @@ test("one guarded submission commits both records atomically then becomes pendin
   await expect(busy).toBeDisabled();
   await busy.click({ force: true });
   await expect(page.getByRole("heading", { name: "طلبك قيد المراجعة" })).toBeVisible();
-  expect(await page.evaluate(() => window.__SA3ERLI_MERCHANT_TEST_EVENTS__)).toEqual(["batch-application", "batch-document", "batch-commit"]);
+  expect(await page.evaluate(() => window.__SA3ERLI_MERCHANT_TEST_EVENTS__)).toEqual(["api-application", "api-document", "api-commit"]);
   await expect(page.locator("form")).toHaveCount(0);
 });
 
@@ -63,7 +63,7 @@ test("failed atomic write has no commit event and leaves the form available", as
   await fillValid(page);
   await page.getByRole("button", { name: "إرسال طلب الاعتماد" }).click();
   await expect(page.getByRole("alert").filter({ hasText: "تعذر إرسال طلب الاعتماد" })).toBeVisible();
-  expect(await page.evaluate(() => window.__SA3ERLI_MERCHANT_TEST_EVENTS__)).toEqual(["batch-application", "batch-document"]);
+  expect(await page.evaluate(() => window.__SA3ERLI_MERCHANT_TEST_EVENTS__)).toEqual(["api-application", "api-document"]);
   await expect(page.getByRole("button", { name: "إرسال طلب الاعتماد" })).toBeEnabled();
 });
 

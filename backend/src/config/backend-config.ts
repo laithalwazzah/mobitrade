@@ -6,6 +6,7 @@ export interface BackendConfig {
   readonly apiPrefix: "api/v1";
   readonly firebaseProjectId: string;
   readonly firebaseAuthEmulatorHost: string | null;
+  readonly firebaseFirestoreEmulatorHost: string | null;
   readonly emulatorMode: boolean;
   readonly corsAllowlist: readonly string[];
   readonly requestBodyLimit: string;
@@ -67,6 +68,7 @@ export function loadBackendConfig(env: NodeJS.ProcessEnv = process.env): Backend
   const emulatorMode = env.BACKEND_EMULATOR_MODE === "1";
   const firebaseProjectId = env.FIREBASE_PROJECT_ID?.trim() ?? "";
   const emulatorHost = env.FIREBASE_AUTH_EMULATOR_HOST?.trim() || null;
+  const firestoreEmulatorHost = env.FIRESTORE_EMULATOR_HOST?.trim() || null;
 
   if (!PROJECT_ID.test(firebaseProjectId)) {
     throw new Error("FIREBASE_PROJECT_ID is required and must be a valid project id");
@@ -78,8 +80,11 @@ export function loadBackendConfig(env: NodeJS.ProcessEnv = process.env): Backend
     if (!emulatorHost || !LOOPBACK_HOST.test(emulatorHost)) {
       throw new Error("Emulator mode requires a loopback FIREBASE_AUTH_EMULATOR_HOST");
     }
-  } else if (emulatorHost) {
-    throw new Error("FIREBASE_AUTH_EMULATOR_HOST is forbidden unless BACKEND_EMULATOR_MODE=1");
+    if (!firestoreEmulatorHost || !LOOPBACK_HOST.test(firestoreEmulatorHost)) {
+      throw new Error("Emulator mode requires a loopback FIRESTORE_EMULATOR_HOST");
+    }
+  } else if (emulatorHost || firestoreEmulatorHost) {
+    throw new Error("Firebase emulator hosts are forbidden unless BACKEND_EMULATOR_MODE=1");
   }
 
   return {
@@ -88,6 +93,7 @@ export function loadBackendConfig(env: NodeJS.ProcessEnv = process.env): Backend
     apiPrefix: "api/v1",
     firebaseProjectId,
     firebaseAuthEmulatorHost: emulatorHost,
+    firebaseFirestoreEmulatorHost: firestoreEmulatorHost,
     emulatorMode,
     corsAllowlist: parseAllowlist(env.CORS_ALLOWLIST, environment),
     requestBodyLimit: env.REQUEST_BODY_LIMIT?.trim() || "64kb",

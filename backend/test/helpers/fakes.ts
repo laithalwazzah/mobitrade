@@ -1,6 +1,9 @@
 import type { SafeIdentity, TokenVerifier } from "../../src/auth/auth.types";
 import { TokenVerificationError } from "../../src/auth/auth.types";
 import type { BackendConfig } from "../../src/config/backend-config";
+import type { CreateMerchantRecord, ListMerchantApplicationsQuery, MerchantApplicationsRepository } from "../../src/merchant/merchant.repository";
+import { MerchantDomainError, type MerchantApplication, type MerchantDecision, type MerchantDocument } from "../../src/merchant/merchant.types";
+import { decodePageToken, encodePageToken } from "../../src/merchant/merchant.validation";
 
 export const identities = {
   unverified: {
@@ -46,6 +49,55 @@ export class FakeTokenVerifier implements TokenVerifier {
   }
 }
 
+export class FakeMerchantRepository implements MerchantApplicationsRepository {
+  readonly applications = new Map<string, MerchantApplication>();
+  readonly documents = new Map<string, MerchantDocument>();
+  readonly audits: Array<Record<string, unknown>> = [];
+  failNextCreate = false;
+
+  async create(ownerId: string, record: CreateMerchantRecord): Promise<MerchantApplication> {
+    if (this.failNextCreate) { this.failNextCreate = false; throw new Error("simulated storage failure"); }
+    const hasApplication = this.applications.has(ownerId);
+    const hasDocument = this.documents.has(ownerId);
+    if (hasApplication && hasDocument) throw new MerchantDomainError("duplicate");
+    if (hasApplication || hasDocument) throw new MerchantDomainError("inconsistent-record");
+    const submittedAt = new Date().toISOString();
+    const application: MerchantApplication = { ownerId, shop: record.shop, status: "pending", submittedAt, version: 1 };
+    const document: MerchantDocument = { ...record.document, createdAt: submittedAt };
+    this.applications.set(ownerId, application);
+    this.documents.set(ownerId, document);
+    return application;
+  }
+
+  async findByOwner(ownerId: string) { return this.applications.get(ownerId) ?? null; }
+  async findById(ownerId: string) { return this.applications.get(ownerId) ?? null; }
+  async getDocument(ownerId: string) { return this.documents.get(ownerId) ?? null; }
+
+  async list(query: ListMerchantApplicationsQuery) {
+    const cursor = decodePageToken(query.pageToken);
+    if (query.pageToken && !cursor) throw new MerchantDomainError("invalid-page-token");
+    let items = [...this.applications.values()]
+      .filter((item) => !query.status || item.status === query.status)
+      .sort((left, right) => right.submittedAt.localeCompare(left.submittedAt) || right.ownerId.localeCompare(left.ownerId));
+    if (cursor) items = items.filter((item) => item.submittedAt < cursor.submittedAt || (item.submittedAt === cursor.submittedAt && item.ownerId < cursor.uid));
+    const page = items.slice(0, query.limit);
+    const last = page.at(-1);
+    return { items: page, nextPageToken: items.length > query.limit && last ? encodePageToken({ submittedAt: last.submittedAt, uid: last.ownerId }) : null };
+  }
+
+  async decide(ownerId: string, reviewerId: string, decision: MerchantDecision) {
+    const current = this.applications.get(ownerId);
+    if (!current) throw new MerchantDomainError("not-found");
+    if (current.status !== "pending") throw new MerchantDomainError("not-pending");
+    if (current.version !== decision.expectedVersion) throw new MerchantDomainError("version-conflict");
+    const reviewedAt = new Date().toISOString();
+    const next: MerchantApplication = { ...current, status: decision.decision, reviewerId, reviewedAt, version: current.version + 1, ...(decision.decision === "rejected" ? { rejectionReason: decision.reason } : {}) };
+    this.applications.set(ownerId, next);
+    this.audits.push({ applicationId: ownerId, reviewerId, fromStatus: "pending", toStatus: decision.decision, fromVersion: current.version, toVersion: next.version });
+    return next;
+  }
+}
+
 export function testConfig(overrides: Partial<BackendConfig> = {}): BackendConfig {
   return {
     environment: "test",
@@ -53,6 +105,7 @@ export function testConfig(overrides: Partial<BackendConfig> = {}): BackendConfi
     apiPrefix: "api/v1",
     firebaseProjectId: "demo-sa3erli-sprint05",
     firebaseAuthEmulatorHost: "127.0.0.1:9099",
+    firebaseFirestoreEmulatorHost: "127.0.0.1:8080",
     emulatorMode: true,
     corsAllowlist: ["http://localhost:4000"],
     requestBodyLimit: "1kb",

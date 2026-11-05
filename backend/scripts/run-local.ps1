@@ -15,9 +15,12 @@ $env:NEXT_PUBLIC_FIREBASE_APP_ID = "demo-app-id"
 $env:BACKEND_EMULATOR_MODE = "1"
 $env:FIREBASE_PROJECT_ID = "demo-sa3erli-sprint05"
 $env:FIREBASE_AUTH_EMULATOR_HOST = "127.0.0.1:9099"
+$env:FIRESTORE_EMULATOR_HOST = "127.0.0.1:8080"
 $env:CORS_ALLOWLIST = "http://localhost:4000,http://127.0.0.1:4000"
 $env:NODE_ENV = "production"
 $env:PORT = "4100"
+$env:FIREBASE_CLI_DISABLE_UPDATE_CHECK = "true"
+$env:CI = "1"
 
 try {
   New-Item -ItemType Directory -Path $temporaryRoot | Out-Null

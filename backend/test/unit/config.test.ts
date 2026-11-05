@@ -8,6 +8,7 @@ function emulatorEnv(overrides: NodeJS.ProcessEnv = {}): NodeJS.ProcessEnv {
     FIREBASE_PROJECT_ID: "demo-sa3erli-sprint05",
     BACKEND_EMULATOR_MODE: "1",
     FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9099",
+    FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080",
     CORS_ALLOWLIST: "http://localhost:4000,http://127.0.0.1:4000",
     ...overrides,
   };
@@ -35,12 +36,20 @@ describe("backend configuration", () => {
     );
   });
 
+  it("prevents Firestore emulator mode from targeting a remote host", () => {
+    assert.throws(
+      () => loadBackendConfig(emulatorEnv({ FIRESTORE_EMULATOR_HOST: "firestore.example.com:8080" })),
+      /loopback/,
+    );
+  });
+
   it("forbids a hidden emulator host when emulator mode is off", () => {
     assert.throws(
       () => loadBackendConfig({
         NODE_ENV: "production",
         FIREBASE_PROJECT_ID: "valid-project",
         FIREBASE_AUTH_EMULATOR_HOST: "127.0.0.1:9099",
+        FIRESTORE_EMULATOR_HOST: "127.0.0.1:8080",
         CORS_ALLOWLIST: "https://example.test",
       }),
       /forbidden/,

@@ -8,10 +8,14 @@ describe("structured log redaction", () => {
       authorization: "Bearer secret-token",
       nested: { email: "person@example.test", password: "secret", safe: "ok" },
       whatsapp: "963911111111",
+      shop: { name: "Private shop", address: "Private address" },
+      document: { bytes: Buffer.from([1, 2, 3]), fileName: "private.png" },
     }), {
       authorization: "[REDACTED]",
       nested: { email: "[REDACTED]", password: "[REDACTED]", safe: "ok" },
       whatsapp: "[REDACTED]",
+      shop: "[REDACTED]",
+      document: "[REDACTED]",
     });
   });
 
