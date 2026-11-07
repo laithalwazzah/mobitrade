@@ -1,4 +1,5 @@
 import { expect, test } from "@playwright/test";
+import { installDeferredCatalogLoader } from "./catalog-loader-harness";
 import { screenshot, watchPage } from "./helpers";
 
 test("1.1 core pages, RTL, Cairo, responsive layout and not-found states", async ({ page }, testInfo) => {
@@ -25,13 +26,16 @@ test("1.1 core pages, RTL, Cairo, responsive layout and not-found states", async
 });
 
 test("1.1 unknown runtime id shows loading before not-found", async ({ page }) => {
-  await page.route("**/firestore.googleapis.com/**", async (route) => {
-    await new Promise((resolve) => setTimeout(resolve, 800));
-    await route.abort();
-  });
+  const loader = await installDeferredCatalogLoader(page);
   await page.goto("/product?id=live-test-unknown");
   await expect(page.getByRole("heading", { name: /جارٍ تحميل أحدث الأسعار/ })).toBeVisible();
+  await expect(page.getByRole("heading", { name: "هذا المنتج غير موجود" })).toHaveCount(0);
+  await expect(page.getByRole("heading", { name: /Galaxy|iPhone|Realme/ })).toHaveCount(0);
+
+  await loader.resolve([]);
+
   await expect(page.getByRole("heading", { name: "هذا المنتج غير موجود" })).toBeVisible();
+  await expect(page.getByRole("heading", { name: /Galaxy|iPhone|Realme/ })).toHaveCount(0);
 });
 
 test("1.2 merchant login gate is not overlapped at 375, 768 and 1280", async ({ page }, testInfo) => {
