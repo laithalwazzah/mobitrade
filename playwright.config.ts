@@ -1,6 +1,7 @@
 import { defineConfig } from "@playwright/test";
 
 process.env.NEXT_PUBLIC_CATALOG_LOADER_TEST_MODE = "1";
+process.env.NEXT_PUBLIC_ADMIN_TEST_MODE = "1";
 for (const name of [
   "NEXT_PUBLIC_FIREBASE_API_KEY",
   "NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN",
@@ -12,7 +13,14 @@ for (const name of [
 
 export default defineConfig({
   testDir: "./tests/e2e",
-  testIgnore: ["failure.spec.ts", "form.spec.ts", "live.spec.ts", "sprint04-emulator.spec.ts", "sprint06-emulator.spec.ts"],
+  testIgnore: [
+    "failure.spec.ts",
+    "form.spec.ts",
+    "live.spec.ts",
+    "sprint04-emulator.spec.ts",
+    "sprint06-emulator.spec.ts",
+    "sprint07-emulator.spec.ts",
+  ],
   fullyParallel: false,
   workers: 1,
   timeout: 45_000,

@@ -2,7 +2,7 @@ import type { SafeIdentity, TokenVerifier } from "../../src/auth/auth.types";
 import { TokenVerificationError } from "../../src/auth/auth.types";
 import type { BackendConfig } from "../../src/config/backend-config";
 import type { CreateMerchantRecord, ListMerchantApplicationsQuery, MerchantApplicationsRepository } from "../../src/merchant/merchant.repository";
-import { MerchantDomainError, type MerchantApplication, type MerchantDecision, type MerchantDocument } from "../../src/merchant/merchant.types";
+import { MerchantDomainError, type MerchantApplication, type MerchantApplicationSummary, type MerchantDecision, type MerchantDocument } from "../../src/merchant/merchant.types";
 import { decodePageToken, encodePageToken } from "../../src/merchant/merchant.validation";
 
 export const identities = {
@@ -54,6 +54,15 @@ export class FakeMerchantRepository implements MerchantApplicationsRepository {
   readonly documents = new Map<string, MerchantDocument>();
   readonly audits: Array<Record<string, unknown>> = [];
   failNextCreate = false;
+  summaryUnavailable = false;
+  summaryState: MerchantApplicationSummary = {
+    total: 0,
+    pending: 0,
+    approved: 0,
+    rejected: 0,
+    version: 1,
+    updatedAt: "2026-11-07T00:00:00.000Z",
+  };
 
   async create(ownerId: string, record: CreateMerchantRecord): Promise<MerchantApplication> {
     if (this.failNextCreate) { this.failNextCreate = false; throw new Error("simulated storage failure"); }
@@ -66,6 +75,13 @@ export class FakeMerchantRepository implements MerchantApplicationsRepository {
     const document: MerchantDocument = { ...record.document, createdAt: submittedAt };
     this.applications.set(ownerId, application);
     this.documents.set(ownerId, document);
+    this.summaryState = {
+      ...this.summaryState,
+      total: this.summaryState.total + 1,
+      pending: this.summaryState.pending + 1,
+      version: this.summaryState.version + 1,
+      updatedAt: submittedAt,
+    };
     return application;
   }
 
@@ -82,7 +98,21 @@ export class FakeMerchantRepository implements MerchantApplicationsRepository {
     if (cursor) items = items.filter((item) => item.submittedAt < cursor.submittedAt || (item.submittedAt === cursor.submittedAt && item.ownerId < cursor.uid));
     const page = items.slice(0, query.limit);
     const last = page.at(-1);
-    return { items: page, nextPageToken: items.length > query.limit && last ? encodePageToken({ submittedAt: last.submittedAt, uid: last.ownerId }) : null };
+    return {
+      items: page.map((item) => ({
+        ownerId: item.ownerId,
+        shop: { name: item.shop.name, area: item.shop.area },
+        status: item.status,
+        submittedAt: item.submittedAt,
+        version: item.version,
+      })),
+      nextPageToken: items.length > query.limit && last ? encodePageToken({ submittedAt: last.submittedAt, uid: last.ownerId }) : null,
+    };
+  }
+
+  async summary() {
+    if (this.summaryUnavailable) throw new MerchantDomainError("summary-unavailable");
+    return this.summaryState;
   }
 
   async decide(ownerId: string, reviewerId: string, decision: MerchantDecision) {
@@ -94,6 +124,13 @@ export class FakeMerchantRepository implements MerchantApplicationsRepository {
     const next: MerchantApplication = { ...current, status: decision.decision, reviewerId, reviewedAt, version: current.version + 1, ...(decision.decision === "rejected" ? { rejectionReason: decision.reason } : {}) };
     this.applications.set(ownerId, next);
     this.audits.push({ applicationId: ownerId, reviewerId, fromStatus: "pending", toStatus: decision.decision, fromVersion: current.version, toVersion: next.version });
+    this.summaryState = {
+      ...this.summaryState,
+      pending: this.summaryState.pending - 1,
+      [decision.decision]: this.summaryState[decision.decision] + 1,
+      version: this.summaryState.version + 1,
+      updatedAt: reviewedAt,
+    };
     return next;
   }
 }

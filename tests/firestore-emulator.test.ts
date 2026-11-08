@@ -48,6 +48,9 @@ test("audit records are inaccessible to every client claim", async () => {
   for (const db of [database(), database("owner", { email_verified: true }), database("admin", { email_verified: true, admin: true })]) {
     await assert.rejects(getDocs(collection(db, "merchantApplicationAudits")));
     await assert.rejects(setDoc(doc(db, "merchantApplicationAudits", "fake"), { action: "decision" }));
+    await assert.rejects(getDoc(doc(db, "merchantApplicationSummaries", "global")));
+    await assert.rejects(getDocs(collection(db, "merchantApplicationSummaries")));
+    await assert.rejects(setDoc(doc(db, "merchantApplicationSummaries", "global"), { total: 0, pending: 0, approved: 0, rejected: 0 }));
   }
 });
 

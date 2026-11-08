@@ -15,6 +15,9 @@
     "test:emulator": "powershell -NoProfile -ExecutionPolicy Bypass -File scripts/run-emulator-tests.ps1",
     "seed:emulator": "tsx scripts/seed-auth-emulator.ts",
     "seed:sprint06": "tsx scripts/seed-sprint06-emulator.ts",
+    "seed:sprint07": "tsx scripts/seed-sprint07-emulator.ts",
+    "verify:sprint07:summary": "tsx scripts/verify-sprint07-summary.ts",
+    "repair:sprint07:summary": "tsx scripts/verify-sprint07-summary.ts --repair",
     "verify:sprint06:atomicity": "tsx scripts/verify-sprint06-atomicity.ts"
   },
   "dependencies": {

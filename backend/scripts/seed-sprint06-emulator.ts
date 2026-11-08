@@ -39,6 +39,14 @@ async function main() {
     });
     await batch.commit();
   }
+  await db.collection("merchantApplicationSummaries").doc("global").create({
+    total: 3,
+    pending: 1,
+    approved: 1,
+    rejected: 1,
+    version: 1,
+    updatedAt: Timestamp.now(),
+  });
   console.log("Sprint 06 demo emulator fixtures seeded (owner, pending, approved, rejected, second owner, admin)." );
 }
 

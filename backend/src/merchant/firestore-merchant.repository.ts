@@ -1,11 +1,12 @@
 import { Injectable } from "@nestjs/common";
-import { FieldPath, Timestamp, type DocumentData, type Query } from "firebase-admin/firestore";
+import { FieldPath, FieldValue, Timestamp, type DocumentData, type Query } from "firebase-admin/firestore";
 import { FirebaseAdminService } from "../firebase/firebase-admin.service";
 import {
   MerchantDomainError,
   type MerchantApplication,
   type MerchantApplicationList,
   type MerchantApplicationStatus,
+  type MerchantApplicationSummary,
   type MerchantDocument,
 } from "./merchant.types";
 import type {
@@ -37,6 +38,22 @@ function applicationFrom(ownerId: string, value: DocumentData | undefined): Merc
   };
 }
 
+function summaryFrom(value: DocumentData | undefined): MerchantApplicationSummary | null {
+  if (!value) return null;
+  const updatedAt = iso(value.updatedAt);
+  const fields = [value.total, value.pending, value.approved, value.rejected, value.version];
+  if (!updatedAt || fields.some((item) => !Number.isInteger(item) || item < 0) || value.version < 1) return null;
+  if (value.total !== value.pending + value.approved + value.rejected) return null;
+  return {
+    total: value.total,
+    pending: value.pending,
+    approved: value.approved,
+    rejected: value.rejected,
+    version: value.version,
+    updatedAt,
+  };
+}
+
 @Injectable()
 export class FirestoreMerchantApplicationsRepository implements MerchantApplicationsRepository {
   constructor(private readonly firebase: FirebaseAdminService) {}
@@ -46,12 +63,15 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
     const documents = this.firebase.firestore.collection("merchantDocuments");
     const applicationRef = applications.doc(ownerId);
     const documentRef = documents.doc(ownerId);
+    const summaryRef = this.firebase.firestore.collection("merchantApplicationSummaries").doc("global");
     const timestamp = Timestamp.now();
     await this.firebase.firestore.runTransaction(async (transaction) => {
-      const [application, document] = await transaction.getAll(applicationRef, documentRef);
-      if (!application || !document) throw new MerchantDomainError("inconsistent-record");
+      const [application, document, summarySnapshot] = await transaction.getAll(applicationRef, documentRef, summaryRef);
+      if (!application || !document || !summarySnapshot) throw new MerchantDomainError("inconsistent-record");
       if (application.exists && document.exists) throw new MerchantDomainError("duplicate");
       if (application.exists || document.exists) throw new MerchantDomainError("inconsistent-record");
+      const summary = summarySnapshot.exists ? summaryFrom(summarySnapshot.data()) : null;
+      if (!summary) throw new MerchantDomainError("summary-unavailable");
       transaction.create(applicationRef, {
         ownerId,
         shop: record.shop,
@@ -65,6 +85,12 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
         contentType: record.document.contentType,
         size: record.document.size,
         createdAt: timestamp,
+      });
+      transaction.update(summaryRef, {
+        total: summary.total + 1,
+        pending: summary.pending + 1,
+        version: summary.version + 1,
+        updatedAt: timestamp,
       });
     });
     return { ownerId, shop: record.shop, status: "pending", submittedAt: timestamp.toDate().toISOString(), version: 1 };
@@ -94,9 +120,27 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
     const items = mapped.slice(0, input.limit);
     const last = items.at(-1);
     return {
-      items,
+      items: items.map((item) => ({
+        ownerId: item.ownerId,
+        shop: { name: item.shop.name, area: item.shop.area },
+        status: item.status,
+        submittedAt: item.submittedAt,
+        version: item.version,
+      })),
       nextPageToken: hasMore && last ? encodePageToken({ submittedAt: last.submittedAt, uid: last.ownerId }) : null,
     };
+  }
+
+  async summary(): Promise<MerchantApplicationSummary> {
+    try {
+      const snapshot = await this.firebase.firestore.collection("merchantApplicationSummaries").doc("global").get();
+      const summary = snapshot.exists ? summaryFrom(snapshot.data()) : null;
+      if (!summary) throw new MerchantDomainError("summary-unavailable");
+      return summary;
+    } catch (error) {
+      if (error instanceof MerchantDomainError) throw error;
+      throw new MerchantDomainError("summary-unavailable");
+    }
   }
 
   async getDocument(ownerId: string): Promise<MerchantDocument | null> {
@@ -121,13 +165,17 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
   async decide(ownerId: string, reviewerId: string, decision: import("./merchant.types").MerchantDecision): Promise<MerchantApplication> {
     const applicationRef = this.firebase.firestore.collection("merchantApplications").doc(ownerId);
     const auditRef = this.firebase.firestore.collection("merchantApplicationAudits").doc();
+    const summaryRef = this.firebase.firestore.collection("merchantApplicationSummaries").doc("global");
     return this.firebase.firestore.runTransaction(async (transaction) => {
-      const snapshot = await transaction.get(applicationRef);
+      const [snapshot, summarySnapshot] = await transaction.getAll(applicationRef, summaryRef);
+      if (!snapshot || !summarySnapshot) throw new MerchantDomainError("summary-unavailable");
       if (!snapshot.exists) throw new MerchantDomainError("not-found");
       const current = applicationFrom(ownerId, snapshot.data());
       if (!current) throw new MerchantDomainError("inconsistent-record");
       if (current.status !== "pending") throw new MerchantDomainError("not-pending");
       if (current.version !== decision.expectedVersion) throw new MerchantDomainError("version-conflict");
+      const summary = summarySnapshot.exists ? summaryFrom(summarySnapshot.data()) : null;
+      if (!summary || summary.pending < 1) throw new MerchantDomainError("summary-unavailable");
       const timestamp = Timestamp.now();
       const nextVersion = current.version + 1;
       const update = {
@@ -135,7 +183,7 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
         reviewedAt: timestamp,
         reviewerId,
         version: nextVersion,
-        ...(decision.decision === "rejected" ? { rejectionReason: decision.reason } : {}),
+        rejectionReason: decision.decision === "rejected" ? decision.reason : FieldValue.delete(),
       };
       transaction.update(applicationRef, update);
       transaction.create(auditRef, {
@@ -148,6 +196,12 @@ export class FirestoreMerchantApplicationsRepository implements MerchantApplicat
         toVersion: nextVersion,
         occurredAt: timestamp,
         ...(decision.decision === "rejected" ? { reason: decision.reason } : {}),
+      });
+      transaction.update(summaryRef, {
+        pending: summary.pending - 1,
+        [decision.decision]: summary[decision.decision] + 1,
+        version: summary.version + 1,
+        updatedAt: timestamp,
       });
       return {
         ...current,

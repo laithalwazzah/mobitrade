@@ -192,7 +192,11 @@ describe("merchant application APIs", () => {
     await http.get("/api/v1/admin/merchant-applications").set("Authorization", "Bearer user").expect(403);
     const list = await http.get("/api/v1/admin/merchant-applications?status=pending&limit=1").set("Authorization", "Bearer admin").expect(200);
     assert.equal(list.body.items.length, 1);
-    assert.equal(JSON.stringify(list.body).includes("bytes"), false);
+    assert.deepEqual(Object.keys(list.body.items[0]).sort(), ["ownerId", "shop", "status", "submittedAt", "version"]);
+    assert.deepEqual(Object.keys(list.body.items[0].shop).sort(), ["area", "name"]);
+    for (const forbidden of ["bytes", "address", "whatsapp", "rejectionReason", "reviewedAt", "reviewerId", "fileName"]) {
+      assert.equal(JSON.stringify(list.body).includes(forbidden), false);
+    }
     const detail = await http.get(`/api/v1/admin/merchant-applications/${identities.user.uid}`).set("Authorization", "Bearer admin").expect(200);
     assert.equal("bytes" in detail.body.application, false);
     const denied = await http.get(`/api/v1/admin/merchant-applications/${identities.user.uid}/document`).set("Authorization", "Bearer user").expect(403);
@@ -201,6 +205,47 @@ describe("merchant application APIs", () => {
     assert.equal(document.headers["cache-control"], "private, no-store, max-age=0");
     assert.equal(document.headers["content-type"], "image/png");
     assert.deepEqual(document.body, png());
+  });
+
+  it("returns a guarded trustworthy global summary and fails closed when unavailable", async () => {
+    const repository = new FakeMerchantRepository();
+    const { http } = await application({}, new FakeTokenVerifier(), repository);
+    await http.get("/api/v1/admin/merchant-applications/summary").expect(401);
+    await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer unverified").expect(403);
+    await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer user").expect(403);
+    await createRequest(http).expect(201);
+    const summary = await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer admin").expect(200);
+    assert.deepEqual(Object.keys(summary.body.summary).sort(), ["approved", "pending", "rejected", "total", "updatedAt", "version"]);
+    assert.equal(summary.body.summary.total, 1);
+    assert.equal(summary.body.summary.pending, 1);
+    assert.equal(summary.body.summary.total, summary.body.summary.pending + summary.body.summary.approved + summary.body.summary.rejected);
+    repository.summaryUnavailable = true;
+    const unavailable = await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer admin").expect(503);
+    assert.equal(unavailable.body.error.code, "admin/summary-unavailable");
+    assert.match(unavailable.body.error.correlationId, /^[a-f0-9-]{36}$/);
+    assert.equal(JSON.stringify(unavailable.body).includes("stack"), false);
+  });
+
+  it("limits the trusted summary endpoint to 30 requests per 60 seconds", async () => {
+    const { http } = await application();
+    for (let index = 0; index < 30; index += 1) {
+      await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer admin").expect(200);
+    }
+    const limited = await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", "Bearer admin").expect(429);
+    assert.equal(limited.body.error.code, "rate_limit/exceeded");
+    assert.match(limited.body.error.correlationId, /^[a-f0-9-]{36}$/);
+  });
+
+  it("updates application, document, audit, and aggregate atomically in the repository contract", async () => {
+    const { http, repository } = await application();
+    await createRequest(http).expect(201);
+    assert.deepEqual({ total: repository.summaryState.total, pending: repository.summaryState.pending }, { total: 1, pending: 1 });
+    const approved = await http.patch(`/api/v1/admin/merchant-applications/${identities.user.uid}/decision`)
+      .set("Authorization", "Bearer admin").send({ decision: "approved", expectedVersion: 1 }).expect(200);
+    assert.equal(approved.body.application.rejectionReason, undefined);
+    assert.deepEqual({ pending: repository.summaryState.pending, approved: repository.summaryState.approved }, { pending: 0, approved: 1 });
+    assert.equal(repository.audits.length, 1);
+    assert.equal(repository.documents.size, 1);
   });
 
   it("paginates safely and rejects invalid filters and cursors", async () => {
@@ -236,7 +281,7 @@ describe("merchant application APIs", () => {
   it("documents all Sprint 06 routes in OpenAPI", async () => {
     const { http } = await application();
     const specification = await http.get("/api/v1/docs-json").expect(200);
-    for (const route of ["/api/v1/merchant-applications", "/api/v1/merchant-applications/me", "/api/v1/admin/merchant-applications", "/api/v1/admin/merchant-applications/{uid}", "/api/v1/admin/merchant-applications/{uid}/document", "/api/v1/admin/merchant-applications/{uid}/decision"]) {
+    for (const route of ["/api/v1/merchant-applications", "/api/v1/merchant-applications/me", "/api/v1/admin/merchant-applications", "/api/v1/admin/merchant-applications/summary", "/api/v1/admin/merchant-applications/{uid}", "/api/v1/admin/merchant-applications/{uid}/document", "/api/v1/admin/merchant-applications/{uid}/decision"]) {
       assert.ok(specification.body.paths[route], route);
     }
     const parameters = specification.body.paths["/api/v1/admin/merchant-applications"].get.parameters;
@@ -252,5 +297,13 @@ describe("merchant application APIs", () => {
     assert.equal(pageToken.required, false);
     assert.equal(pageToken.schema.maxLength, 512);
     assert.equal(parameters.some((parameter: { name: string }) => ["page", "pageSize"].includes(parameter.name)), false);
+    const listSchema = specification.body.paths["/api/v1/admin/merchant-applications"].get.responses["200"].content["application/json"].schema;
+    assert.deepEqual(Object.keys(listSchema.properties.items.items.properties).sort(), ["ownerId", "shop", "status", "submittedAt", "version"]);
+    assert.deepEqual(Object.keys(listSchema.properties.items.items.properties.shop.properties).sort(), ["area", "name"]);
+    const summary = specification.body.paths["/api/v1/admin/merchant-applications/summary"].get;
+    assert.deepEqual(summary.parameters ?? [], []);
+    const schema = summary.responses["200"].content["application/json"].schema;
+    assert.ok(schema.properties.summary);
+    assert.equal(JSON.stringify(schema).includes("bytes"), false);
   });
 });

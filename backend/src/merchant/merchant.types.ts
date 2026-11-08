@@ -31,8 +31,25 @@ export interface MerchantDocument {
 }
 
 export interface MerchantApplicationList {
-  readonly items: readonly MerchantApplication[];
+  readonly items: readonly MerchantApplicationListItem[];
   readonly nextPageToken: string | null;
+}
+
+export interface MerchantApplicationListItem {
+  readonly ownerId: string;
+  readonly shop: Pick<MerchantShop, "name" | "area">;
+  readonly status: MerchantApplicationStatus;
+  readonly submittedAt: string;
+  readonly version: number;
+}
+
+export interface MerchantApplicationSummary {
+  readonly total: number;
+  readonly pending: number;
+  readonly approved: number;
+  readonly rejected: number;
+  readonly version: number;
+  readonly updatedAt: string;
 }
 
 export interface MerchantDecision {
@@ -48,7 +65,8 @@ export type MerchantDomainErrorCode =
   | "document-not-found"
   | "not-pending"
   | "version-conflict"
-  | "invalid-page-token";
+  | "invalid-page-token"
+  | "summary-unavailable";
 
 export class MerchantDomainError extends Error {
   constructor(readonly code: MerchantDomainErrorCode) {

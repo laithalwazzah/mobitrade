@@ -2,6 +2,7 @@ import type {
   MerchantApplication,
   MerchantApplicationList,
   MerchantApplicationStatus,
+  MerchantApplicationSummary,
   MerchantDecision,
   MerchantDocument,
   MerchantDocumentType,
@@ -30,6 +31,7 @@ export interface MerchantApplicationsRepository {
   list(query: ListMerchantApplicationsQuery): Promise<MerchantApplicationList>;
   findById(ownerId: string): Promise<MerchantApplication | null>;
   getDocument(ownerId: string): Promise<MerchantDocument | null>;
+  summary(): Promise<MerchantApplicationSummary>;
   decide(ownerId: string, reviewerId: string, decision: MerchantDecision): Promise<MerchantApplication>;
 }
 

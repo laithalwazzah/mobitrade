@@ -21,6 +21,10 @@ service cloud.firestore {
       allow read, write: if false;
     }
 
+    match /merchantApplicationSummaries/{id} {
+      allow read, write: if false;
+    }
+
     match /liveOffers/{id} {
       allow read: if true;
       allow create, update: if isApprovedMerchant() && id.matches('^9639[0-9]{8}_.+')

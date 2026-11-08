@@ -25,7 +25,7 @@ test("frontend merchant workflow uses ID-token multipart API and never direct bu
 
 test("client rules deny direct merchant records and audits without widening public catalog reads", () => {
   const rules = readFileSync("firestore.rules", "utf8");
-  for (const path of ["merchantApplications/{uid}", "merchantDocuments/{uid}", "merchantApplicationAudits/{id}"]) {
+  for (const path of ["merchantApplications/{uid}", "merchantDocuments/{uid}", "merchantApplicationAudits/{id}", "merchantApplicationSummaries/{id}"]) {
     const start = rules.indexOf(`match /${path}`);
     assert.ok(start >= 0);
     assert.match(rules.slice(start, start + 130), /allow read, write: if false/);

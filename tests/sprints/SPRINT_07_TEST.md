@@ -5,6 +5,8 @@
 > **الحالة:** **APPROVED — OWNER APPROVED**
 > **الإصدار:** `1.0-approved`
 > **تاريخ اعتماد المالك:** 2026-11-07
+> **تاريخ إغلاق Sprint بموافقة المالك:** 2026-11-08
+> **حالة Sprint:** **CLOSED — OWNER APPROVED**
 > **الخطة:** [SPRINT_07_PLAN.md](../../docs/sprints/SPRINT_07_PLAN.md)
 > **خط الأساس:** `5ac3339cc9b30fc05340e142c874f828f3218763`
 > **تاريخ قرارات التخطيط المعتمدة:** 2026-11-07
@@ -16,8 +18,9 @@
 |---|---|---|
 | `0.1-draft` | 2026-11-07 | مسودة مصفوفة الاختبارات وQA المالك للمراجعة. |
 | `1.0-approved` | 2026-11-07 | اعتماد المالك الكامل لمصفوفة الاختبار والfixtures وخطوات QA والاستبعادات. |
+| إغلاق Sprint | 2026-11-08 | اعتماد المالك النهائي بعد اكتمال 42 اختباراً آلياً و12 حالة QA يدوية بنتيجة 54 PASS / 0 FAIL / 0 BLOCKED. |
 
-> **إشعار الاعتماد:** اعتمد المالك هذه القائمة بتاريخ 2026-11-07 فوق baseline commit `5ac3339cc9b30fc05340e142c874f828f3218763`. تضم 42 اختباراً آلياً و12 حالة QA يدوية للمالك، بإجمالي 54 حالة، وترتبط بخطة تضم 31 مهمة تنفيذ. اعتماد الوثيقة يجعل Sprint **READY FOR IMPLEMENTATION** فقط؛ ولا يجعله READY FOR QA أو CLOSED. لم يبدأ التنفيذ أو الاختبار، لذلك تبقى النتائج 0 PASS / 0 FAIL / 54 BLOCKED. يبقى النشر الإنتاجي وFirebase الحي والوثائق التجارية الحقيقية غير مصرح بها.
+> **إشعار الاعتماد والإغلاق:** اعتمد المالك هذه القائمة أولاً بتاريخ 2026-11-07 فوق baseline commit `5ac3339cc9b30fc05340e142c874f828f3218763`. تضم 42 اختباراً آلياً و12 حالة QA يدوية للمالك، بإجمالي 54 حالة، وترتبط بخطة تضم 31 مهمة تنفيذ. اكتمل التنفيذ الآلي بتاريخ 2026-11-08 بنتيجة 42 PASS / 0 FAIL / 0 BLOCKED، ثم أكمل المالك الحالات اليدوية بنتيجة 12 PASS / 0 FAIL / 0 BLOCKED وأغلق Sprint صراحةً بتاريخ 2026-11-08. الحالة **CLOSED — OWNER APPROVED**. يبقى النشر الإنتاجي وFirebase الحي والوثائق التجارية الحقيقية غير مصرح بها.
 
 ## 1. حقول النتيجة وقاعدة التنفيذ
 
@@ -49,7 +52,7 @@ java -version
 npm run qa:sprint07
 ```
 
-هذا الأمر **PLANNED وليس موجوداً عند إنشاء هذه المسودة**. يجب أن يبني Frontend/Backend، يشغل Auth/Firestore/Hosting أو static server محلياً، يزرع dummy fixtures، ينفذ الاختبارات المطلوبة، ثم يوقف كل شيء. يجب أن يرفض project غير `demo-*` أو hosts غير loopback.
+الأمر منفذ الآن: يبني Frontend/Backend، ويشغل Auth/Firestore وstatic server محلياً، ويزرع dummy fixtures، وينفذ الاختبارات المتكاملة، ثم يوقف كل شيء. يرفض project غير `demo-*` أو hosts غير loopback.
 
 ## 3. مصفوفة الأدوار
 
@@ -66,63 +69,63 @@ npm run qa:sprint07
 
 | ID | الاختبار | المتوقع | التتبع | النتيجة | الدليل |
 |---|---|---|---|---|---|
-| `AT-001` | signed-out admin gate | لا flash؛ returnTo داخلي | `FR-ADM-001`, `SCN-AUTH-005` | BLOCKED | لم ينفذ بعد |
-| `AT-002` | unverified admin gate | verify state؛ لا admin calls | `FR-ADM-001`, `SCN-ADM-001` | BLOCKED | لم ينفذ بعد |
-| `AT-003` | verified non-admin | forbidden آمن بعد `/auth/me` | `FR-ADM-001`, `NFR-SEC-001` | BLOCKED | لم ينفذ بعد |
-| `AT-004` | verified admin | يسمح بالshell فقط بعد claim موثوق | `FR-ADM-001`, `DEC-006` | BLOCKED | لم ينفذ بعد |
-| `AT-005` | DTO parsers | ترفض malformed/extra bytes fields | `FR-ADM-002`–`004`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-006` | summary/list independent state | فشل أحدهما لا يمحو الآخر | `FR-ADM-006`, `FR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-007` | filter/token reducer | filter reset token؛ token opaque | `FR-ADM-002`, `SCN-ADM-002` | BLOCKED | لم ينفذ بعد |
-| `AT-008` | decision reducer | reject يتطلب reason؛ approve لا يرسله؛ double-submit ممنوع | `FR-ADM-004`, `SCN-ADM-004` | BLOCKED | لم ينفذ بعد |
+| `AT-001` | signed-out admin gate | لا flash؛ returnTo داخلي | `FR-ADM-001`, `SCN-AUTH-005` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-002` | unverified admin gate | verify state؛ لا admin calls | `FR-ADM-001`, `SCN-ADM-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-003` | verified non-admin | forbidden آمن بعد `/auth/me` | `FR-ADM-001`, `NFR-SEC-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-004` | verified admin | يسمح بالshell فقط بعد claim موثوق | `FR-ADM-001`, `DEC-006` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-005` | DTO parsers | ترفض malformed/extra bytes fields | `FR-ADM-002`–`004`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-006` | summary/list independent state | فشل أحدهما لا يمحو الآخر | `FR-ADM-006`, `FR-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-007` | filter/token reducer | filter reset token؛ token opaque | `FR-ADM-002`, `SCN-ADM-002` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-008` | decision reducer | reject يتطلب reason؛ approve لا يرسله؛ double-submit ممنوع | `FR-ADM-004`, `SCN-ADM-004` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
 
 ### 4.2 Backend unit/integration/API contract
 
 | ID | الاختبار | المتوقع | التتبع | النتيجة | الدليل |
 |---|---|---|---|---|---|
-| `AT-009` | summary invariants | non-negative؛ total=sum؛ version/date صالحان | `FR-ADM-006`, `NFR-REL-001` | BLOCKED | لم ينفذ بعد |
-| `AT-010` | summary authorization | missing/invalid 401، unverified/non-admin 403، admin 200 | `FR-ADM-001`, `FR-ADM-006` | BLOCKED | لم ينفذ بعد |
-| `AT-011` | summary contract | schema محدد بلا PII/bytes | `FR-ADM-006`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-012` | summary unavailable | missing/corrupt/inconsistent aggregate يعطي safe 503 `admin/summary-unavailable` + correlationId ولا zero مضلل | `FR-ADM-006`, `FR-OPS-002` | BLOCKED | لم ينفذ بعد |
-| `AT-013` | summary rate limit | 30 طلباً/60 ثانية ثم 429 envelope | `FR-ADM-006`, `NFR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-014` | list query contract | فقط status/limit/pageToken؛ limit 1–50/default20 | `FR-ADM-002`, `SCN-ADM-002` | BLOCKED | لم ينفذ بعد |
-| `AT-015` | stable pagination | لا duplicate/skip في fixtures الثابتة؛ token invalid آمن | `FR-ADM-002`, `NFR-REL-001` | BLOCKED | لم ينفذ بعد |
-| `AT-016` | list minimization | فقط ownerId/shop.name/shop.area/status/submittedAt/version؛ كل الحقول المحظورة غائبة | `FR-ADM-002`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-017` | detail contract | metadata اللازمة فقط؛ لا bytes | `FR-ADM-003`, `SCN-ADM-003` | BLOCKED | لم ينفذ بعد |
-| `AT-018` | document contract | image bytes صحيحة؛ attachment؛ private/no-store/nosniff | `FR-ADM-003`, `DEC-007`, `DEC-008` | BLOCKED | لم ينفذ بعد |
-| `AT-019` | approve/reject | reject بلا reason مرفوض؛ approve UI لا ترسل reason؛ لا rejection reason محفوظ أو مكشوف للموافقة؛ Audit واحد | `FR-ADM-004`, `SCN-ADM-004` | BLOCKED | لم ينفذ بعد |
-| `AT-020` | concurrency | wrong expectedVersion 409؛ لا قرار/Audit إضافي | `FR-ADM-004`, `NFR-REL-001` | BLOCKED | لم ينفذ بعد |
-| `AT-021` | OpenAPI | summary موثق؛ list params الدقيقة؛ schemas/errors/rate limits | `FR-ADM-002`, `FR-ADM-006`, `NFR-MNT-001` | BLOCKED | لم ينفذ بعد |
-| `AT-022` | correlation/redaction | ID في headers/envelope؛ لا token/PII/bytes/log leakage | `NFR-SEC-002`, `NFR-OPS-001` | BLOCKED | لم ينفذ بعد |
+| `AT-009` | summary invariants | non-negative؛ total=sum؛ version/date صالحان | `FR-ADM-006`, `NFR-REL-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-010` | summary authorization | missing/invalid 401، unverified/non-admin 403، admin 200 | `FR-ADM-001`, `FR-ADM-006` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-011` | summary contract | schema محدد بلا PII/bytes | `FR-ADM-006`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-012` | summary unavailable | missing/corrupt/inconsistent aggregate يعطي safe 503 `admin/summary-unavailable` + correlationId ولا zero مضلل | `FR-ADM-006`, `FR-OPS-002` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-013` | summary rate limit | 30 طلباً/60 ثانية ثم 429 envelope | `FR-ADM-006`, `NFR-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-014` | list query contract | فقط status/limit/pageToken؛ limit 1–50/default20 | `FR-ADM-002`, `SCN-ADM-002` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-015` | stable pagination | لا duplicate/skip في fixtures الثابتة؛ token invalid آمن | `FR-ADM-002`, `NFR-REL-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-016` | list minimization | فقط ownerId/shop.name/shop.area/status/submittedAt/version؛ كل الحقول المحظورة غائبة | `FR-ADM-002`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-017` | detail contract | metadata اللازمة فقط؛ لا bytes | `FR-ADM-003`, `SCN-ADM-003` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-018` | document contract | image bytes صحيحة؛ attachment؛ private/no-store/nosniff | `FR-ADM-003`, `DEC-007`, `DEC-008` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-019` | approve/reject | reject بلا reason مرفوض؛ approve UI لا ترسل reason؛ لا rejection reason محفوظ أو مكشوف للموافقة؛ Audit واحد | `FR-ADM-004`, `SCN-ADM-004` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-020` | concurrency | wrong expectedVersion 409؛ لا قرار/Audit إضافي | `FR-ADM-004`, `NFR-REL-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-021` | OpenAPI | summary موثق؛ list params الدقيقة؛ schemas/errors/rate limits | `FR-ADM-002`, `FR-ADM-006`, `NFR-MNT-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-022` | correlation/redaction | ID في headers/envelope؛ لا token/PII/bytes/log leakage | `NFR-SEC-002`, `NFR-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
 
 ### 4.3 Emulator، Rules، integrated E2E
 
 | ID | الاختبار | المتوقع | التتبع | النتيجة | الدليل |
 |---|---|---|---|---|---|
-| `AT-023` | deterministic fixtures | known counts لكل status وaggregate مطابق | `FR-ADM-006`, `NFR-MNT-003` | BLOCKED | لم ينفذ بعد |
-| `AT-024` | atomic aggregate create | create يزيد total/pending في transaction نفسها | `FR-ADM-006`, `NFR-REL-001` | BLOCKED | لم ينفذ بعد |
-| `AT-025` | atomic aggregate decision | pending-- وtarget++ مع application/Audit | `FR-ADM-004`, `FR-ADM-006` | BLOCKED | لم ينفذ بعد |
-| `AT-026` | injected failures | لا partial app/summary/decision/audit | `NFR-REL-001`, `SCN-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-027` | direct-client rules | كل roles مرفوضة للapplications/documents/audits/summary | `NFR-SEC-001`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-028` | integrated admin flow | role→summary→list→detail→document→decision→refresh | `SCN-ADM-001`–`004` | BLOCKED | لم ينفذ بعد |
+| `AT-023` | deterministic fixtures | known counts لكل status وaggregate مطابق | `FR-ADM-006`, `NFR-MNT-003` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-024` | atomic aggregate create | create يزيد total/pending في transaction نفسها | `FR-ADM-006`, `NFR-REL-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-025` | atomic aggregate decision | pending-- وtarget++ مع application/Audit | `FR-ADM-004`, `FR-ADM-006` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-026` | injected failures | لا partial app/summary/decision/audit | `NFR-REL-001`, `SCN-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-027` | direct-client rules | كل roles مرفوضة للapplications/documents/audits/summary | `NFR-SEC-001`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-028` | integrated admin flow | role→summary→list→detail→document→decision→refresh | `SCN-ADM-001`–`004` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
 
 ### 4.4 Playwright، accessibility، regression، build
 
 | ID | الاختبار | المتوقع | التتبع | النتيجة | الدليل |
 |---|---|---|---|---|---|
-| `AT-029` | route/state UI | loading/empty/error/forbidden/conflict/rate/retry/refresh | `FR-OPS-001`, `FR-ADM-001`–`006` | BLOCKED | لم ينفذ بعد |
-| `AT-030` | responsive/a11y | 320/375/768/1024/1280، RTL، keyboard/focus/no overflow | `NFR-ACC-001`–`003` | BLOCKED | لم ينفذ بعد |
-| `AT-031` | regression | Sprint 01–06 + comparison/media/catalog-loading لا تتراجع | `NFR-MNT-003`, `SCN-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-032` | build/isolation | lint/unit/backend/rules/build مع وبدون env؛ no live Firebase | `NFR-MNT-002`, `NFR-OPS-002` | BLOCKED | لم ينفذ بعد |
-| `AT-033` | aggregate drift verifier | يعيد حساب counts ويبلغ match/drift بلا PII ولا mutation | `FR-ADM-006`, `NFR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-034` | Emulator-only repair guard | يصلح drift في demo/loopback فقط ويرفض live/non-loopback قبل أي mutation | `NFR-OPS-002`, `NFR-SEC-001` | BLOCKED | لم ينفذ بعد |
-| `AT-035` | summary/list failure independence | فشل summary لا يمحو list ناجحة والعكس؛ retry مستقل | `FR-ADM-006`, `FR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-036` | Sprint 06 create atomicity regression | application/document/aggregate كلها تنجح أو لا شيء | `NFR-REL-001`, `SCN-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `AT-037` | Sprint 06 decision atomicity regression | application/Audit/aggregate كلها تنجح أو لا تغيير | `FR-ADM-004`, `NFR-REL-001` | BLOCKED | لم ينفذ بعد |
-| `AT-038` | Blob cleanup on modal close | revoke URL وتفريغ Blob عند الإغلاق | `FR-ADM-003`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-039` | Blob cleanup on owner/application change | revoke قبل عرض/طلب وثيقة أخرى | `FR-ADM-003`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
-| `AT-040` | Blob cleanup on logout | revoke وتفريغ admin state فور logout | `FR-ADM-001`, `NFR-SEC-001` | BLOCKED | لم ينفذ بعد |
-| `AT-041` | Blob cleanup on component unmount | cleanup يعمل عند navigation/unmount | `FR-ADM-003`, `NFR-MNT-003` | BLOCKED | لم ينفذ بعد |
-| `AT-042` | Blob cleanup on 401/403 | revoke وتفريغ Blob ولا prefetch/cache/storage | `FR-ADM-001`, `NFR-PRV-001` | BLOCKED | لم ينفذ بعد |
+| `AT-029` | route/state UI | loading/empty/error/forbidden/conflict/rate/retry/refresh | `FR-OPS-001`, `FR-ADM-001`–`006` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-030` | responsive/a11y | 320/375/768/1024/1280، RTL، keyboard/focus/no overflow | `NFR-ACC-001`–`003` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-031` | regression | Sprint 01–06 + comparison/media/catalog-loading لا تتراجع | `NFR-MNT-003`, `SCN-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-032` | build/isolation | lint/unit/backend/rules/build مع وبدون env؛ no live Firebase | `NFR-MNT-002`, `NFR-OPS-002` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-033` | aggregate drift verifier | يعيد حساب counts ويبلغ match/drift بلا PII ولا mutation | `FR-ADM-006`, `NFR-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-034` | Emulator-only repair guard | يصلح drift في demo/loopback فقط ويرفض live/non-loopback قبل أي mutation | `NFR-OPS-002`, `NFR-SEC-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-035` | summary/list failure independence | فشل summary لا يمحو list ناجحة والعكس؛ retry مستقل | `FR-ADM-006`, `FR-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-036` | Sprint 06 create atomicity regression | application/document/aggregate كلها تنجح أو لا شيء | `NFR-REL-001`, `SCN-OPS-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-037` | Sprint 06 decision atomicity regression | application/Audit/aggregate كلها تنجح أو لا تغيير | `FR-ADM-004`, `NFR-REL-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-038` | Blob cleanup on modal close | revoke URL وتفريغ Blob عند الإغلاق | `FR-ADM-003`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-039` | Blob cleanup on owner/application change | revoke قبل عرض/طلب وثيقة أخرى | `FR-ADM-003`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-040` | Blob cleanup on logout | revoke وتفريغ admin state فور logout | `FR-ADM-001`, `NFR-SEC-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-041` | Blob cleanup on component unmount | cleanup يعمل عند navigation/unmount | `FR-ADM-003`, `NFR-MNT-003` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
+| `AT-042` | Blob cleanup on 401/403 | revoke وتفريغ Blob ولا prefetch/cache/storage | `FR-ADM-001`, `NFR-PRV-001` | PASS | نجح آلياً؛ التفاصيل والأوامر في القسم 8 |
 
 **إجمالي automated cases المخططة:** 42.
 
@@ -162,25 +165,25 @@ reset/reseed يجب أن يكون idempotent محلياً، وألا يقبل pr
 
 | ID | الخطوات المختصرة | المتوقع | viewports/role | التتبع | النتيجة | الدليل |
 |---|---|---|---|---|---|---|
-| `MQ-001` | افتح `/admin` signed-out ثم unverified | login/verify بلا flash أو loop | 375،1280 | `FR-ADM-001` | BLOCKED | لم ينفذ بعد |
-| `MQ-002` | verified normal يفتح routes مباشرة | forbidden عربي ولا بيانات | 375،1280 | `SCN-ADM-001` | BLOCKED | لم ينفذ بعد |
-| `MQ-003` | admin يفتح dashboard | summary/list يظهران مستقلين | 320،1280 | `FR-ADM-006` | BLOCKED | لم ينفذ بعد |
-| `MQ-004` | بدّل status/limit وتنقل next pages ثم refresh | ترتيب ثابت ولا totals page-local | 375،1024 | `FR-ADM-002` | BLOCKED | لم ينفذ بعد |
-| `MQ-005` | fixture فارغ وفشل list/summary مستقل | empty/error/retry واضح؛ نجاح أحدهما لا يمحى | 375،1280 | `FR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `MQ-006` | افتح detail ثم راقب JSON | metadata فقط، لا bytes | 375،1280 | `FR-ADM-003` | BLOCKED | لم ينفذ بعد |
-| `MQ-007` | افتح modal الوثيقة بفعل صريح ثم اختبر lifecycles | private no-store؛ لا prefetch/storage؛ cleanup لكل close/change/logout/unmount/401/403 | 768،1280 | `DEC-007`, `DEC-008` | BLOCKED | لم ينفذ بعد |
-| `MQ-008` | approve pending ثم refresh | status/version/summary/list تتحدث | 375،1280 | `FR-ADM-004` | BLOCKED | لم ينفذ بعد |
-| `MQ-009` | reject بلا/مع reason | الأول مرفوض inline؛ الثاني ينجح | 375،1280 | `SCN-ADM-004` | BLOCKED | لم ينفذ بعد |
-| `MQ-010` | افتح نسختين وقرر من الأولى ثم الثانية | الثانية 409، refetch، لا قرار ثانٍ | 1280 | `FR-ADM-004` | BLOCKED | لم ينفذ بعد |
-| `MQ-011` | اختبر 401/403/429/unavailable ثم retry | errors آمنة وcorrelation، لا state حساس | 375،1280 | `NFR-SEC-002`, `NFR-OPS-001` | BLOCKED | لم ينفذ بعد |
-| `MQ-012` | keyboard-only وreduced motion وzoom/overflow | focus مرئي، لا trap/clip/scroll أفقي | 320،375،768،1024،1280 | `NFR-ACC-001`–`003` | BLOCKED | لم ينفذ بعد |
+| `MQ-001` | افتح `/admin` signed-out ثم unverified | login/verify بلا flash أو loop | 375،1280 | `FR-ADM-001` | PASS | Owner QA: نجحت بوابات الدخول والتوثيق بلا flash |
+| `MQ-002` | verified normal يفتح routes مباشرة | forbidden عربي ولا بيانات | 375،1280 | `SCN-ADM-001` | PASS | Owner QA: منع المستخدم غير الإداري |
+| `MQ-003` | admin يفتح dashboard | summary/list يظهران مستقلين | 320،1280 | `FR-ADM-006` | PASS | Owner QA: الملخص والقائمة يعملان باستقلال |
+| `MQ-004` | بدّل status/limit وتنقل next pages ثم refresh | ترتيب ثابت ولا totals page-local | 375،1024 | `FR-ADM-002` | PASS | Owner retest: الخيارات 5/10/20/50؛ عرض limit 5 السجلات 5 ثم 2، وأعاد Previous الخمسة نفسها بالترتيب نفسه بلا تكرار أو حذف أو خطأ تنقل |
+| `MQ-005` | fixture فارغ وفشل list/summary مستقل | empty/error/retry واضح؛ نجاح أحدهما لا يمحى | 375،1280 | `FR-OPS-001` | PASS | Owner QA: حالات الفشل والاستعادة المستقلة |
+| `MQ-006` | افتح detail ثم راقب JSON | metadata فقط، لا bytes | 375،1280 | `FR-ADM-003` | PASS | Owner QA: detail مصغر بلا bytes |
+| `MQ-007` | افتح modal الوثيقة بفعل صريح ثم اختبر lifecycles | private no-store؛ لا prefetch/storage؛ cleanup لكل close/change/logout/unmount/401/403 | 768،1280 | `DEC-007`, `DEC-008` | PASS | Owner retest: لم يحدث fetch تلقائي؛ بعد «عرض الوثيقة» عاد 200 وفُك WebP بلا broken image، مع `image/webp` وattachment آمن و`private, no-store, max-age=0` |
+| `MQ-008` | approve pending ثم refresh | status/version/summary/list تتحدث | 375،1280 | `FR-ADM-004` | PASS | Owner QA: الموافقة والتحديث |
+| `MQ-009` | reject بلا/مع reason | الأول مرفوض inline؛ الثاني ينجح | 375،1280 | `SCN-ADM-004` | PASS | Owner QA: سبب الرفض الإلزامي |
+| `MQ-010` | افتح نسختين وقرر من الأولى ثم الثانية | الثانية 409، refetch، لا قرار ثانٍ | 1280 | `FR-ADM-004` | PASS | Owner QA: تعارض الإصدار والاستعادة |
+| `MQ-011` | اختبر 401/403/429/unavailable ثم retry | errors آمنة وcorrelation، لا state حساس | 375،1280 | `NFR-SEC-002`, `NFR-OPS-001` | PASS | Owner QA: الأخطاء الآمنة وإعادة المحاولة |
+| `MQ-012` | keyboard-only وreduced motion وzoom/overflow | focus مرئي، لا trap/clip/scroll أفقي | 320،375،768،1024،1280 | `NFR-ACC-001`–`003` | PASS | Owner QA: الوصول والاستجابة بلا overflow |
 
 **إجمالي QA اليدوي المخطط:** 12.
 **إجمالي الحالات المخططة:** 54 = 42 آلية + 12 يدوية.
 
-## 8. أوامر الفحص المقترحة بعد التنفيذ
+## 8. أوامر الفحص والأدلة المنفذة
 
-هذه الأوامر موجودة حالياً ما عدا ما وُسم `PLANNED`:
+نُفذت الأوامر الآتية بتاريخ 2026-11-08 دون اتصال بـFirebase حي:
 
 ```powershell
 npm run lint
@@ -191,26 +194,23 @@ npm --prefix backend run build
 npm run test:rules
 npm run build
 npm run test:e2e
+npm run test:sprint06:integrated
+npm run test:sprint07:integrated
 ```
 
-أوامر يجب إضافتها في Sprint 07، ولا يجوز ادعاء وجودها الآن:
+النتائج بعد إصلاح حاجزي QA: Frontend unit `58/58`، Backend unit/integration `33/33`، Rules `4/4`، Backend Emulator `4/4`، Sprint 06 integrated `2/2`، Sprint 07 integrated `2/2`، والانحدار غير الحي `110/110`. نجح static export مع `.env.local` وبدونه؛ نُقل الملف مؤقتاً وأعيد في `finally` دون قراءة قيمه. أثبت اختبار Sprint 07 المتكامل pagination حتمية 5 ثم 2 ثم الرجوع لنفس الخمسة، وإعادة ضبط cursor عند تغيير الفلتر، وفك WebP فعلياً إلى صورة 1×1 مع رؤوس private/no-store. أُوقفت العمليات والمنافذ بعد التشغيل.
 
-```powershell
-npm run test:sprint07:integrated   # PLANNED
-npm run qa:sprint07                # PLANNED
-```
-
-يجب إجراء build مع `.env.local` ثم بدونه عبر نقل مؤقت آمن وإعادة الملف في `finally` دون قراءة قيمه. تحفظ الأدلة في مسارات ignored، وتتوقف كل المنافذ بعد QA.
+تغطي هذه الأدلة `AT-001`–`AT-042`: اختبارات parsers والخصوصية والعزل في `tests/sprint07.test.ts`، عقود Backend وOpenAPI والحدود في `backend/test/integration/api.test.ts`، الذرّية الفعلية في `backend/test/e2e/emulator.test.ts`، رفض العميل في `tests/firestore-emulator.test.ts`، الواجهة المعزولة في `tests/e2e/sprint07.spec.ts`، والتدفق المتكامل في `tests/e2e/sprint07-emulator.spec.ts`.
 
 ## 9. فحص الإغلاق والنتائج
 
 | المجموعة | PASS | FAIL | BLOCKED | الحالة الحالية |
 |---|---:|---:|---:|---|
-| Automated | 0 | 0 | 42 | APPROVED PLAN — لم يبدأ التنفيذ |
-| Owner manual QA | 0 | 0 | 12 | APPROVED PLAN — لم يبدأ التنفيذ |
-| الإجمالي | 0 | 0 | 54 | **READY FOR IMPLEMENTATION — NOT READY FOR QA / NOT CLOSED** |
+| Automated | 42 | 0 | 0 | PASS — نُفذت الأدلة الآلية |
+| Owner manual QA | 12 | 0 | 0 | PASS — أكمل المالك الحالات الاثنتي عشرة، بما فيها إعادة اختبار `MQ-004` و`MQ-007` |
+| الإجمالي | 54 | 0 | 0 | **CLOSED — OWNER APPROVED 2026-11-08** |
 
-لا يغلق Sprint عند مرور automation فقط. الإغلاق يتطلب: كل executable case بنتيجة صادقة، owner manual QA، تقرير Sprint 07 يطابق الأدلة، reconciliation للتتبع، ثم عبارة موافقة مالك صريحة وتاريخ. قبل ذلك يمنع استخدام `CLOSED`.
+اكتملت شروط الإغلاق: جميع الحالات التنفيذية موثقة، وQA المالك 12/12 PASS، والتقرير متسق مع الأدلة، وصدرت موافقة المالك الصريحة بتاريخ 2026-11-08. يغلق ذلك Sprint 07 فقط، ولا يفوض النشر أو Firebase الحي أو الوثائق التجارية الحقيقية أو أي عمل من Sprint 08–10.
 
 ## 10. سجل قرارات المالك وبنود المراجعة
 

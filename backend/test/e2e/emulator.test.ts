@@ -5,6 +5,7 @@ import request from "supertest";
 import { createApplication } from "../../src/bootstrap";
 import { loadBackendConfig } from "../../src/config/backend-config";
 import { FirebaseAdminService } from "../../src/firebase/firebase-admin.service";
+import { Timestamp } from "firebase-admin/firestore";
 import { resetAuthEmulator, seedAuthEmulator } from "../../scripts/emulator-fixtures";
 
 let app: INestApplication;
@@ -20,6 +21,10 @@ before(async () => {
   assert.equal(reset.ok, true);
   tokens = await seedAuthEmulator();
   app = await createApplication(config);
+  const adminFirebase = app.get(FirebaseAdminService);
+  await adminFirebase.firestore.collection("merchantApplicationSummaries").doc("global").create({
+    total: 0, pending: 0, approved: 0, rejected: 0, version: 1, updatedAt: Timestamp.now(),
+  });
   http = request(app.getHttpServer());
 });
 
@@ -76,6 +81,8 @@ describe("Merchant API + Auth/Firestore Emulator E2E", () => {
     assert.equal(storedApplication.exists, true);
     assert.equal(storedDocument.exists, true);
     assert.equal(Buffer.isBuffer(storedDocument.data()?.bytes), true);
+    const summaryAfterCreate = await adminFirebase.firestore.collection("merchantApplicationSummaries").doc("global").get();
+    assert.deepEqual({ total: summaryAfterCreate.data()?.total, pending: summaryAfterCreate.data()?.pending }, { total: 1, pending: 1 });
 
     const direct = await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/v1/projects/demo-sa3erli-sprint05/databases/(default)/documents/merchantApplications/${tokens.owner.uid}`, {
       headers: { Authorization: `Bearer ${tokens.owner.idToken}` },
@@ -101,6 +108,11 @@ describe("Merchant API + Auth/Firestore Emulator E2E", () => {
     const audits = await adminFirebase.firestore.collection("merchantApplicationAudits").where("applicationId", "==", tokens.owner.uid).get();
     assert.equal(audits.size, 1);
     assert.equal(audits.docs[0]?.data().toStatus, "approved");
+    const summaryAfterDecision = await adminFirebase.firestore.collection("merchantApplicationSummaries").doc("global").get();
+    assert.deepEqual({ pending: summaryAfterDecision.data()?.pending, approved: summaryAfterDecision.data()?.approved }, { pending: 0, approved: 1 });
+
+    const summary = await http.get("/api/v1/admin/merchant-applications/summary").set("Authorization", `Bearer ${tokens.admin.idToken}`).expect(200);
+    assert.deepEqual({ total: summary.body.summary.total, pending: summary.body.summary.pending, approved: summary.body.summary.approved }, { total: 1, pending: 0, approved: 1 });
 
     const auditList = await fetch(`http://${process.env.FIRESTORE_EMULATOR_HOST}/v1/projects/demo-sa3erli-sprint05/databases/(default)/documents/merchantApplicationAudits`, {
       headers: { Authorization: `Bearer ${tokens.admin.idToken}` },

@@ -4,6 +4,7 @@ import {
   Inject,
   Injectable,
   NotFoundException,
+  ServiceUnavailableException,
 } from "@nestjs/common";
 import { MERCHANT_REPOSITORY, type MerchantApplicationsRepository } from "./merchant.repository";
 import { MerchantDomainError, type MerchantDecision } from "./merchant.types";
@@ -29,6 +30,12 @@ function translate(error: unknown): never {
   }
   if (error.code === "invalid-page-token") {
     throw new BadRequestException({ code: "merchant/invalid-page-token", message: "رمز الصفحة غير صالح." });
+  }
+  if (error.code === "summary-unavailable") {
+    throw new ServiceUnavailableException({
+      code: "admin/summary-unavailable",
+      message: "تعذر تحميل الملخص الإداري الموثوق الآن. حاول مجدداً.",
+    });
   }
   throw new ConflictException({ code: "merchant/version-conflict", message: "تغيّر الطلب منذ فتحه. حدّث البيانات وحاول مجددًا." });
 }
@@ -75,6 +82,14 @@ export class MerchantApplicationsService {
     const application = await this.repository.findById(ownerId);
     if (!application) throw new NotFoundException({ code: "merchant/not-found", message: "طلب الاعتماد غير موجود." });
     return application;
+  }
+
+  async summary() {
+    try {
+      return await this.repository.summary();
+    } catch (error) {
+      translate(error);
+    }
   }
 
   async document(ownerId: string) {
