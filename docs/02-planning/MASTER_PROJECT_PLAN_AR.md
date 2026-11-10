@@ -9,12 +9,12 @@
 | البند | القيمة |
 |---|---|
 | معرّف الوثيقة | `DOC-PLAN-AR-001` |
-| الإصدار | `1.0-approved` |
-| التاريخ | 2026-11-07 |
-| تاريخ الاعتماد | 2026-11-07 |
+| الإصدار | `1.1-approved` |
+| التاريخ | 2026-11-08 |
+| تاريخ الاعتماد | 2026-11-08 |
 | المالك | مالك منتج «سعّرلي» |
 | خط الأساس التنفيذي | `41a94003b9c921aec9ba1c9709a5cf5430d4bad7` |
-| آخر Sprint مغلق | Sprint 06 — **CLOSED — OWNER APPROVED** بتاريخ 2026-11-05 |
+| آخر Sprint مغلق | Sprint 07 — **CLOSED — OWNER APPROVED** بتاريخ 2026-11-08 |
 | حالة الخطة | **APPROVED — OWNER APPROVED** |
 | اللغة | العربية، مع إبقاء المعرّفات التقنية بالإنجليزية عند الحاجة |
 
@@ -24,19 +24,21 @@
 |---|---|---|
 | `0.1-draft` | 2026-11-07 | مسودة الخطة الرئيسية الشاملة للمراجعة. |
 | `1.0-approved` | 2026-11-07 | اعتماد المالك للخطة ونطاق Sprint 07–11 والمخاطر والقرارات المفتوحة كما هي موثقة. |
+| `1.1-approved` | 2026-11-08 | اعتماد المالك لنشر `DEC-012` و`DEC-013` وتحديث إغلاق Sprint 07 والخطة والتتبّع. |
 
-> **إشعار الاعتماد:** اعتمد المالك هذه الخطة بتاريخ 2026-11-07 بوصفها خط التخطيط المعتمد لإنشاء SRS v2 وتسليم Sprint 07–11. لا يحسم الاعتماد القرارات المفتوحة، ولا يفوض النشر أو معالجة وثائق تجارية حقيقية قبل اجتياز بوابات الإنتاج والمراجعات المطلوبة.
+> **إشعار الاعتماد:** اعتمد المالك `1.1-approved` بتاريخ 2026-11-08 مع حفظ اعتماد 1.0 تاريخياً. لا يفوض الاعتماد النشر أو الوثائق التجارية الحقيقية ولا يحسم البنية أو القانون أو retention.
 
 ### 1.1 ترتيب مصادر الحقيقة
 
 1. خط الأساس التنفيذي المحدد أعلاه لما هو **IMPLEMENTED**.
-2. [FUNCTIONAL_SCENARIO_AR.md](../01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md) بالإصدار `1.0-approved` للسيناريوهات والقرارات `DEC-001` إلى `DEC-011`، ومعه [SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf](../01-product/scenarios/SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf) بالإصدار نفسه والمعتمد بتاريخ 2026-11-07.
-3. [SA3ERLI_SRS_V2_AR.md](../01-product/requirements/SA3ERLI_SRS_V2_AR.md) بالإصدار `2.0-approved` والمعتمد بتاريخ 2026-11-07، ومعه [SA3ERLI_SRS_V2_AR_APPROVED.pdf](../01-product/requirements/SA3ERLI_SRS_V2_AR_APPROVED.pdf)؛ وهو خط أساس المتطلبات لـSprint 07–11.
-4. تقارير وقوائم QA المغلقة في `docs/sprints/` و`tests/sprints/` بوصفها أدلة تاريخية لا يعاد تفسير نتائجها.
-5. `Sa3erli_SRS_AR.pdf` بوصفه SRS تاريخياً بالإصدار v1.0 لا يعدل ضمن هذه الخطة.
-6. الكود عند التعارض مع وصف قديم، على أن يسجل الفرق ولا يحول السلوك الجزئي إلى مكتمل.
+2. [FUNCTIONAL_SCENARIO_AR.md](../01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md) بالإصدار `1.1-approved` الذي يحفظ اعتماد 1.0 وينشر `DEC-012` و`DEC-013`، ومعه [PDF 1.1 الحالي](../01-product/scenarios/SA3ERLI_FUNCTIONAL_SCENARIO_AR_V1_1_APPROVED.pdf) و[PDF 1.0 التاريخي](../01-product/scenarios/SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf).
+3. [SA3ERLI_SRS_V2_AR.md](../01-product/requirements/SA3ERLI_SRS_V2_AR.md) بالإصدار `2.1-approved` الذي يحفظ اعتماد 2.0، ومعه [PDF 2.1 الحالي](../01-product/requirements/SA3ERLI_SRS_V2_1_AR_APPROVED.pdf) و[PDF 2.0 التاريخي](../01-product/requirements/SA3ERLI_SRS_V2_AR_APPROVED.pdf).
+4. [السيناريو الشامل من البداية إلى الإطلاق](../01-product/scenarios/SA3ERLI_END_TO_END_PROJECT_SCENARIO_AR.md) بالإصدار `1.0-approved`، ومعه [PDF الحالي](../01-product/scenarios/SA3ERLI_END_TO_END_PROJECT_SCENARIO_AR_APPROVED.pdf).
+5. تقارير وقوائم QA المغلقة في `docs/sprints/` و`tests/sprints/` بوصفها أدلة تاريخية لا يعاد تفسير نتائجها.
+6. `Sa3erli_SRS_AR.pdf` بوصفه SRS تاريخياً بالإصدار v1.0 لا يعدل ضمن هذه الخطة.
+7. الكود عند التعارض مع وصف قديم، على أن يسجل الفرق ولا يحول السلوك الجزئي إلى مكتمل.
 
-التغيير المحلي غير المثبت في `tests/e2e/ui.spec.ts` مستبعد من الأدلة، ولا تحسم هذه الخطة التحقيق المستقل المرتبط به. أصبح SRS v2 ونسختا PDF المعتمدتان جزءاً من baseline التوثيق قبل Sprint 07؛ ولا يفوض ذلك التنفيذ أو النشر، ويبقى SRS v1.0 التاريخي بلا تعديل.
+أغلق تحقيق تحميل الكتالوج بتغيير مستقل حتمي قبل Sprint 07، ثم أغلقت Sprint 07 بموافقة المالك بتاريخ 2026-11-08. يبقى SRS v1.0 التاريخي بلا تعديل، ولا يفوض أي baseline توثيقي النشر.
 
 ### 1.2 دلالات الحالة
 
@@ -47,6 +49,11 @@
 | `PLANNED` | معتمد للتسليم في Sprint لاحق ولم ينفذ بعد. |
 | `UNKNOWN` | يحتاج قرار مالك أو مراجعة قانونية/تشغيلية ولا يجوز افتراضه. |
 | `DEFERRED` | بوابة إنتاج أو تحقق مؤجل عمداً إلى مرحلة محددة. |
+
+### 1.3 القراران الجديدان
+
+- **`DEC-012` — توقيت حذف الوثيقة (`PLANNED`):** verified admin view والقرار النهائي شرطان متلازمان؛ يبدأ عد 48 ساعة من الحدث اللاحق. تبقى الوثيقة للأدمن المخول حتى اكتمالهما. يلزم scheduling حتمي وretry وalert وAudit، بينما metadata/Audit retention مفتوح ولا تعتمد أسماء حقول نهائية.
+- **`DEC-013` — حداثة السعر (`PLANNED`):** update مسموح في أي وقت بلا cooldown؛ العمر من الإنشاء/التأكيد الأول ثم أحدث update/reconfirm. stale بعد أكثر من سبعة أيام يبقى منشوراً مع notice عربي وتاريخ أحدث تأكيد، ولا يخفى أو يعلق أو يحذف أو يحجب تلقائياً. schema النهائي مفتوح.
 
 ## 2. رؤية المنتج والنطاق والاستبعادات
 
@@ -106,7 +113,7 @@
 
 ### 3.5 غير المنفذ بعد
 
-- Admin UI، `needs_changes` وإعادة الإرسال، إنشاء Shop وmerchant claim، وإعادة التقديم المرتبطة.
+- `needs_changes` وإعادة الإرسال، إنشاء Shop وmerchant claim، وإعادة التقديم المرتبطة. Admin UI أغلقت في Sprint 07.
 - Merchant dashboard وملكية CRUD للعروض والإخفاء/الإعادة/Soft Delete والتأكيد الدوري.
 - Object Storage الخاص، حذف الوثيقة بعد 48 ساعة، scheduled jobs الإنتاجية، والاستضافة/النطاق/backup/DR.
 - اختبار نسخة منشورة أو هاتف سوري على بيانات موبايل، واعتماد قانوني وسياسات خصوصية/شروط نهائية.
@@ -144,7 +151,7 @@
 
 ### 4.6 المهام المجدولة
 
-- حذف الوثائق بعد 48 ساعة من trigger المعتمد، retries وتنبيه عند الفشل.
+- تسجيل verified view والقرار النهائي، ثم حذف الوثائق بعد 48 ساعة من الحدث اللاحق، مع retries وتنبيه وAudit وفق `DEC-012`.
 - صيانة retention والتنبيهات أو فحوص الاتساق التي تعتمد لاحقاً.
 - تعمل بهوية خدمة موثوقة وبصلاحية أقل ما يمكن، مع idempotency وAudit/metrics.
 
@@ -165,7 +172,7 @@
 
 - تعمل المعايير معاً وتستبعد المنتجات بلا عرض مطابق.
 - لا يفعّل ترتيب السعر إلا مع عملة واحدة، ولا تقارن `USD` و`SYP`.
-- تعرض البطاقات تاريخ العرض المختار وتحذير stale عند سبعة أيام تقويمية على الأقل.
+- تعرض البطاقات تاريخ العرض المختار؛ في عقد `DEC-013` المخطط يظهر notice بعد أكثر من سبعة أيام من أحدث تأكيد/تحديث مع بقاء العرض منشوراً، بلا cooldown أو إخفاء تلقائي.
 
 ### 5.3 المنتج والمحل والمقارنة وWhatsApp
 
@@ -187,7 +194,8 @@
 
 ### 5.6 لوحة الأدمن
 
-- **PLANNED Sprint 07:** layout محمي، summary، قائمة، status filter، pagination، تفاصيل، تنزيل خاص، approve/reject، conflict/retry، empty/loading/error/forbidden.
+- **IMPLEMENTED Sprint 07 — CLOSED — OWNER APPROVED:** layout محمي، summary، قائمة، status filter، pagination، تفاصيل، تنزيل خاص، approve/reject، conflict/retry، empty/loading/error/forbidden.
+- **PLANNED Sprint 10:** تسجيل verified view وربط عرض الوثيقة بدورة حذف `DEC-012` دون بدء العد من المشاهدة وحدها.
 - لا تنفذ منطق أعمال في الواجهة ولا تقرأ مجموعات التاجر مباشرة.
 
 ### 5.7 بوابة التاجر
@@ -226,7 +234,7 @@
 
 ### 6.4 `needs_changes` وإعادة الإرسال
 
-- قرار الأدمن يحدد سبباً وحقولاً مطلوبة، يثبت transition وAudit، ويبدأ عد حذف الوثيقة القديمة.
+- قرار الأدمن يحدد سبباً وحقولاً مطلوبة ويثبت transition وAudit؛ لا يبدأ `needs_changes` وحده حذف الوثيقة القديمة، ويخضع حذفها لاحقاً لشرطي `DEC-012`.
 - يسمح للمالك بتعديل الدورة المسموحة فقط ورفع وثيقة جديدة ثم يعيدها إلى `pending` ذرياً.
 
 ### 6.5 إنشاء Shop وmerchant claim
@@ -252,8 +260,8 @@
 
 ### 6.9 دورة السبعة أيام
 
-- edit أو reconfirm للسعر نفسه يحدث `updatedAt` الموثوق ويعيد دورة 7 أيام.
-- stale لا يحذف العرض ولا يخلط العملات؛ notifications اختيارية وفق القناة المعتمدة.
+- edit أو reconfirm مسموحان في أي وقت ويعيدان عمر الحداثة من أحدث تأكيد/تحديث مفاهيمي؛ لا يعتمد اسم حقل نهائي.
+- بعد أكثر من سبعة أيام يبقى العرض منشوراً ومرئياً مع «هذا السعر قديم — آخر تحديث: YYYY-MM-DD»؛ لا يخفى أو يعلق أو يحذف أو يحجب تلقائياً، ولا تخلط العملات.
 
 ### 6.10 الإشعارات
 
@@ -267,7 +275,8 @@
 
 ### 6.12 حذف الوثيقة المجدول
 
-- triggers: `approved/rejected` للوثيقة الحالية و`needs_changes` للوثيقة القديمة؛ موعد بعد 48 ساعة.
+- trigger مركب: verified admin view وقرار نهائي مسجل معاً؛ الموعد بعد 48 ساعة من الحدث اللاحق، وتبقى الوثيقة متاحة للأدمن المخول حتى اكتمال الشرطين.
+- لا تبدأ المشاهدة وحدها أو القرار وحده العد؛ أسماء الأحداث والموعد مفاهيمية حتى اعتماد schema.
 - job idempotent، يسجل النجاح والفشل، يعيد المحاولة وفق سياسة لاحقة وينبه الأدمن دون تمديد خفي.
 
 ### 6.13 الضوابط العرضية
@@ -295,10 +304,10 @@
 |---|---|---|
 | Application cycle/link | applicant `uid` مع cycle id وprevious id | `PLANNED` Sprint 08؛ يلزم قرار نموذج. |
 | Shop | `shopId` و`ownerUid` ثابت | `PLANNED` Sprint 08. |
-| Merchant offer | `offerId` و`shopId` وproduct identity | `PLANNED` Sprint 09. |
+| Merchant offer | `offerId` و`shopId` وproduct identity وأحدث تأكيد سعر مفاهيمياً | `PLANNED` Sprint 09؛ schema النهائي غير معتمد. |
 | Notification | recipient `uid` وtype/read state | `PLANNED` Sprint 08؛ القناة/الاحتفاظ مفتوحان. |
 | Expanded audit | actor/target/action/correlation/version | `PLANNED` Sprint 08–10. |
-| Document metadata | application cycle/storage key/deletion due/status | `PLANNED` Sprint 10 مع Object Storage. |
+| Document metadata | application cycle/storage key وأحداث view/decision وdeletion due مفاهيمياً | `PLANNED` Sprint 10 مع Object Storage؛ schema النهائي وretention مفتوحان. |
 | Scheduled-job record/dead letter | job id/target/due/attempt/status | `PLANNED` Sprint 10؛ التصميم مفتوح. |
 
 ### 7.3 حقول الملكية والثقة
@@ -314,7 +323,7 @@
 - Reapplication بعد `rejected`: دورة جديدة مرتبطة، بعد إذن أدمن، دون تعديل التاريخ المرفوض.
 - Shop: `active ↔ suspended`؛ الأثر النهائي على العروض قرار مفتوح.
 - Offer: `active ↔ hidden` و`active/hidden → deleted`؛ `deleted` نهائي للتاجر.
-- Document: available → deletion scheduled → deleted، مع failed/retry state تشغيلي.
+- Document: available حتى اكتمال verified view والقرار النهائي، ثم deletion scheduled من الحدث اللاحق +48h، ثم deleted، مع failed/retry state تشغيلي.
 
 ### 7.5 الفهارس
 
@@ -330,7 +339,7 @@
 
 ### 7.7 الاحتفاظ بالـmetadata
 
-- bytes تحذف وفق 48 ساعة بعد trigger؛ metadata/Audit المحدودان قد يبقيان حسب سياسة قانونية لم تعتمد مدتها.
+- bytes تحذف بعد 48 ساعة من الحدث اللاحق بين verified view والقرار النهائي؛ metadata/Audit قد يبقيان حسب سياسة قانونية لم تعتمد مدتها.
 - مدة Soft Delete والحساب والإشعارات والـAudit مفتوحة ولا تفترضها هذه الخطة.
 
 ### 7.8 ترحيل Firestore Bytes
@@ -382,7 +391,7 @@
 
 ### 9.5 حذف الوثائق والمراجعة القانونية
 
-- حذف bytes نهائياً بعد 48 ساعة من `approved/rejected`، والوثيقة القديمة بعد `needs_changes`، مع alert/retry عند الفشل.
+- حذف bytes نهائياً بعد 48 ساعة من الحدث اللاحق بين verified view والقرار النهائي، مع scheduling حتمي وalert/retry/Audit؛ لا يكفي أحد الحدثين منفرداً.
 - المدة والسياسة معتمدتان وظيفياً لكن التنفيذ والمراجعة القانونية بوابتان قبل بيانات حقيقية.
 - سياسة حذف الحساب والـmetadata/Audit وSoft Delete لا تزال مفتوحة.
 
@@ -457,12 +466,14 @@
 
 | المخرج | الحالة/الموعد |
 |---|---|
-| Functional Scenario MD | [FUNCTIONAL_SCENARIO_AR.md](../01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md) معتمد بالإصدار `1.0-approved`. |
-| Functional Scenario PDF | [SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf](../01-product/scenarios/SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf) مكتمل ومودع ومعتمد بالإصدار `1.0-approved` بتاريخ 2026-11-07. |
+| Functional Scenario MD | [FUNCTIONAL_SCENARIO_AR.md](../01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md) معتمد بالإصدار `1.1-approved`؛ اعتماد 1.0 محفوظ تاريخياً. |
+| Functional Scenario PDF | [SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf](../01-product/scenarios/SA3ERLI_FUNCTIONAL_SCENARIO_AR_APPROVED.pdf) artifact تاريخي byte-identical للإصدار `1.0-approved` بتاريخ 2026-11-07؛ لا يمثل المراجعة الجديدة. |
 | SRS v1.0 التاريخي | محفوظ بلا تعديل. |
-| SRS v2 MD | [SA3ERLI_SRS_V2_AR.md](../01-product/requirements/SA3ERLI_SRS_V2_AR.md) معتمد بالإصدار `2.0-approved` ويشكل خط أساس متطلبات Sprint 07–11. |
+| SRS v2 MD | [SA3ERLI_SRS_V2_AR.md](../01-product/requirements/SA3ERLI_SRS_V2_AR.md) معتمد بالإصدار `2.1-approved`؛ اعتماد 2.0 محفوظ تاريخياً. |
+| SRS v2 PDF | [SA3ERLI_SRS_V2_AR_APPROVED.pdf](../01-product/requirements/SA3ERLI_SRS_V2_AR_APPROVED.pdf) artifact تاريخي للإصدار `2.0-approved` ولا يمثل المراجعة الجديدة. |
 | SRS v2 PDF | [SA3ERLI_SRS_V2_AR_APPROVED.pdf](../01-product/requirements/SA3ERLI_SRS_V2_AR_APPROVED.pdf) مكتمل ومودع ومعتمد بتاريخ 2026-11-07؛ يعاد إصداره في Sprint 11 فقط إذا غيّرت تحديثات المتطلبات المعتمدة محتواه. |
-| الخطة الرئيسية | هذه الوثيقة؛ `APPROVED — OWNER APPROVED` بالإصدار `1.0-approved`. |
+| End-to-End Scenario | [SA3ERLI_END_TO_END_PROJECT_SCENARIO_AR.md](../01-product/scenarios/SA3ERLI_END_TO_END_PROJECT_SCENARIO_AR.md) و[PDF المعتمد](../01-product/scenarios/SA3ERLI_END_TO_END_PROJECT_SCENARIO_AR_APPROVED.pdf)، الإصدار `1.0-approved`. |
+| الخطة الرئيسية | هذه الوثيقة؛ `APPROVED — OWNER APPROVED` بالإصدار `1.1-approved`، مع حفظ اعتماد 1.0 في السجل. لا يوجد PDF للخطة. |
 | OpenAPI | موجود للعقود الحالية؛ يحدث مع كل endpoint جديد. |
 | Architecture documentation | `PLANNED` مع context/container/deployment/trust-boundary views. |
 | Data model | `PLANNED` مع entities/states/indexes/retention/migration. |
@@ -489,9 +500,10 @@
 
 ### 13.1 Sprint 07 — لوحة الأدمن
 
-- **الهدف:** تقديم واجهة أدمن محمية تستهلك APIs الموثوقة المسلمة في Sprint 06.
+- **الحالة:** **CLOSED — OWNER APPROVED** بتاريخ 2026-11-08.
+- **الهدف المنجز:** تقديم واجهة أدمن محمية تستهلك APIs الموثوقة المسلمة في Sprint 06.
 - **مهام Frontend:** route/layout محميان، summary موثوق، list، status filter، pagination، detail، private document viewer/download، approve/reject dialogs، conflict/loading/empty/error/forbidden/retry، responsive/a11y. تعرض summary حالات loading/error/empty مستقلة.
-- **مهام Backend:** إضافة endpoint أدمن read-only صغير للـsummary يعيد counts معرفة بدقة؛ هذا هو الخيار المفضل في الخطة لأن list API الحالية تدعم `status/limit/pageToken` ولا تقدم totals عالمية موثوقة. إذا ألغى المالك endpoint صراحة، تزال global totals من النطاق ويسمى أي count ظاهر page-local بوضوح. لا يعاد تنفيذ APIs القرارات الأساسية.
+- **مهام Backend المنجزة:** endpoint أدمن read-only للـsummary يعيد counts معرفة بدقة ومستقلة عن list API ذات `status/limit/pageToken`؛ لا تشتق totals من صفحة قائمة.
 - **البيانات/التخزين:** summary aggregation موثوقة ومتسقة مع تعريف counts المعتمد، دون bytes أو PII زائد؛ استخدام الفهرس الحالي للقائمة والتحقق من no-store وعدم تسرب bytes.
 - **الأمن/الخصوصية:** admin authorization، rate limiting، أخطاء آمنة، عدم direct Firestore، منع caching للوثيقة، redaction وعدم كشف PII في summary/list أكثر من اللازم.
 - **الاختبارات الآلية:** unit components، mocked API، integrated Emulator E2E، authorization، pagination، conflict، private document، summary counts حتمية وrate-limit/error contracts، responsive/a11y/regression.
@@ -500,7 +512,7 @@
 - **التبعيات:** Sprint 06 baseline وadmin dummy claims وAPIs الحالية، اعتماد الخطة وSRS v2، إيداع PDF السيناريو، وإغلاق بوابة `ui.spec.ts` بbaseline نظيف ودليل مستقل.
 - **الاستبعادات:** `needs_changes`، shop/merchant claim، reapplication، merchant dashboard، Object Storage.
 - **معايير الدخول:** Sprint 06 مغلق، الخطة وSRS v2 معتمدان، PDF السيناريو مودع، بوابة الاستقرار 13.0 مغلقة وworking tree مفهوم، والعقود والفهرس وEmulator fixtures متاحة.
-- **معايير الخروج:** كل واجهات الأدمن المطلوبة تعمل عبر API فقط؛ summary يستخدم endpoint موثوقاً موثقاً في OpenAPI ومختبراً حتمياً، أو تزال totals العالمية ويسمى count بأنه page-local بقرار موثق؛ الاختبارات غير الحية وOwner QA تمر، ولا توسع صلاحية، ويحدث traceability.
+- **معايير الخروج المحققة:** كل واجهات الأدمن المطلوبة تعمل عبر API فقط؛ summary يستخدم endpoint موثوقاً موثقاً في OpenAPI ومختبراً حتمياً؛ الاختبارات غير الحية وOwner QA مرت دون توسيع صلاحية، وحدث traceability.
 - **بوابات الإنتاج المؤجلة:** ADC/CORS/domain/deployed index/real document/production deployment.
 
 ### 13.2 Sprint 08 — دورة الاعتماد والهوية التجارية
@@ -522,33 +534,33 @@
 ### 13.3 Sprint 09 — بوابة التاجر وإدارة العروض
 
 - **الهدف:** تمكين التاجر المعتمد غير المعلّق من إدارة ملف محله وعروضه المملوكة.
-- **مهام Frontend:** dashboard، shop profile، WhatsApp confirmation، offer list/create/update، hide/reactivate/Soft Delete، stale/reconfirm، loading/empty/error/conflict، mobile/a11y.
-- **مهام Backend:** merchant/ownership/status guards، shop APIs، offer CRUD/transitions، normalization، concurrency، seven-day reconfirm وAudit.
-- **البيانات/التخزين:** final Shop/offer schema، indexes، ownership، status/version/timestamps وsoft-delete metadata؛ migration آمنة من live offers تحدد لاحقاً.
+- **مهام Frontend:** dashboard، shop profile، WhatsApp confirmation، offer list/create/update، hide/reactivate/Soft Delete، وإشعار `DEC-013` مع التاريخ وupdate/reconfirm بلا cooldown، loading/empty/error/conflict، mobile/a11y.
+- **مهام Backend:** merchant/ownership/status guards، shop APIs، offer CRUD/transitions، normalization، concurrency، latest-confirmation المفاهيمي وAudit دون تجميد schema قبل التصميم.
+- **البيانات/التخزين:** final Shop/offer schema، indexes، ownership، status/version وأحدث تأكيد سعر مفاهيمياً وsoft-delete metadata؛ migration آمنة من live offers تحدد لاحقاً.
 - **الأمن/الخصوصية:** منع cross-shop access، منع client ownerUid، suspension enforcement، no cross-currency comparison، audit للبيانات الحساسة.
-- **الاختبارات الآلية:** ownership/authz، CRUD، currency/condition، duplicate، conflicts، hide/reactivate/delete، stale boundaries، merged public reads وregressions.
+- **الاختبارات الآلية:** ownership/authz، CRUD، currency/condition، duplicate، conflicts، hide/reactivate/delete، initial/latest-confirmation وupdate-any-time وحدود ما بعد 7 أيام وبقاء stale منشوراً، merged public reads وregressions.
 - **QA اليدوي:** تاجران ومحلان، active/suspended، تعديل profile/WhatsApp، كامل دورة العرض، public visibility والأسعار.
 - **مخرجات التوثيق:** Merchant API/OpenAPI، data migration، user guide وSprint checklist/report.
 - **التبعيات:** Shop وmerchant claim من Sprint 08 وقرارات schema/migration/suspension impact.
 - **الاستبعادات:** physical purge النهائي، production storage/hosting، release النهائي.
 - **معايير الدخول:** merchant role وShop consistency مستقران، ownership model معتمد، test fixtures جاهزة.
-- **معايير الخروج:** التاجر يدير ملكه فقط، الحالات العامة متسقة فوراً، price cycle صحيح، regressions وOwner QA تمر.
+- **معايير الخروج:** التاجر يدير ملكه فقط، الحالات العامة متسقة فوراً، `DEC-013` تعمل بلا cooldown أو إخفاء تلقائي وبnotice مؤرخ، regressions وOwner QA تمر.
 - **بوابات الإنتاج المؤجلة:** provider/retention/purge/deployed mobile-network test.
 
 ### 13.4 Sprint 10 — تقوية الأمن والخصوصية والبنية الإنتاجية
 
 - **الهدف:** إزالة الحلول التطويرية واستكمال privacy/security/operations قبل release.
 - **مهام Frontend:** account deletion UX بعد اعتماد السياسة، رسائل retention/deletion، recovery states، privacy links والموافقات المطلوبة.
-- **مهام Backend:** account-deletion orchestration، scheduled document deletion/retry/alerts، storage abstraction، retention jobs، security hardening وoperational endpoints اللازمة.
+- **مهام Backend:** account-deletion orchestration، تسجيل verified view والقرار النهائي، حساب due من الحدث اللاحق +48h، scheduled deletion/retry/alerts/Audit، storage abstraction، retention jobs، security hardening وoperational endpoints اللازمة.
 - **البيانات/التخزين:** ترحيل Firestore Bytes إلى private Object Storage، metadata keys، lifecycle/retention، backups، restore validation وphysical purge policies.
 - **الأمن/الخصوصية:** threat model، least privilege، secret rotation، dependency/config review، legal/privacy review، log retention وincident controls.
-- **الاختبارات الآلية:** malicious files، storage authz، deletion at 48h، retry/idempotency، account effects، retention/purge، backup/restore، rules/API penetration-oriented cases.
+- **الاختبارات الآلية:** malicious files، storage authz، view-only/decision-only، ترتيب الحدثين، deletion عند later-event +48h، retry/idempotency/alert/Audit، account effects، retention/purge، backup/restore، rules/API penetration-oriented cases.
 - **QA اليدوي:** private access، deletion schedule/failure alert، account policy، recovery/rollback drills في بيئة غير حية.
 - **مخرجات التوثيق:** security/privacy docs، storage migration، retention matrix، backup/restore/DR/incident runbooks، checklist/report.
 - **التبعيات:** قرارات provider/legal/retention/account deletion/suspension/purge، ونتائج Sprint 08–09.
 - **الاستبعادات:** production release نفسه؛ لا بيانات تجارية حقيقية قبل البوابات.
 - **معايير الدخول:** مزود وبنية/قانون/retention معتمدة، staging آمن متاح، data inventory مكتمل.
-- **معايير الخروج:** لا Firestore Bytes إنتاجية، حذف 48h آلي ومرصود، recovery مثبت، المخاطر الحرجة مغلقة أو مقبولة رسمياً.
+- **معايير الخروج:** لا Firestore Bytes إنتاجية، `DEC-012` آلية ومرصودة دون حذف قبل الشرطين، recovery مثبت، وسياسة metadata/Audit retention مغلقة أو مقبولة رسمياً.
 - **بوابات الإنتاج المؤجلة:** domain النهائي، production credentials، الاختبارات الميدانية وموافقة release في Sprint 11.
 
 ### 13.5 Sprint 11 — QA النهائي والجاهزية والإطلاق
@@ -573,7 +585,7 @@
 |---|---|---|---|---|---|---|
 | `SCN-PUB-001` | IMPLEMENTED | 01–02؛ regression 07–11 | كتالوج وfallback | لا API خاص حالياً | static + live merge | UI/E2E regression |
 | `SCN-PUB-002` | IMPLEMENTED | 01 | فلاتر/ترتيب/reset | لا أثر حالي | view model فقط | Unit + Playwright |
-| `SCN-PUB-003` | IMPLEMENTED | 01؛ امتداد 09 | بطاقة سعر/قدم | reconfirm لاحقاً | updatedAt/عملة/حالة | Unit boundaries + E2E |
+| `SCN-PUB-003` | IMPLEMENTED | 01؛ امتداد 09 | بطاقة/notice مؤرخ | reconfirm لاحقاً | latest confirmation مفاهيمي/عملة | Unit boundaries + E2E |
 | `SCN-PUB-004` | IMPLEMENTED | 01–02 | product/shop/WhatsApp | قراءة عامة | shops/offers | Playwright + link checks |
 | `SCN-PUB-005` | PARTIAL | تحقيق مستقل ثم 11 | loading/empty/not-found | fallback آمن | static/live failure | targeted UI + regression مخطط |
 | `SCN-CMP-001` | IMPLEMENTED | سابق/01–02 | selection/tray/storage | لا أثر | localStorage دفاعي | Unit + Playwright |
@@ -590,23 +602,23 @@
 | `SCN-MER-005` | IMPLEMENTED | 04–06 | status screens | owner status API | current application | Mocked + integrated E2E |
 | `SCN-MER-006` | PLANNED | 08 | edit/resubmit | state transition | cycle/new document | State/unit/API/E2E مخطط |
 | `SCN-MER-007` | PARTIAL | 08 | rejected/reapply UX | admin authorization | linked cycles/Audit | Authz/concurrency/E2E مخطط |
-| `SCN-ADM-001` | PARTIAL | 07 | protected Admin UI | admin guard موجود | لا direct access | Guard/UI/E2E مخطط |
-| `SCN-ADM-002` | PARTIAL | 07 | list/filter/pagination | list API موجود | index/current apps | Contract + Playwright مخطط |
-| `SCN-ADM-003` | PARTIAL | 07؛ storage 10 | detail/private viewer | detail/document APIs | bytes→Object Storage | no-store/authz/E2E مخطط |
-| `SCN-ADM-004` | PARTIAL | 07 | decision/conflict UX | decision/Audit موجودان | version/audit | Existing API + UI E2E مخطط |
-| `SCN-ADM-005` | PLANNED | 08 و10 | needs_changes/job status | transition + scheduler | due/retry/storage | State/job/privacy tests مخطط |
+| `SCN-ADM-001` | IMPLEMENTED | 07 | protected Admin UI | admin guards | لا direct access | Sprint 07 PASS |
+| `SCN-ADM-002` | IMPLEMENTED | 07 | list/filter/pagination/summary | list + summary APIs | index/current apps/aggregate | Sprint 07 PASS |
+| `SCN-ADM-003` | IMPLEMENTED | 07؛ lifecycle 10 | detail/private viewer | detail/document؛ view tracking مخطط | bytes→Object Storage | Sprint 07 PASS + `DEC-012` tests مخططة |
+| `SCN-ADM-004` | IMPLEMENTED | 07؛ lifecycle 10 | decision/conflict UX | decision/Audit؛ deletion linkage مخطط | version/audit | Sprint 07 PASS + `DEC-012` tests مخططة |
+| `SCN-ADM-005` | PLANNED | 08 و10 | needs_changes/job status | transition + two-event scheduler | due/retry/storage | State/later-event/job/privacy tests مخططة |
 | `SCN-SHP-001` | PLANNED | 08 | refreshed role/state | Shop + claim workflow | Shop/ownerUid/Audit | Failure/atomic consistency E2E |
 | `SCN-SHP-002` | PLANNED | 09 | merchant profile | shop update APIs | Shop metadata/Audit | Ownership/validation/E2E |
 | `SCN-SHP-003` | PLANNED | 08؛ policy 10 | suspended states | suspend/reactivate guards | Shop status/Audit | Authz/session E2E مخطط |
 | `SCN-OFR-001` | PLANNED | 09 | offer list/create | owned CRUD | offer/shop indexes | Unit/API/integrated E2E |
-| `SCN-OFR-002` | PLANNED | 09 | edit/conflict | ownership/version | offer metadata | Cross-owner/concurrency tests |
+| `SCN-OFR-002` | PLANNED | 09 | edit/conflict | ownership/version | latest confirmation مفاهيمي | Cross-owner/concurrency/update-any-time tests |
 | `SCN-OFR-003` | PLANNED | 09؛ purge 10 | hide/reactivate/delete | transitions/Audit | status/deletedAt | State/public exclusion E2E |
-| `SCN-OFR-004` | PARTIAL | 09 | stale/reconfirm | trusted updatedAt | seven-day cycle | UTC boundary + integrated E2E |
-| `SCN-PRV-001` | PARTIAL | 10 | deletion status/error | scheduled deletion | Object Storage/metadata | Job/authz/retry/retention tests |
+| `SCN-OFR-004` | PARTIAL | 09 | stale notice/reconfirm | latest-confirmation contract | visible seven-day freshness | UTC/update-any-time/visibility E2E |
+| `SCN-PRV-001` | PARTIAL | 10 | deletion status/error | two-event scheduled deletion | Object Storage/metadata | ordering/+48h/authz/retry/retention tests |
 | `SCN-PRV-002` | UNKNOWN | 10 | account deletion UX | orchestration غير محسوم | cross-entity retention | Legal decision + test plan لاحق |
 | `SCN-OPS-001` | PARTIAL | 07–11 | loading/error/recovery | health/errors/ops | backup/rollback/alerts | Full regression + drills + field QA |
 
-**تغطية المصفوفة:** 34 سيناريو فريداً؛ `IMPLEMENTED 15`، `PARTIAL 10`، `PLANNED 8`، `UNKNOWN 1`.
+**تغطية المصفوفة بعد إغلاق Sprint 07:** 34 سيناريو فريداً؛ `IMPLEMENTED 19`، `PARTIAL 6`، `PLANNED 8`، `UNKNOWN 1`.
 
 ## 15. سجل التبعيات والمخاطر
 
@@ -621,7 +633,7 @@
 | `RISK-04` | بيانات | migration من live offers إلى ملكية التاجر غير محددة. | ازدواج أو فقد/استيلاء | inventory، mapping، dry run، rollback واختبار. |
 | `RISK-05` | وصول | أثر suspension على العروض العامة غير محسوم. | عرض بيانات غير مرغوبة أو اختفاء مفاجئ | قرار مالك قبل Sprint 08 exit. |
 | `RISK-06` | تشغيل | provider/domain/backup/DR/SLOs غير مختارة. | جاهزية نشر غير مثبتة | حسم Sprint 10–11 واختبارات restore/rollback. |
-| `RISK-07` | تجربة | ترتيب unknown live product قيد التحقيق وقد يكون عيب منتج أو اختباراً لا يدخل loading أو انتقالاً أسرع من الرصد. | flash/نتيجة غير حتمية وbaseline متسخ | adapter حتمي وحالات loading/success/failure، ثم revert أو commit مستقل بالدليل قبل Sprint 07. |
+| `RISK-07` | تجربة | كان ترتيب unknown live product غير حتمي قبل Sprint 07. | flash/نتيجة غير حتمية | أُغلق بتحقيق وتغيير اختبار حتمي مستقل؛ يبقى regression مطلوباً. |
 | `RISK-08` | خصوصية | logs/Audit قد تجمع PII أكثر من اللازم مع التوسع. | تسرب واحتفاظ زائد | schema allowlists/redaction/retention review. |
 | `RISK-09` | أمن | stale token بعد suspension/claim change. | كتابة غير مصرح بها | server-side Shop status check وsession refresh؛ لا claim وحده. |
 | `RISK-10` | إطلاق | لم تختبر نسخة منشورة أو شبكة سورية فعلية. | فشل ميداني | بوابة Sprint 11 إلزامية. |
@@ -637,7 +649,7 @@
 7. الاستضافة والنطاق وCORS وobservability وbackup وDR وrollback.
 8. حقول البحث الإداري وحدوده.
 9. نموذج application cycles والربط بعد الرفض أو `needs_changes`.
-10. scheduler/alerts/retry/dead-letter لحذف الوثائق.
+10. تفاصيل scheduler/dead-letter والتصعيد؛ وجوب الجدولة الحتمية وretry/alert/Audit محسوم في `DEC-012`.
 11. قناة notifications ومدة الاحتفاظ.
 12. منع الكتابة فور suspension وتزامن claims والحالة.
 13. schema/migration النهائيان لعروض التاجر و`ownerUid/shopId`.
@@ -680,7 +692,7 @@
 - [ ] إيداع Functional Scenario PDF المعتمد في المستودع، وإعادة إصدار SRS v2 PDF فقط إذا تغيرت المتطلبات المعتمدة.
 - [ ] مراجعة قانونية/خصوصية وسياسات account/document/metadata/Audit retention.
 - [ ] private Object Storage عبر Backend وعدم وجود وثائق حقيقية في Firestore Bytes.
-- [ ] حذف 48 ساعة آلي مع retry/alert/Audit واختبار failure recovery.
+- [ ] حذف آلي بعد 48 ساعة من الحدث اللاحق بين verified view والقرار النهائي، مع retry/alert/Audit واختبار failure recovery.
 - [ ] provider/domain/HTTPS/ADC/secrets/CORS/rules/indexes مع مراجعة least privilege.
 - [ ] staging production-like وتمرين backup/restore/rollback/DR/incident.
 - [ ] إزالة TEST/local-only configuration والfixtures من artifacts الإنتاجية.
@@ -707,5 +719,7 @@
 - [ ] اختيار البنية الإنتاجية دون افتراض provider/domain في هذه المسودة.
 - [ ] اعتماد استراتيجية QA وبوابات الهاتف السوري والنسخة المنشورة.
 - [ ] اعتماد دورة traceability لكل Sprint وreconciliation النهائي وإعادة إصدار SRS v2 PDF عند تغير المتطلبات المعتمدة فقط.
+- [x] اعتماد `DEC-012` و`DEC-013` بتاريخ 2026-11-08 بوصفهما قرارين جديدين وحصر تنفيذهما في Sprint 09–10.
+- [x] اعتماد هذه المراجعة `1.1-approved` كbaseline توثيقي جديد؛ لا يوجد PDF للخطة في هذه المهمة.
 
-> اعتماد هذه الخطة لا يغلق أي قرار مفتوح ولا يفوض النشر أو التعامل مع وثائق تجارية حقيقية. حالة الوثيقة هي **APPROVED — OWNER APPROVED**، وتبقى بوابات التنفيذ والإنتاج خاضعة لشروطها وموافقاتها المنفصلة.
+> هذه المراجعة **APPROVED — OWNER APPROVED** بالإصدار `1.1-approved`. لا تغلق أي قرار مفتوح ولا تفوض النشر أو التعامل مع وثائق تجارية حقيقية. يبقى اعتماد الإصدار 1.0 محفوظاً تاريخياً، وتخضع بوابات التنفيذ والإنتاج لشروطها وموافقاتها المنفصلة.

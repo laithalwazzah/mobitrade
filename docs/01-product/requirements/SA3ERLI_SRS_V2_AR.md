@@ -9,15 +9,16 @@
 | البند | القيمة |
 |---|---|
 | معرّف الوثيقة | `DOC-SRS-AR-002` |
-| الإصدار | `2.0-approved` |
+| الإصدار | `2.1-approved` |
 | الحالة | **APPROVED — OWNER APPROVED** |
-| التاريخ | 2026-11-07 |
-| تاريخ الاعتماد | 2026-11-07 |
-| نسخة PDF المعتمدة | [SA3ERLI_SRS_V2_AR_APPROVED.pdf](./SA3ERLI_SRS_V2_AR_APPROVED.pdf) |
+| التاريخ | 2026-11-08 |
+| تاريخ الاعتماد | 2026-11-08 |
+| نسخة PDF الحالية المعتمدة | [SA3ERLI_SRS_V2_1_AR_APPROVED.pdf](./SA3ERLI_SRS_V2_1_AR_APPROVED.pdf) |
+| نسخة PDF التاريخية | [SA3ERLI_SRS_V2_AR_APPROVED.pdf](./SA3ERLI_SRS_V2_AR_APPROVED.pdf) للإصدار `2.0-approved` |
 | المالك | مالك منتج «سعّرلي» |
 | المراجعون | مالك المنتج، المراجع التقني، ومراجع قانوني/خصوصية قبل بيانات حقيقية |
 | خط الأساس التنفيذي | `41a94003b9c921aec9ba1c9709a5cf5430d4bad7` |
-| آخر Sprint مغلق | Sprint 06 — **CLOSED — OWNER APPROVED** بتاريخ 2026-11-05 |
+| آخر Sprint مغلق | Sprint 07 — **CLOSED — OWNER APPROVED** بتاريخ 2026-11-08 |
 | اللغة المرجعية | العربية؛ تبقى الأسماء والمسارات والحالات التقنية بالإنجليزية عند الحاجة |
 
 ### سجل الإصدارات
@@ -26,18 +27,24 @@
 |---|---|---|
 | `2.0-draft` | 2026-11-07 | أول مسودة SRS v2 شاملة مبنية على السيناريو الوظيفي والخطة الرئيسية المعتمدين. |
 | `2.0-approved` | 2026-11-07 | اعتماد المالك لـSRS v2 بعد مراجعة البنية والتتبع وذرية المتطلبات. |
+| `2.1-approved` | 2026-11-08 | اعتماد المالك لنشر `DEC-012` و`DEC-013` وتحديث Sprint 07 والتتبّع والمتطلبات الذرية. |
 
-> **إشعار الاعتماد:** اعتمد المالك SRS v2 بتاريخ 2026-11-07 مع بقاء خط الأساس التنفيذي `41a94003b9c921aec9ba1c9709a5cf5430d4bad7`. يشمل الاعتماد 37 متطلباً وظيفياً و21 متطلباً غير وظيفي و34 سيناريو متتبعاً. تبقى القرارات المفتوحة وبوابات الإنتاج مفتوحة، ولا يعني الاعتماد أنها منفذة أو محسومة. يجيز الاعتماد تخطيط Sprint 07 فقط؛ ولا يجيز النشر الإنتاجي أو معالجة وثائق تجارية حقيقية.
+> **إشعار الاعتماد:** اعتمد المالك `2.1-approved` بتاريخ 2026-11-08 مع حفظ اعتماد 2.0 وPDF المقابل له تاريخياً. لا يفوض الاعتماد الإنتاج أو الوثائق الحقيقية، ولا يحسم metadata/Audit retention أو البنية والبوابات القانونية.
 
 ### أسبقية المصادر
 
 1. التنفيذ المثبت في commit خط الأساس أعلاه عند إسناد `IMPLEMENTED`.
-2. `docs/01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md` بالإصدار `1.0-approved` وقرارات `DEC-001`–`DEC-011`.
-3. `docs/02-planning/MASTER_PROJECT_PLAN_AR.md` بالإصدار `1.0-approved`.
+2. `docs/01-product/scenarios/FUNCTIONAL_SCENARIO_AR.md` بالإصدار `1.1-approved` الذي يحفظ اعتماد 1.0 وينشر قرارات `DEC-001`–`DEC-013`.
+3. `docs/02-planning/MASTER_PROJECT_PLAN_AR.md` بالإصدار `1.1-approved` الذي يحفظ اعتماد 1.0.
 4. تقارير واختبارات Sprint 01–06 المغلقة بوصفها أدلة تاريخية.
 5. `Sa3erli_SRS_AR.pdf` بوصفه SRS v1.0 تاريخياً يبقى بلا تعديل.
 
-التغيير المحلي غير المحسوم في `tests/e2e/ui.spec.ts` مستبعد من الدليل السلوكي. هذه المسودة لا تنشئ PDF ولا تفوض التنفيذ أو النشر أو استخدام وثائق تجارية حقيقية.
+هذه المسودة لا تنشئ PDF ولا تفوض التنفيذ أو النشر أو استخدام وثائق تجارية حقيقية. PDF الحالي artifact تاريخي للإصدار 2.0 فقط.
+
+### القراران الجديدان المنشوران في هذه المراجعة
+
+- **`DEC-012` — توقيت حذف الوثيقة:** يلزم verified admin view وقرار نهائي معاً؛ يبدأ عد 48 ساعة من الحدث اللاحق، وتبقى الوثيقة متاحة للأدمن المخول حتى اكتمالهما. يلزم scheduling حتمي وretry وalert وAudit. المصطلحات الزمنية مفاهيمية وليست schema نهائياً، وretention للmetadata/Audit مفتوح. الحالة `PLANNED`.
+- **`DEC-013` — حداثة السعر:** update مسموح في أي وقت بلا cooldown. يبدأ العمر من الإنشاء/التأكيد الأول ثم أحدث update/reconfirm. بعد أكثر من سبعة أيام يبقى العرض منشوراً مع «هذا السعر قديم — آخر تحديث: YYYY-MM-DD»؛ لا يخفى أو يعلق أو يحذف أو يحجب تلقائياً. اسم حقل أحدث تأكيد غير معتمد. الحالة `PLANNED`.
 
 ## 2. المقدمة
 
@@ -81,7 +88,7 @@
 | Merchant application | دورة طلب اعتماد بيانات المحل والوثيقة التجارية. |
 | Audit | سجل أفعال وقرارات حساسة مع الفاعل والتوقيت والتغيير. |
 | Object Storage | تخزين ملفات خاص مطلوب قبل الإنتاج؛ مزوده غير محسوم. |
-| stale price | عرض مضى على تحديثه أو تأكيده سبعة أيام تقويمية على الأقل. |
+| stale price | عرض مضى أكثر من سبعة أيام على أحدث تأكيد/تحديث مفاهيمي؛ يبقى منشوراً مع notice مؤرخ وفق `DEC-013`. |
 | provisioning | workflow ينسق Shop وAuth claim وAudit مع fail-closed/retry/reconciliation. |
 
 ## 4. نظرة النظام والسياق
@@ -146,17 +153,17 @@
 #### `FR-PUB-003` — السعر والحالة والقدم
 
 - **معرّف المتطلب:** `FR-PUB-003`
-- **نص المتطلب:** يجب عرض العرض المختار وحالته وعملته وتاريخ تحديثه، ووسم stale بعد سبعة أيام.
+- **نص المتطلب:** يجب عرض العرض المختار وحالته وعملته وتاريخ أحدث تأكيد/تحديث للسعر، وإظهار notice عربي بعد أكثر من سبعة أيام مع إبقاء العرض منشوراً.
 - **الفاعل الأساسي:** الزائر.
 - **الأولوية:** Must.
-- **الحالة الحالية:** IMPLEMENTED.
+- **الحالة الحالية:** PARTIAL؛ العرض التاريخي والتحذير الأساسي موجودان، وسياسة `DEC-013` الكاملة PLANNED.
 - **Sprint المالك:** Sprint 01؛ إدارة التأكيد Sprint 09.
-- **المصدر:** `SCN-PUB-003` و`DEC-010`.
+- **المصدر:** `SCN-PUB-003` و`DEC-010` و`DEC-013`.
 - **الشروط السابقة:** وجود عرض مطابق.
-- **السلوك المتوقع:** يحسب الأرخص لكل condition/currency ويعد المحلات الفريدة.
+- **السلوك المتوقع:** يحسب الأرخص لكل condition/currency ويعد المحلات الفريدة؛ stale يبقى ظاهراً مع «هذا السعر قديم — آخر تحديث: YYYY-MM-DD» ولا يغير حالة النشر.
 - **سلوك الفشل:** التاريخ غير الصالح لا ينتج حساب قدم مضللاً.
 - **قيود الأمن/الخصوصية:** لا مقارنة عابرة للعملة.
-- **معايير القبول القابلة للاختبار:** حدود اليوم السابع UTC وحساب الأرخص والعملات تمر باختبارات حتمية.
+- **معايير القبول القابلة للاختبار:** creation/initial-confirmation وآخر update/reconfirm وحدود ما بعد اليوم السابع UTC وحساب الأرخص والعملات تمر باختبارات حتمية، دون اعتماد اسم حقل نهائي.
 
 #### `FR-PUB-004` — تفاصيل المنتج والمحل وWhatsApp
 
@@ -386,7 +393,7 @@
 - **الشروط السابقة:** قرار أدمن `needs_changes` على دورة حالية.
 - **السلوك المتوقع:** تعديل محدود، وثيقة جديدة، transition ذري وAudit.
 - **سلوك الفشل:** يبقى fail-closed ولا تضيع الدورة أو الوثيقة السابقة قبل جدولة حذفها.
-- **قيود الأمن/الخصوصية:** حذف الوثيقة القديمة بعد 48 ساعة؛ لا تعديل pending.
+- **قيود الأمن/الخصوصية:** لا يحذف `needs_changes` الوثيقة القديمة منفرداً؛ يبقى حذفها خاضعاً لشرطي `DEC-012`، ولا تعديل pending خارج المسار المسموح.
 - **معايير القبول القابلة للاختبار:** state/authz/duplicate/file/retry integrated tests تمر.
 
 #### `FR-MER-007` — الرفض وإعادة التقديم
@@ -412,7 +419,7 @@
 - **نص المتطلب:** يجب توفير Admin UI محمية بـ`admin: true` وتمنع بقية الأدوار.
 - **الفاعل الأساسي:** الأدمن.
 - **الأولوية:** Must.
-- **الحالة الحالية:** PARTIAL.
+- **الحالة الحالية:** IMPLEMENTED في Sprint 07.
 - **Sprint المالك:** Sprint 07.
 - **المصدر:** `SCN-ADM-001` و`DEC-006`.
 - **الشروط السابقة:** جلسة وتوكن وclaim صالحان.
@@ -427,7 +434,7 @@
 - **نص المتطلب:** يجب عرض قائمة طلبات الأدمن باستخدام `status` و`limit` و`pageToken` مع pagination مستقرة، دون اشتقاق totals عالمية من list API الحالية.
 - **الفاعل الأساسي:** الأدمن.
 - **الأولوية:** Must.
-- **الحالة الحالية:** PARTIAL.
+- **الحالة الحالية:** IMPLEMENTED في Sprint 07.
 - **Sprint المالك:** Sprint 07.
 - **المصدر:** `SCN-ADM-002` و`DEC-006` والخطة 13.1.
 - **الشروط السابقة:** admin authorized.
@@ -442,9 +449,9 @@
 - **نص المتطلب:** يجب أن يرى الأدمن التفاصيل وينزل الوثيقة الخاصة عبر Backend فقط.
 - **الفاعل الأساسي:** الأدمن.
 - **الأولوية:** Must.
-- **الحالة الحالية:** PARTIAL.
+- **الحالة الحالية:** IMPLEMENTED للنطاق التطويري الحالي؛ تسجيل verified view وفق `DEC-012` PLANNED.
 - **Sprint المالك:** Sprint 07؛ التخزين Sprint 10.
-- **المصدر:** `SCN-ADM-003` و`DEC-007` و`DEC-008`.
+- **المصدر:** `SCN-ADM-003` و`DEC-007` و`DEC-008` و`DEC-012`.
 - **الشروط السابقة:** admin authorized وطلب موجود.
 - **السلوك المتوقع:** detail JSON بلا bytes؛ download attachment خاص.
 - **سلوك الفشل:** 404/403/storage error آمنة مع retry.
@@ -457,9 +464,9 @@
 - **نص المتطلب:** يجب أن يقرر الأدمن approve/reject للـpending فقط مع version، وسبب رفض إلزامي وAudit واحد.
 - **الفاعل الأساسي:** الأدمن.
 - **الأولوية:** Must.
-- **الحالة الحالية:** PARTIAL.
+- **الحالة الحالية:** IMPLEMENTED في Sprint 07؛ ربط القرار بموعد `DEC-012` PLANNED.
 - **Sprint المالك:** Backend Sprint 06؛ UI Sprint 07.
-- **المصدر:** `SCN-ADM-004` و`DEC-006`.
+- **المصدر:** `SCN-ADM-004` و`DEC-006` و`DEC-012`.
 - **الشروط السابقة:** طلب pending ونسخة متوقعة.
 - **السلوك المتوقع:** decision/audit/version atomic داخل Firestore.
 - **سلوك الفشل:** conflict/not-pending/reason missing آمنة ولا تكرر القرار.
@@ -487,7 +494,7 @@
 - **نص المتطلب:** يجب توفير Backend endpoint إداري read-only يعيد global counts معرفة بوضوح للوحة الأدمن.
 - **الفاعل الأساسي:** الأدمن.
 - **الأولوية:** Must.
-- **الحالة الحالية:** PLANNED.
+- **الحالة الحالية:** IMPLEMENTED في Sprint 07.
 - **Sprint المالك:** Sprint 07.
 - **المصدر:** `SCN-ADM-002` و`DEC-006` والخطة المعتمدة 13.1.
 - **الشروط السابقة:** admin token وclaim صالحان.
@@ -568,9 +575,9 @@
 - **الأولوية:** Must.
 - **الحالة الحالية:** PLANNED.
 - **Sprint المالك:** Sprint 09.
-- **المصدر:** `SCN-OFR-002` و`DEC-010` و`DEC-011`.
+- **المصدر:** `SCN-OFR-002` و`DEC-010` و`DEC-011` و`DEC-013`.
 - **الشروط السابقة:** عرض غير deleted وShop active.
-- **السلوك المتوقع:** version/precondition وتحديث `updatedAt` الموثوق.
+- **السلوك المتوقع:** version/precondition وتسجيل أحدث تأكيد/تحديث موثوق مفاهيمياً؛ يسمح بتحديث السعر في أي وقت دون cooldown.
 - **سلوك الفشل:** 403 أو conflict آمن ولا lost update.
 - **قيود الأمن/الخصوصية:** ownership من Shop؛ لا خلط عملات.
 - **معايير القبول القابلة للاختبار:** owner/other-owner/suspended/conflict/currency tests تمر.
@@ -593,17 +600,17 @@
 #### `FR-OFR-004` — دورة السعر السباعية
 
 - **معرّف المتطلب:** `FR-OFR-004`
-- **نص المتطلب:** يجب أن يستطيع التاجر تعديل السعر أو تأكيده، ويعاد حساب stale بعد سبعة أيام من `updatedAt`.
+- **نص المتطلب:** يجب أن يستطيع التاجر تعديل السعر أو تأكيده في أي وقت، ويحسب stale بعد أكثر من سبعة أيام من الإنشاء/التأكيد الأول أو أحدث update/reconfirm.
 - **الفاعل الأساسي:** التاجر المعتمد والزائر.
 - **الأولوية:** Must.
 - **الحالة الحالية:** PARTIAL.
 - **Sprint المالك:** عرض Sprint 01؛ إدارة Sprint 09.
-- **المصدر:** `SCN-OFR-004` و`DEC-010`.
+- **المصدر:** `SCN-OFR-004` و`DEC-010` و`DEC-013`.
 - **الشروط السابقة:** عرض active مملوك.
-- **السلوك المتوقع:** edit/reconfirm يحدثان timestamp؛ stale يبقى ظاهراً بتحذير.
-- **سلوك الفشل:** لا حذف تلقائي ولا مقارنة cross-currency.
+- **السلوك المتوقع:** edit/reconfirm يزيلان التحذير ويعيدان بدء العمر؛ stale يبقى منشوراً مع notice وتاريخ أحدث تأكيد/تحديث.
+- **سلوك الفشل:** لا cooldown ولا إخفاء أو تعليق أو حذف أو حجب تلقائي ولا مقارنة cross-currency.
 - **قيود الأمن/الخصوصية:** timestamp خادمي وownership.
-- **معايير القبول القابلة للاختبار:** day-7 UTC/edit/reconfirm/stale/public sorting tests تمر.
+- **معايير القبول القابلة للاختبار:** initial age وlatest-confirmation وafter-day-7 UTC وupdate-any-time وreconfirm وnotice/public-visibility/sorting tests تمر دون تثبيت schema نهائي.
 
 #### `FR-OFR-005` — إنشاء عرض أو عدة عروض
 
@@ -625,17 +632,17 @@
 #### `FR-PRV-001` — حذف الوثيقة
 
 - **معرّف المتطلب:** `FR-PRV-001`
-- **نص المتطلب:** يجب حذف bytes بعد 48 ساعة من approved/rejected، والوثيقة القديمة بعد `needs_changes`.
+- **نص المتطلب:** يجب ألا يبدأ حذف bytes إلا بعد verified admin view وقرار نهائي معاً، وأن يكون الاستحقاق بعد 48 ساعة من الحدث اللاحق.
 - **الفاعل الأساسي:** scheduled-job identity.
 - **الأولوية:** Must.
 - **الحالة الحالية:** PARTIAL.
 - **Sprint المالك:** triggers Sprint 08؛ التنفيذ Sprint 10.
-- **المصدر:** `SCN-PRV-001` و`DEC-007` و`DEC-008`.
-- **الشروط السابقة:** trigger وdeletion due صالحان.
-- **السلوك المتوقع:** حذف idempotent مع metadata/Audit المسموحين.
+- **المصدر:** `SCN-PRV-001` و`DEC-007` و`DEC-008` و`DEC-012`.
+- **الشروط السابقة:** verified view ناجح وقرار نهائي مسجل وموعد مفاهيمي محسوب من الحدث اللاحق.
+- **السلوك المتوقع:** تبقى الوثيقة متاحة للأدمن المخول حتى اكتمال الشرطين؛ ثم حذف حتمي قابل للتعافي مع metadata/Audit وفق سياسة retention غير محسومة.
 - **سلوك الفشل:** retry وalert وAudit؛ لا تجاهل صامت.
 - **قيود الأمن/الخصوصية:** Object Storage خاص قبل الإنتاج ولا public URL.
-- **معايير القبول القابلة للاختبار:** due boundary/success/retry/alert/no-access-after-delete tests تمر.
+- **معايير القبول القابلة للاختبار:** view-only وdecision-only لا يبدآن العد؛ ترتيب الحدثين وlater-event +48h وsuccess/retry/alert/Audit/no-access-after-delete تمر، دون افتراض أسماء حقول نهائية.
 
 #### `FR-PRV-002` — حذف الحساب
 
@@ -684,7 +691,7 @@
 - **قيود الأمن/الخصوصية:** لا tokens/credentials/document bytes/PII زائد في logs أو alerts؛ service identities بأقل صلاحية.
 - **معايير القبول القابلة للاختبار:** health/readiness/redaction/correlation/job-failure/clean-shutdown/port-cleanup وrecovery/observability في staging تمر بأدلة آلية ويدوية مناسبة.
 
-**عدد المتطلبات الوظيفية:** 37 متطلباً فريداً: `IMPLEMENTED 15`، `PARTIAL 11`، `PLANNED 10`، `UNKNOWN 1`. هذا توزيع المتطلبات بعد التفكيك الذري، وليس تصنيف السيناريوهات الـ34.
+**عدد المتطلبات الوظيفية:** 37 متطلباً فريداً: `IMPLEMENTED 19`، `PARTIAL 8`، `PLANNED 9`، `UNKNOWN 1`. هذا توزيع المتطلبات بعد التفكيك الذري وإغلاق Sprint 07، وليس تصنيف السيناريوهات الـ34.
 
 ## 7. متطلبات Frontend
 
@@ -778,11 +785,11 @@
 
 ### 10.4 Offer
 
-`active ↔ hidden` و`active/hidden → deleted`. `deleted` نهائي للتاجر. stale حالة مشتقة من العمر وليست حذفاً.
+`active ↔ hidden` و`active/hidden → deleted`. `deleted` نهائي للتاجر. stale حالة مشتقة بعد أكثر من سبعة أيام من أحدث تأكيد/تحديث مفاهيمي، وليست إخفاءً أو تعليقاً أو حذفاً؛ update/reconfirm مسموحان في أي وقت.
 
 ### 10.5 Document deletion
 
-`available → deletion scheduled → deleted`، مع `failed/retry required` تشغيلي وتنبيه/Audit.
+`available → view_verified` و`available → final_reviewed` بأي ترتيب؛ لا يبدأ العد قبل وجودهما معاً. بعدها `deletion scheduled` عند +48 ساعة من الحدث اللاحق، ثم `deleted`، مع `failed/retry required` وتشغيل حتمي وتنبيه/Audit. أسماء الحالة مفاهيمية وليست schema نهائياً.
 
 ### 10.6 Provisioning
 
@@ -796,7 +803,7 @@
 - التنزيل يستخدم `Cache-Control: private, no-store` ولا permanent public URL.
 - Firestore Bytes تطويري فقط ومحظور للوثائق التجارية الحقيقية.
 - Object Storage خاص مطلوب قبل الإنتاج؛ المزود مفتوح.
-- حذف bytes بعد 48 ساعة من approved/rejected، والوثيقة القديمة بعد `needs_changes`.
+- لا يبدأ حذف bytes من المشاهدة وحدها أو القرار وحده؛ يلزم verified admin view وقرار نهائي، والموعد بعد 48 ساعة من الحدث اللاحق.
 - فشل الحذف ينتج retry وalert وAudit، ولا يسجل نجاحاً كاذباً.
 
 ## 12. متطلبات الأمن
@@ -833,7 +840,7 @@
 | `NFR-REL-003` | افتراضات availability وSLO تبقى مفتوحة حتى اختيار البنية. | UNKNOWN | القرار المفتوح للبنية التشغيلية | اعتماد SLO/monitor قبل production approval. |
 | `NFR-SEC-001` | يجب تطبيق defense-in-depth بين token/guards/rules/ownership/status. | PARTIAL | `DEC-006` وبوابات الأمن | authz matrix وdirect-client denial تمر. |
 | `NFR-SEC-002` | يجب منع الأسرار والوثائق وPII الزائد من logs/errors/artifacts. | PARTIAL | `SCN-OPS-001` | redaction scans واختبارات error envelopes تمر. |
-| `NFR-PRV-001` | يجب تطبيق minimization وprivate Backend access ومنع direct-client وJSON redaction، ثم private Object Storage وحذف الوثيقة القابل للتدقيق قبل الإنتاج. | PARTIAL | `DEC-007` و`DEC-008` | الأدلة الحالية تثبت minimization وBackend-only access وdirect-client denial وعدم bytes في JSON؛ وتبقى Object Storage واختبارات حذف 48 ساعة/retry/alert بوابات إنتاج مطلوبة. |
+| `NFR-PRV-001` | يجب تطبيق minimization وprivate Backend access ومنع direct-client وJSON redaction، ثم private Object Storage وحذف الوثيقة القابل للتدقيق وفق الشرطين قبل الإنتاج. | PARTIAL | `DEC-007` و`DEC-008` و`DEC-012` | الأدلة الحالية تثبت minimization وBackend-only access وdirect-client denial وعدم bytes في JSON؛ وتبقى Object Storage وتسجيل الحدثين وlater-event +48h وretry/alert/Audit بوابات إنتاج مطلوبة. |
 | `NFR-PRV-002` | يجب اعتماد retention/account-deletion قانونياً قبل الإنتاج. | UNKNOWN | القرار المفتوح للاحتفاظ وحذف الحساب | policy ومصفوفة retention معتمدان. |
 | `NFR-ACC-001` | يجب دعم keyboard/focus/landmarks/labels/status/errors دون focus trap. | PARTIAL | `SCN-OPS-001` | Playwright keyboard وفحص يدوي/AT. |
 | `NFR-ACC-002` | يجب احترام reduced motion والتباين وحجوم اللمس والقراءة. | PARTIAL | `SCN-OPS-001` | automated/manual accessibility regression. |
@@ -915,7 +922,7 @@
 
 ### 18.4 مجهول ومؤجل
 
-حذف الحساب وقرارات retention/provider/domain/hosting/suspension impact والمخططات التشغيلية مجهولة. Object Storage، حذف 48 ساعة، staging/production، الاختبار الميداني والقانوني بوابات مؤجلة لا تعد منفذة.
+حذف الحساب وقرارات retention/provider/domain/hosting/suspension impact والمخططات التشغيلية مجهولة. Object Storage، حذف 48 ساعة وفق `DEC-012`، دورة `DEC-013` الكاملة، staging/production، والاختبار الميداني والقانوني بوابات مؤجلة لا تعد منفذة.
 
 ## 19. مصفوفات التتبع
 
@@ -925,7 +932,7 @@
 |---|---|---|---|---|---|---|---|
 | `SCN-PUB-001` | `FR-PUB-001` | IMPLEMENTED | 01–02 | Home/CatalogProvider | live read fallback | static + liveOffers | UI/E2E regression |
 | `SCN-PUB-002` | `FR-PUB-002` | IMPLEMENTED | 01 | Home filters | — | view model | Unit + Playwright |
-| `SCN-PUB-003` | `FR-PUB-003` | IMPLEMENTED | 01/09 | ProductList | reconfirm مخطط | offer dates/currency | UTC unit + E2E |
+| `SCN-PUB-003` | `FR-PUB-003` | IMPLEMENTED | 01/09 | ProductList؛ notice موسع مخطط | reconfirm مخطط | latest confirmation مفاهيمي/currency | UTC unit + E2E |
 | `SCN-PUB-004` | `FR-PUB-004` | IMPLEMENTED | 01–02 | product/shop | public read | shops/offers | links/WhatsApp E2E |
 | `SCN-PUB-005` | `FR-PUB-005` | PARTIAL | pre-07/11 | loading/not-found | fallback | static/live | deterministic adapter مخطط |
 | `SCN-CMP-001` | `FR-CMP-001` | IMPLEMENTED | regression | CompareProvider/tray | — | localStorage | Unit + Playwright |
@@ -942,25 +949,25 @@
 | `SCN-MER-005` | `FR-MER-005` | IMPLEMENTED | 04/06 | status screens | owner GET | application | integrated E2E |
 | `SCN-MER-006` | `FR-MER-006` | PLANNED | 08 | edit/resubmit | transition | cycle/new document | state/API/E2E planned |
 | `SCN-MER-007` | `FR-MER-007` | PARTIAL | 08 | rejected/reapply | authorization | linked cycles/Audit | authz/E2E planned |
-| `SCN-ADM-001` | `FR-ADM-001` | PARTIAL | 07 | Admin shell | admin guard موجود | — | guard/UI planned |
-| `SCN-ADM-002` | `FR-ADM-002`, `FR-ADM-006` | PARTIAL | 07 | list + summary states | list موجود؛ summary endpoint مخطط | index/apps/counts | pagination + deterministic summary contract/E2E |
-| `SCN-ADM-003` | `FR-ADM-003` | PARTIAL | 07/10 | detail/viewer | detail/document موجود | private storage | no-store/authz planned |
-| `SCN-ADM-004` | `FR-ADM-004` | PARTIAL | 06/07 | decision UI | decision موجود | version/Audit | API موجود/UI planned |
-| `SCN-ADM-005` | `FR-ADM-005`, `FR-PRV-001` | PLANNED | 08/10 | needs_changes + deletion state | decision + scheduled deletion | version/Audit/deletion due/storage | state/linkage + job/retry/alert tests |
+| `SCN-ADM-001` | `FR-ADM-001` | IMPLEMENTED | 07 | Admin shell منفذة | guards منفذة | — | Sprint 07 PASS |
+| `SCN-ADM-002` | `FR-ADM-002`, `FR-ADM-006` | IMPLEMENTED | 07 | list + summary منفذان | list + summary منفذان | index/apps/counts | Sprint 07 PASS |
+| `SCN-ADM-003` | `FR-ADM-003` | IMPLEMENTED | 07/10 | detail/viewer منفذ | document منفذ؛ view tracking مخطط | private storage | no-store/authz PASS؛ `DEC-012` planned |
+| `SCN-ADM-004` | `FR-ADM-004` | IMPLEMENTED | 06/07/10 | decision UI منفذة | decision منفذ؛ deletion linkage مخطط | version/Audit | Sprint 07 PASS؛ `DEC-012` planned |
+| `SCN-ADM-005` | `FR-ADM-005`, `FR-PRV-001` | PLANNED | 08/10 | needs_changes + deletion state | decision + scheduled deletion | two-event due/storage | state/linkage + later-event/job/retry/alert tests |
 | `SCN-SHP-001` | `FR-SHP-001` | PLANNED | 08 | refreshed role | provisioning | Shop/claim/Audit | failure/reconciliation planned |
 | `SCN-SHP-002` | `FR-SHP-002` | PLANNED | 09 | merchant profile | Shop update | Shop/Audit | ownership/E2E planned |
 | `SCN-SHP-003` | `FR-SHP-003` | PLANNED | 08/10 | suspended UX | status guards | Shop status/Audit | stale-session planned |
 | `SCN-OFR-001` | `FR-OFR-001`, `FR-OFR-005` | PLANNED | 09 | offer list + create | owned list + create | offers/indexes/atomicity policy | pagination + multi-create/failure E2E |
-| `SCN-OFR-002` | `FR-OFR-002` | PLANNED | 09 | edit/conflict | ownership/version | offer metadata | concurrency planned |
+| `SCN-OFR-002` | `FR-OFR-002` | PLANNED | 09 | edit/conflict | ownership/version | latest confirmation مفاهيمي | concurrency/update-any-time planned |
 | `SCN-OFR-003` | `FR-OFR-003` | PLANNED | 09/10 | status actions | transitions/Audit | status/deletedAt | public exclusion planned |
-| `SCN-OFR-004` | `FR-OFR-004` | PARTIAL | 01/09 | stale/reconfirm | trusted timestamp | 7-day cycle | UTC/integrated planned |
-| `SCN-PRV-001` | `FR-PRV-001` | PARTIAL | 08/10 | deletion state | scheduled job | private storage | job/retry planned |
+| `SCN-OFR-004` | `FR-OFR-004` | PARTIAL | 01/09 | stale notice/reconfirm | latest-confirmation contract | visible stale 7-day cycle | UTC/update-any-time/visibility planned |
+| `SCN-PRV-001` | `FR-PRV-001` | PARTIAL | 08/10 | deletion state | two-event scheduled job | private storage/metadata | ordering/+48h/retry/Audit planned |
 | `SCN-PRV-002` | `FR-PRV-002` | UNKNOWN | 10 | account UX | orchestration open | retention open | legal/test plan later |
 | `SCN-OPS-001` | `FR-OPS-001`, `FR-OPS-002` | PARTIAL | 01–11 | accessible UI states/recovery | health/logging/correlation/shutdown | jobs/alerts/observability | UI recovery + operational/drill evidence |
 
-**التوزيع:** `IMPLEMENTED 15`، `PARTIAL 10`، `PLANNED 8`، `UNKNOWN 1`؛ الإجمالي 34.
+**التوزيع المحدث بعد إغلاق Sprint 07:** `IMPLEMENTED 19`، `PARTIAL 6`، `PLANNED 8`، `UNKNOWN 1`؛ الإجمالي 34.
 
-**توزيع المتطلبات الوظيفية المرتبطة:** `IMPLEMENTED 15`، `PARTIAL 11`، `PLANNED 10`، `UNKNOWN 1`؛ الإجمالي 37. زيادة العدد ناتجة عن تفكيك السيناريو الواحد إلى متطلبات ذرية ولا تغير تصنيف السيناريو.
+**توزيع المتطلبات الوظيفية المرتبطة:** `IMPLEMENTED 19`، `PARTIAL 8`، `PLANNED 9`، `UNKNOWN 1`؛ الإجمالي 37. يعكس التوزيع إغلاق Sprint 07 وإعادة توصيف `FR-PUB-003` كـPARTIAL تحت `DEC-013`.
 
 ### 19.B المتطلبات إلى Sprint
 
@@ -1002,7 +1009,7 @@
 7. hosting/domain/CORS/observability/backup/DR/rollback وSLO/RPO/RTO.
 8. حقول وحدود بحث الأدمن.
 9. نموذج application cycles والروابط.
-10. scheduler/retry/alert/dead-letter لحذف الوثائق.
+10. تفاصيل scheduler/dead-letter والتصعيد؛ وجوب الجدولة الحتمية وretry/alert/Audit محسوم في `DEC-012`.
 11. قناة notifications والاحتفاظ.
 12. تزامن claims والحالة ومنع الكتابة فور التعليق.
 13. offer schema/migration و`ownerUid/shopId` النهائيان.
@@ -1015,7 +1022,7 @@
 
 - [ ] مراجعة قانونية/خصوصية وسياسات retention/account deletion.
 - [ ] private Object Storage وعدم Firestore Bytes حقيقية.
-- [ ] حذف 48 ساعة آلي مع retry/alert/Audit.
+- [ ] حذف آلي بعد 48 ساعة من الحدث اللاحق بين verified view والقرار النهائي، مع retry/alert/Audit.
 - [ ] staging production-like منفصل.
 - [ ] secrets/ADC/exact CORS/HTTPS/TLS وleast privilege.
 - [ ] rules/indexes منشورة ومختبرة بلا توسيع وصول.
@@ -1037,10 +1044,12 @@
 - [x] اعتماد فصل APIs الموجودة عن القدرات المخططة.
 - [ ] اعتماد data/state/provisioning/storage models.
 - [x] تأكيد توزيع Sprint 07–11 ومصفوفات traceability.
+- [x] اعتماد `DEC-012` و`DEC-013` بتاريخ 2026-11-08 بوصفهما قرارين جديدين، مع إبقاء تنفيذهما `PLANNED`.
 - [x] إبقاء القرارات المفتوحة دون حسم غير موثق.
 - [ ] جدولة legal/privacy/infrastructure decisions قبل بواباتها.
 - [ ] اعتماد استراتيجية الاختبار وproduction gates.
 - [x] تأكيد أن SRS v1.0 تاريخي وغير معدل.
-- [x] اعتماد هذه الوثيقة قبل بدء Sprint 07، ثم إصدار PDF في مهمة منفصلة فقط.
+- [x] اعتماد الإصدار `2.0-approved` قبل Sprint 07 وإصدار PDF التاريخي المقابل له.
+- [x] اعتماد `2.1-approved` وإصدار PDF جديد مع إبقاء PDF الإصدار 2.0 التاريخي.
 
-> هذه الوثيقة **APPROVED — OWNER APPROVED**. لا تحول المتطلبات المخططة أو المجهولة إلى تنفيذ قائم، ولا تفوض النشر أو معالجة وثائق تجارية حقيقية.
+> هذه الوثيقة **APPROVED — OWNER APPROVED** بالإصدار `2.1-approved`. لا تحول `DEC-012` أو `DEC-013` أو المتطلبات المخططة إلى تنفيذ قائم، ولا تفوض النشر أو معالجة وثائق تجارية حقيقية. يبقى PDF `2.0-approved` artifact تاريخياً بلا تعديل.
